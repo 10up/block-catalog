@@ -30,9 +30,45 @@ class CatalogBuilder {
 			return wp_set_object_terms( $post_id, [], BLOCK_CATALOG_TAXONOMY );
 		}
 
-		$result = wp_set_post_terms( $post_id, $terms, BLOCK_CATALOG_TAXONOMY, false );
+		$result = $this->set_post_block_terms( $post_id, $terms );
 
 		return $result;
+	}
+
+	/**
+	 * Sets the blocks terms of the post. Creates the terms if absent.
+	 *
+	 * @param int   $post_id The post id
+	 * @param array $terms The block terms
+	 * @return array|WP_Error
+	 */
+	public function set_post_block_terms( $post_id, $terms ) {
+		$term_ids = [];
+
+		foreach ( $terms as $slug => $label ) {
+			if ( ! term_exists( $slug, BLOCK_CATALOG_TAXONOMY ) ) {
+				$term_args = [
+					'slug' => $slug,
+				];
+
+				$result = wp_insert_term( $label, BLOCK_CATALOG_TAXONOMY, $term_args );
+
+				if ( ! is_wp_error( $result ) ) {
+					$term_ids[] = intval( $result['term_id'] );
+				}
+			} else {
+				$result = get_term_by( 'slug', $slug, BLOCK_CATALOG_TAXONOMY );
+
+				if ( ! empty( $result ) ) {
+					$term_ids[] = intval( $result->term_id );
+				}
+			}
+		}
+
+		$term_ids = array_filter( $term_ids );
+		$term_ids = array_unique( $term_ids );
+
+		return wp_set_object_terms( $post_id, $term_ids, BLOCK_CATALOG_TAXONOMY, false );
 	}
 
 	/**
@@ -71,7 +107,7 @@ class CatalogBuilder {
 			$block_terms = $this->block_to_terms( $block );
 
 			if ( ! empty( $block_terms ) ) {
-				$terms = array_merge( $terms, $block_terms );
+				$terms = array_replace( $terms, $block_terms );
 			}
 		}
 
@@ -128,15 +164,57 @@ class CatalogBuilder {
 			return [];
 		}
 
+		$terms = [];
+		$label = $this->get_block_label( $block );
+
 		/**
-		 * Allows plugins/themes to change the term name corresponding to the the
+		 * Allows plugins/themes to change the term label corresponding to the
 		 * block in the catalog.
 		 *
 		 * @param array $terms The term names corresponding to the block in the catalog
+		 * @param array $block The block data
 		 */
-		$terms = apply_filters( 'block_catalog_block_terms', [ $block['blockName'] ], $block );
+		$label = apply_filters( 'block_catalog_block_term_label', $label, $block );
+
+		$terms[ $block['blockName'] ] = $label;
+
+		if ( ! empty( $block['attrs']['ref'] ) ) {
+			$reusable_slug           = 'reusable-block-' . intval( $block['attrs']['ref'] );
+			$terms[ $reusable_slug ] = get_the_title( $block['attrs']['ref'] ) . ' - Reusable';
+		}
+
+		/**
+		 * Allows plugins/themes to change the term labels corresponding to the
+		 * block in the catalog. This is useful to build multiple terms from a
+		 * single block. eg:- embed & special-type-of-embed
+		 *
+		 * @param array $terms The term names corresponding to the block in the catalog
+		 * @param array $block The block data
+		 */
+		$terms = apply_filters( 'block_catalog_block_terms', $terms, $block );
 
 		return $terms;
+	}
+
+	/**
+	 * Finds the label of the block term from its blockName.
+	 *
+	 * @param string $name The block data
+	 * @return string
+	 */
+	public function get_block_label( $block ) {
+		$name       = $block['blockName'] ?? '';
+		$registered = \WP_Block_Type_Registry::get_instance()->get_registered( $name );
+		$title      = ! empty( $registered->title ) ? $registered->title : $block['blockName'];
+
+		/**
+		 * Allows plugins/themes to change the block title for the specified block
+		 *
+		 * @param string $title The block title
+		 * @param string $name The block name
+		 * @param array  $block The block data
+		 */
+		return apply_filters( 'block_catalog_block_title', $title, $name, $block );
 	}
 
 }

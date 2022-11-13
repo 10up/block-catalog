@@ -22,7 +22,7 @@ function setup() {
 	};
 
 	add_action( 'init', $n( 'i18n' ) );
-	add_action( 'init', $n( 'init' ) );
+	add_action( 'init', $n( 'init' ), 1000000 );
 	add_action( 'wp_enqueue_scripts', $n( 'scripts' ) );
 	add_action( 'wp_enqueue_scripts', $n( 'styles' ) );
 	add_action( 'admin_enqueue_scripts', $n( 'admin_scripts' ) );
@@ -32,6 +32,10 @@ function setup() {
 	add_filter( 'mce_css', $n( 'mce_css' ) );
 	// Hook to allow async or defer on asset loading.
 	add_filter( 'script_loader_tag', $n( 'script_loader_tag' ), 10, 2 );
+
+	if ( defined( 'WP_CLI' ) && WP_CLI ) {
+		\WP_CLI::add_command( 'block-catalog', '\BlockCatalog\CatalogCommand' );
+	}
 
 	do_action( 'block_catalog_plugin_loaded' );
 }
@@ -62,7 +66,6 @@ function init() {
 		$builder = new CatalogBuilder();
 
 		$terms = $builder->catalog( $post_id );
-
 	} );
 
 }
