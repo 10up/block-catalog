@@ -179,7 +179,7 @@ class CatalogBuilder {
 		$terms[ $block['blockName'] ] = $label;
 
 		if ( ! empty( $block['attrs']['ref'] ) ) {
-			$reusable_slug           = 'reusable-block-' . intval( $block['attrs']['ref'] );
+			$reusable_slug           = 're-' . intval( $block['attrs']['ref'] );
 			$terms[ $reusable_slug ] = get_the_title( $block['attrs']['ref'] ) . ' - Reusable';
 		}
 

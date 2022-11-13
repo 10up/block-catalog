@@ -216,7 +216,7 @@ class CatalogCommand extends \WP_CLI_Command {
 			\WP_CLI::error( __( "No posts found.", 'block-catalog' ) );
 		}
 
-		\WP_CLI\Utils\format_items( $opts['format'], $posts, $opts['fields']);
+		\WP_CLI\Utils\format_items( $opts['format'], $posts, $opts['fields'] );
 	}
 
 	/**
