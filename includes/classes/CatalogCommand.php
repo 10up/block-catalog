@@ -26,7 +26,7 @@ class CatalogCommand extends \WP_CLI_Command {
 	 * @param array $args Command args
 	 * @param array $opts Command opts
 	 */
-	public function catalog( $args = [], $opts = [] ) {
+	public function index( $args = [], $opts = [] ) {
 		$dry_run = ! empty( $opts['dry-run'] );
 
 		if ( $dry_run ) {
@@ -185,7 +185,7 @@ class CatalogCommand extends \WP_CLI_Command {
 		$builder = new CatalogBuilder();
 
 		if ( ! empty( $opts['catalog'] ) ) {
-			$this->catalog();
+			$this->index();
 		}
 
 		$taxonomy = new BlockCatalogTaxonomy();
