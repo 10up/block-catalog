@@ -1,5 +1,5 @@
 {
-  "name": "tenup-plugin",
+  "name": "block-catalog-plugin",
   "version": "1.0.0",
   "scripts": {
     "start": "npm run watch",

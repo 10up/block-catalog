@@ -1,5 +1,5 @@
 {
-  "name": "10up/wp-plugin",
+  "name": "10up/block-catalog-plugin",
   "type": "wordpress-plugin",
   "authors": [
     {
@@ -12,7 +12,7 @@
   },
   "autoload": {
     "psr-4": {
-      "TenUpPlugin\\": "includes/classes/"
+      "BlockCatalog\\": "includes/classes/"
     }
   }
 }

@@ -1,10 +1,10 @@
 <?php
 
 // Useful global constants.
-define( 'TENUP_PLUGIN_VERSION', '0.1.0' );
-define( 'TENUP_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
-define( 'TENUP_PLUGIN_PATH', plugin_dir_path( __FILE__ ) );
-define( 'TENUP_PLUGIN_INC', TENUP_PLUGIN_PATH . 'includes/' );
+define( 'BLOCK_CATALOG_PLUGIN_VERSION', '0.1.0' );
+define( 'BLOCK_CATALOG_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
+define( 'BLOCK_CATALOG_PLUGIN_PATH', plugin_dir_path( __FILE__ ) );
+define( 'BLOCK_CATALOG_PLUGIN_INC', BLOCK_CATALOG_PLUGIN_PATH . 'includes/' );
 
 $is_local_env = in_array( wp_get_environment_type(), [ 'local', 'development' ], true );
 $is_local_url = strpos( home_url(), '.test' ) || strpos( home_url(), '.local' );
@@ -16,17 +16,17 @@ if ( $is_local && file_exists( __DIR__ . '/dist/fast-refresh.php' ) ) {
 }
 
 // Require Composer autoloader if it exists.
-if ( file_exists( TENUP_PLUGIN_PATH . 'vendor/autoload.php' ) ) {
-	require_once TENUP_PLUGIN_PATH . 'vendor/autoload.php';
+if ( file_exists( BLOCK_CATALOG_PLUGIN_PATH . 'vendor/autoload.php' ) ) {
+	require_once BLOCK_CATALOG_PLUGIN_PATH . 'vendor/autoload.php';
 }
 
 // Include files.
-require_once TENUP_PLUGIN_INC . '/utility.php';
-require_once TENUP_PLUGIN_INC . '/core.php';
+require_once BLOCK_CATALOG_PLUGIN_INC . '/utility.php';
+require_once BLOCK_CATALOG_PLUGIN_INC . '/core.php';
 
 // Activation/Deactivation.
-register_activation_hook( __FILE__, '\TenUpPlugin\Core\activate' );
-register_deactivation_hook( __FILE__, '\TenUpPlugin\Core\deactivate' );
+register_activation_hook( __FILE__, '\BlockCatalog\Core\activate' );
+register_deactivation_hook( __FILE__, '\BlockCatalog\Core\deactivate' );
 
 // Bootstrap.
-TenUpPlugin\Core\setup();
+BlockCatalog\Core\setup();

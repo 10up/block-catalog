@@ -8,10 +8,10 @@
  * to Namespaces.
  *
  * @link https://developer.wordpress.org/themes/basics/template-tags/
- * @package TenUpPlugin
+ * @package BlockCatalog
  */
 
-namespace TenUpPlugin\Utility;
+namespace BlockCatalog\Utility;
 
 /**
  * Get asset info from extracted asset files
@@ -21,10 +21,10 @@ namespace TenUpPlugin\Utility;
  * @return string|array
  */
 function get_asset_info( $slug, $attribute = null ) {
-	if ( file_exists( TENUP_PLUGIN_PATH . 'dist/js/' . $slug . '.asset.php' ) ) {
-		$asset = require TENUP_PLUGIN_PATH . 'dist/js/' . $slug . '.asset.php';
-	} elseif ( file_exists( TENUP_PLUGIN_PATH . 'dist/css/' . $slug . '.asset.php' ) ) {
-		$asset = require TENUP_PLUGIN_PATH . 'dist/css/' . $slug . '.asset.php';
+	if ( file_exists( BLOCK_CATALOG_PLUGIN_PATH . 'dist/js/' . $slug . '.asset.php' ) ) {
+		$asset = require BLOCK_CATALOG_PLUGIN_PATH . 'dist/js/' . $slug . '.asset.php';
+	} elseif ( file_exists( BLOCK_CATALOG_PLUGIN_PATH . 'dist/css/' . $slug . '.asset.php' ) ) {
+		$asset = require BLOCK_CATALOG_PLUGIN_PATH . 'dist/css/' . $slug . '.asset.php';
 	} else {
 		return null;
 	}
