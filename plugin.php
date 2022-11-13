@@ -1,10 +1,28 @@
 <?php
+/**
+ * Plugin Name:       Block Catalog
+ * Description:       Catalog of all blocks used on a site
+ * Version:           0.1.0
+ * Requires at least: 6.0
+ * Requires PHP:      7.4
+ * Author:            Darshan Sawardekar, 10up
+ * Author URI:        https://10up.com
+ * License:           GPL v2 or later
+ * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
+ * Text Domain:       block-catalog
+ * Domain Path:       /languages
+ *
+ * @package           BlockCatalog
+ */
+
 
 // Useful global constants.
 define( 'BLOCK_CATALOG_PLUGIN_VERSION', '0.1.0' );
 define( 'BLOCK_CATALOG_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 define( 'BLOCK_CATALOG_PLUGIN_PATH', plugin_dir_path( __FILE__ ) );
 define( 'BLOCK_CATALOG_PLUGIN_INC', BLOCK_CATALOG_PLUGIN_PATH . 'includes/' );
+
+define( 'BLOCK_CATALOG_TAXONOMY', 'block-catalog' );
 
 $is_local_env = in_array( wp_get_environment_type(), [ 'local', 'development' ], true );
 $is_local_url = strpos( home_url(), '.test' ) || strpos( home_url(), '.local' );
@@ -25,8 +43,8 @@ require_once BLOCK_CATALOG_PLUGIN_INC . '/utility.php';
 require_once BLOCK_CATALOG_PLUGIN_INC . '/core.php';
 
 // Activation/Deactivation.
-register_activation_hook( __FILE__, '\BlockCatalog\Core\activate' );
-register_deactivation_hook( __FILE__, '\BlockCatalog\Core\deactivate' );
+register_activation_hook( __FILE__, '\BlockCatalog\activate' );
+register_deactivation_hook( __FILE__, '\BlockCatalog\deactivate' );
 
 // Bootstrap.
-BlockCatalog\Core\setup();
+BlockCatalog\setup();

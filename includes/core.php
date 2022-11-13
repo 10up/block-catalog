@@ -5,7 +5,7 @@
  * @package BlockCatalog
  */
 
-namespace BlockCatalog\Core;
+namespace BlockCatalog;
 
 use \WP_Error;
 use BlockCatalog\Utility;
@@ -54,6 +54,9 @@ function i18n() {
  */
 function init() {
 	do_action( 'block_catalog_plugin_init' );
+
+	$block_catalog_taxonomy = new BlockCatalogTaxonomy();
+	$block_catalog_taxonomy->register();
 }
 
 /**
