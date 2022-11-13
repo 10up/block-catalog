@@ -127,8 +127,8 @@ class CatalogCommand extends \WP_CLI_Command {
 	 * <blocks>...
 	 * : The block names to search for, eg:- core/embed
 	 *
-	 * [--catalog]
-	 * : Where to re-catalog before searching.
+	 * [--index]
+	 * : Where to re-index before searching.
 	 *
 	 * [--fields]
 	 * : List of post fields to display
@@ -157,7 +157,7 @@ class CatalogCommand extends \WP_CLI_Command {
 		}
 
 		if ( empty( $opts['fields'] ) ) {
-			$opts['fields'] = ['ID', 'post_title'];
+			$opts['fields'] = ['ID', 'post_type', 'post_title'];
 		} else {
 			$opts['fields'] = explode( ',', $opts['fields'] );
 		}
@@ -184,7 +184,7 @@ class CatalogCommand extends \WP_CLI_Command {
 
 		$builder = new CatalogBuilder();
 
-		if ( ! empty( $opts['catalog'] ) ) {
+		if ( ! empty( $opts['index'] ) ) {
 			$this->index();
 		}
 
