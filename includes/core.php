@@ -57,6 +57,14 @@ function init() {
 
 	$block_catalog_taxonomy = new BlockCatalogTaxonomy();
 	$block_catalog_taxonomy->register();
+
+	add_action( 'save_post', function( $post_id ) {
+		$builder = new CatalogBuilder();
+
+		$terms = $builder->catalog( $post_id );
+
+	} );
+
 }
 
 /**
