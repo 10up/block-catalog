@@ -113,7 +113,7 @@ class RESTSupport {
 		$builder = new CatalogBuilder();
 
 		foreach ( $post_ids as $post_id ) {
-			$result = $builder->catalog( $post_id, $opts );
+			$result = $builder->catalog( $post_id );
 
 			if ( is_wp_error( $result ) ) {
 				$errors++;
