@@ -23,19 +23,30 @@ function setup() {
 
 	add_action( 'init', $n( 'i18n' ) );
 	add_action( 'init', $n( 'init' ), 1000000 );
-	add_action( 'wp_enqueue_scripts', $n( 'scripts' ) );
 	add_action( 'wp_enqueue_scripts', $n( 'styles' ) );
 	add_action( 'admin_enqueue_scripts', $n( 'admin_scripts' ) );
 	add_action( 'admin_enqueue_scripts', $n( 'admin_styles' ) );
 
-	// Editor styles. add_editor_style() doesn't work outside of a theme.
-	add_filter( 'mce_css', $n( 'mce_css' ) );
 	// Hook to allow async or defer on asset loading.
 	add_filter( 'script_loader_tag', $n( 'script_loader_tag' ), 10, 2 );
 
 	if ( defined( 'WP_CLI' ) && WP_CLI ) {
 		\WP_CLI::add_command( 'block-catalog', '\BlockCatalog\CatalogCommand' );
 	}
+
+	wp_register_script(
+		'block_catalog_plugin_tools',
+		script_url( 'tools', 'admin' ),
+		['wp-api-fetch', 'wp-polyfill'],
+		BLOCK_CATALOG_PLUGIN_VERSION,
+		true
+	);
+
+	$tools_page = new ToolsPage();
+	$tools_page->register();
+
+	$rest_support = new RESTSupport();
+	$rest_support->register();
 
 	do_action( 'block_catalog_plugin_loaded' );
 }
@@ -99,7 +110,7 @@ function deactivate() {
  * @return array
  */
 function get_enqueue_contexts() {
-	return [ 'admin', 'frontend', 'shared' ];
+	return [ 'admin' ];
 }
 
 /**
@@ -139,44 +150,11 @@ function style_url( $stylesheet, $context ) {
 }
 
 /**
- * Enqueue scripts for front-end.
- *
- * @return void
- */
-function scripts() {
-
-	wp_enqueue_script(
-		'block_catalog_plugin_shared',
-		script_url( 'shared', 'shared' ),
-		Utility\get_asset_info( 'shared', 'dependencies' ),
-		BLOCK_CATALOG_PLUGIN_VERSION,
-		true
-	);
-
-	wp_enqueue_script(
-		'block_catalog_plugin_frontend',
-		script_url( 'frontend', 'frontend' ),
-		Utility\get_asset_info( 'frontend', 'dependencies' ),
-		BLOCK_CATALOG_PLUGIN_VERSION,
-		true
-	);
-
-}
-
-/**
  * Enqueue scripts for admin.
  *
  * @return void
  */
 function admin_scripts() {
-
-	wp_enqueue_script(
-		'block_catalog_plugin_shared',
-		script_url( 'shared', 'shared' ),
-		Utility\get_asset_info( 'shared', 'dependencies' ),
-		BLOCK_CATALOG_PLUGIN_VERSION,
-		true
-	);
 
 	wp_enqueue_script(
 		'block_catalog_plugin_admin',
@@ -194,14 +172,6 @@ function admin_scripts() {
  * @return void
  */
 function styles() {
-
-	wp_enqueue_style(
-		'block_catalog_plugin_shared',
-		style_url( 'shared', 'shared' ),
-		[],
-		BLOCK_CATALOG_PLUGIN_VERSION
-	);
-
 	if ( is_admin() ) {
 		wp_enqueue_style(
 			'block_catalog_plugin_admin',
@@ -209,15 +179,7 @@ function styles() {
 			[],
 			BLOCK_CATALOG_PLUGIN_VERSION
 		);
-	} else {
-		wp_enqueue_style(
-			'block_catalog_plugin_frontend',
-			style_url( 'frontend', 'frontend' ),
-			[],
-			BLOCK_CATALOG_PLUGIN_VERSION
-		);
 	}
-
 }
 
 /**
@@ -226,37 +188,12 @@ function styles() {
  * @return void
  */
 function admin_styles() {
-
-	wp_enqueue_style(
-		'block_catalog_plugin_shared',
-		style_url( 'shared', 'shared' ),
-		[],
-		BLOCK_CATALOG_PLUGIN_VERSION
-	);
-
 	wp_enqueue_style(
 		'block_catalog_plugin_admin',
 		style_url( 'admin', 'admin' ),
 		[],
 		BLOCK_CATALOG_PLUGIN_VERSION
 	);
-
-}
-
-/**
- * Enqueue editor styles. Filters the comma-delimited list of stylesheets to load in TinyMCE.
- *
- * @param string $stylesheets Comma-delimited list of stylesheets.
- * @return string
- */
-function mce_css( $stylesheets ) {
-	if ( ! empty( $stylesheets ) ) {
-		$stylesheets .= ',';
-	}
-
-	return $stylesheets . BLOCK_CATALOG_PLUGIN_URL . ( ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) ?
-			'assets/css/frontend/editor-style.css' :
-			'dist/css/editor-style.min.css' );
 }
 
 /**
