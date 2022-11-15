@@ -49,10 +49,14 @@ class ToolsPage {
 		?>
 		<h1>Block Catalog - Index</h1>
 
-		<div id="index-message-notice" style="display:none">
-			<h4 id="index-message">
+		<div id="index-notice" class="notice" style="display:none; margin-left: 0">
+			<p id="index-notice-body">
+				Testing
 			</h4>
 		</div>
+
+		<h4 id="index-message" style="display:none">
+		</h4>
 
 		<div id="index-settings">
 

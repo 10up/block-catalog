@@ -66,6 +66,9 @@ class ToolsApp {
 	didLoadStart() {
 		this.setState({ status: 'loading', message: 'Loading posts to index ...' });
 		this.hideErrors();
+		this.setNotice('');
+
+		window.scrollTo(0, 0);
 	}
 
 	didLoadComplete(event) {
@@ -74,23 +77,25 @@ class ToolsApp {
 	}
 
 	didIndexStart(event) {
-		const message = `Indexing ${event.detail.progress}/${event.detail.total} Posts ...`;
+		const message = `Indexing ${event.detail.progress} / ${event.detail.total} Posts ...`;
 		this.setState({ status: 'indexing', message, ...event.detail });
 	}
 
 	didIndexProgress(event) {
-		const message = `Indexing ${event.detail.progress}/${event.detail.total} Posts ...`;
+		const message = `Indexing ${event.detail.progress} / ${event.detail.total} Posts ...`;
 		this.setState({ status: 'indexing', message, ...event.detail });
 	}
 
 	didIndexComplete(event) {
-		const message = `Indexed ${event.detail.progress}/${event.detail.total} Posts.`;
-		this.setState({ status: 'settings', message, ...event.detail });
+		const message = `Indexed ${event.detail.progress} / ${event.detail.total} Posts.`;
+		this.setState({ status: 'settings', message: '', ...event.detail });
+		this.setNotice(message, 'success');
 	}
 
 	didIndexCancel(event) {
 		const message = 'Index cancelled.';
-		this.setState({ status: 'cancelled', message, ...event.detail });
+		this.setState({ status: 'cancelled', message: '', ...event.detail });
+		this.setNotice(message, 'error');
 	}
 
 	didIndexError(event) {
@@ -161,13 +166,22 @@ class ToolsApp {
 	}
 
 	setMessage(message) {
-		const notice = document.querySelector('#index-message-notice');
-
-		if (notice) {
-			notice.style.display = message !== '' ? 'block' : 'none';
-		}
-
 		const element = document.querySelector('#index-message');
+
+		if (element) {
+			element.style.display = message !== '' ? 'block' : 'none';
+			element.innerHTML = message;
+		}
+	}
+
+	setNotice(message, type = 'success') {
+		const container = document.querySelector('#index-notice');
+		const element = document.querySelector('#index-notice-body');
+
+		if (container) {
+			container.style.display = message !== '' ? 'block' : 'none';
+			container.className = `notice notice-${type}`;
+		}
 
 		if (element) {
 			element.innerHTML = message;
