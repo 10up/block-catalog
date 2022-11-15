@@ -78,7 +78,7 @@ class ToolsPage {
 		</div>
 
 		<div id="index-status" style="display:none">
-			<progress id="index-progress" value="0" max="100">
+			<progress class="index-progress-bar" id="index-progress" value="50" max="100">
 	    </progress>
 			<p class="cancel">
 				<input type="button" name="cancel" id="cancel" class="button button-primary" value="Cancel">

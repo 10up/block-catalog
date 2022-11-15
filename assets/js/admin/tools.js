@@ -7,6 +7,7 @@ class ToolsApp {
 
 		this.onIndex('loadStart', 'didLoadStart');
 		this.onIndex('loadComplete', 'didLoadComplete');
+		this.onIndex('loadError', 'didLoadError');
 		this.onIndex('indexStart', 'didIndexStart');
 		this.onIndex('indexProgress', 'didIndexProgress');
 		this.onIndex('indexComplete', 'didIndexComplete');
@@ -41,6 +42,11 @@ class ToolsApp {
 			case 'loaded':
 				this.hide('#index-settings');
 				this.show('#index-status');
+				break;
+
+			case 'load-error':
+				this.show('#index-settings');
+				this.hide('#index-status');
 				break;
 
 			case 'settings':
@@ -106,6 +112,25 @@ class ToolsApp {
 		this.indexer.index(this.state.posts);
 	}
 
+	didLoadError(event) {
+		const err = event.detail || {};
+
+		let message = 'Failed to load posts to index.';
+
+		if (err?.message) {
+			message += `  (${err?.code} - ${err.message})`;
+		}
+
+		if (err?.data?.message) {
+			message += `  (${err.data.message})`;
+		} else if ( typeof(err?.data) === 'string') {
+			message += `  (${err.data})`;
+		}
+
+		this.setState({ status: 'load-error', message: '', error: err});
+		this.setNotice(message, 'error');
+	}
+
 	didIndexStart(event) {
 		const message = `Indexing ${event.detail.progress} / ${event.detail.total} Posts ...`;
 		this.setState({ status: 'indexing', message, ...event.detail });
@@ -117,10 +142,22 @@ class ToolsApp {
 	}
 
 	didIndexComplete(event) {
-		console.log('complete', event.detail);
-		const message = `Indexed ${event.detail.progress} / ${event.detail.total} Posts Successfully.`;
+		let message;
+		let type;
+
+		if (event.detail.failures === 0) {
+			message = `Indexed ${event.detail.completed} / ${event.detail.total} Posts Successfully.`;
+			type    = 'success';
+		} else if (event.detail.failures > 0 && event.detail.completed > 0) {
+			message = `Indexed ${event.detail.completed} Posts successfully with ${event.detail.failures} Errors.`;
+			type    = 'error';
+		} else {
+			message = `Failed to index ${event.detail.total} Posts.`;
+			type    = 'error';
+		}
+
 		this.setState({ status: 'settings', message: '', ...event.detail });
-		this.setNotice(message, 'success');
+		this.setNotice(message, type);
 	}
 
 	didIndexCancel(event) {
@@ -130,7 +167,21 @@ class ToolsApp {
 	}
 
 	didIndexError(event) {
-		this.addErrorLine(event.detail.error || 'Unexpected error occurred');
+		const err = event.detail || {};
+
+		let message = 'Failed to index posts';
+
+		if (err?.message) {
+			message += `  (${err?.code} - ${err.message})`;
+		}
+
+		if (err?.data?.message) {
+			message += `  (${err.data.message})`;
+		} else if ( typeof(err?.data) === 'string') {
+			message += `  (${err.data})`;
+		}
+
+		this.addErrorLine(message);
 	}
 
 	didDeleteIndexStart(event) {
@@ -150,7 +201,7 @@ class ToolsApp {
 			message = `Deleted ${event.detail?.removed} block catalog term(s) successfully.`;
 			this.setNotice(message, 'success');
 		} else {
-			message = 'Nothing to delete, block catalog index is empty';
+			message = 'Nothing to delete, block catalog index is empty.';
 			this.setNotice(message, 'error');
 		}
 
@@ -201,6 +252,12 @@ class ToolsApp {
 	}
 
 	didDeleteIndexClick() {
+		const res = confirm('This will delete all terms in the Block Catalog index. Are you sure?');
+
+		if (!res) {
+			return false;
+		}
+
 		this.indexer.deleteIndex();
 		return false;
 	}
@@ -325,7 +382,7 @@ class ToolsApp {
 		const item = document.createElement('li');
 		const text = document.createTextNode(line);
 
-		item.appendChild(text);
+		item.innerHTML = line;
 		list.appendChild(item);
 	}
 }

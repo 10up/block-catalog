@@ -3,3 +3,13 @@
  * https://project-website.tld
  *
  */
+.index-progress-bar {
+	width: 300px;
+  background-color: #eee;
+  border-radius: 2px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.25) inset;
+}
+
+.index-progress-bar::-webkit-progress-value {
+  background-color: #2271b1;
+}
