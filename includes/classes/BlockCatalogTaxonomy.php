@@ -66,7 +66,9 @@ class BlockCatalogTaxonomy {
 			$options
 		);
 
-		add_action( 'restrict_manage_posts', [ $this, 'render_block_catalog_filter' ], 10000 );
+		if ( apply_filters( 'block_catalog_filter_enabled', true ) ) {
+			add_action( 'restrict_manage_posts', [ $this, 'render_block_catalog_filter' ], 10000 );
+		}
 
 		return true;
 	}
@@ -161,15 +163,15 @@ class BlockCatalogTaxonomy {
 
 			$terms     = get_terms( $term_opts );
 			$selection = isset( $_GET['block-catalog'] ) ? sanitize_text_field( $_GET['block-catalog'] ) : ''; // phpcs:ignore
-			$html      = '<select name="block-catalog" id="block-catalog" class=\"postform\">';
+			$html      = '<select name="block-catalog" id="block-catalog" class="postform">';
 			$html     .= sprintf( '<option %s value="">All Block Catalog Terms</option>', selected( $selection, '', false ) );
 
 			foreach ( $terms as $term ) {
 				$html .= sprintf(
 					'<option %s value="%s">%s</option>',
 					selected( $selection, $term->slug, false ),
-					$term->slug,
-					$term->name
+					esc_attr( $term->slug ),
+					esc_attr( $term->name )
 				);
 			}
 
