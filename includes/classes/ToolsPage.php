@@ -73,6 +73,7 @@ class ToolsPage {
 
 		<p class="submit">
 			<input type="button" name="submit" id="submit" class="button button-primary" value="Index Posts">
+			<input type="button" name="reset" id="delete-index" class="button button-secondary" value="Delete Index">
 		</p>
 		</div>
 
@@ -81,6 +82,12 @@ class ToolsPage {
 	    </progress>
 			<p class="cancel">
 				<input type="button" name="cancel" id="cancel" class="button button-primary" value="Cancel">
+			</p>
+		</div>
+
+		<div id="delete-status" style="display:none">
+			<p class="cancel">
+				<input type="button" name="cancel-delete" id="cancel-delete" class="button button-primary" value="Cancel">
 			</p>
 		</div>
 

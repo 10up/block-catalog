@@ -36,6 +36,66 @@ class CatalogBuilder {
 	}
 
 	/**
+	 * Resets the Block Catalog by removing all catalog terms.
+	 *
+	 * @param array $opts Optional opts
+	 */
+	public function delete_index( $opts = [] ) {
+		$term_opts = [
+			'taxonomy'   => BLOCK_CATALOG_TAXONOMY,
+			'fields'     => 'ids',
+			'hide_empty' => false,
+		];
+
+		$terms   = get_terms( $term_opts );
+		$total   = count( $terms );
+		$removed = 0;
+		$errors  = 0;
+		$is_cli  = defined( 'WP_CLI' ) && WP_CLI;
+
+		$message = "Removing $total block catalog terms ...";
+
+		if ( $is_cli ) {
+			$progress_bar = \WP_CLI\Utils\make_progress_bar( $message, $total );
+		}
+
+		foreach ( $terms as $term_id ) {
+			if ( $is_cli ) {
+				$progress_bar->tick();
+			}
+
+			$result = wp_delete_term( $term_id, BLOCK_CATALOG_TAXONOMY );
+
+			if ( ! is_wp_error( $result ) ) {
+				$removed++;
+			} else {
+				$errors++;
+			}
+		}
+
+		if ( $is_cli ) {
+			$progress_bar->finish();
+		}
+
+		if ( $is_cli ) {
+			if ( ! empty( $removed ) ) {
+				\WP_CLI::success( "Removed $removed block catalog term(s)." );
+			} else {
+				\WP_CLI::warning( 'No block catalog terms to remove.' );
+			}
+
+			if ( ! empty( $errors ) ) {
+				\WP_CLI::warning( "Failed to remove $errors block catalog terms(s)." );
+			}
+		}
+
+		return [
+			'removed' => $removed,
+			'errors'  => $errors,
+		];
+	}
+
+	/**
 	 * Sets the blocks terms of the post. Creates the terms if absent.
 	 *
 	 * @param int   $post_id The post id

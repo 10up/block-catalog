@@ -36,7 +36,7 @@ class RESTSupport {
 			'block-catalog/v1',
 			'/posts/',
 			[
-				'methods'             => 'GET',
+				'methods'             => 'POST',
 				'callback'            => [ $this, 'get_posts' ],
 				'permission_callback' => function() {
 					return current_user_can( 'edit_posts' );
@@ -69,6 +69,28 @@ class RESTSupport {
 				],
 			]
 		);
+
+		register_rest_route(
+			'block-catalog/v1',
+			'/delete-index/',
+			[
+				'methods'             => 'POST',
+				'callback'            => [ $this, 'delete_index' ],
+				'permission_callback' => function() {
+					return current_user_can( 'edit_posts' );
+				},
+			]
+		);
+	}
+
+	/**
+	 * Deletes the Block catalog index.
+	 *
+	 * @return array
+	 */
+	public function delete_index() {
+		$builder = new CatalogBuilder();
+		return $builder->delete_index();
 	}
 
 	/**

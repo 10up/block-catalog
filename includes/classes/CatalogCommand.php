@@ -77,46 +77,13 @@ class CatalogCommand extends \WP_CLI_Command {
 	 *
 	 * ## OPTIONS
 	 *
+	 * @subcommand delete-index
 	 * @param array $args Command args
 	 * @param array $opts Command opts
 	 */
-	public function reset( $args = [], $opts = [] ) {
-		$term_opts = [
-			'taxonomy'   => BLOCK_CATALOG_TAXONOMY,
-			'fields'     => 'ids',
-			'hide_empty' => false,
-		];
-
-		$terms   = get_terms( $term_opts );
-		$total   = count( $terms );
-		$removed = 0;
-
-		$message      = "Removing $total block catalog terms ...";
-		$progress_bar = \WP_CLI\Utils\make_progress_bar( $message, $total );
-
-		foreach ( $terms as $term_id ) {
-			$progress_bar->tick();
-
-			$result = wp_delete_term( $term_id, BLOCK_CATALOG_TAXONOMY );
-
-			if ( ! is_wp_error( $result ) ) {
-				$removed++;
-			} else {
-				$errors++;
-			}
-		}
-
-		$progress_bar->finish();
-
-		if ( ! empty( $removed ) ) {
-			\WP_CLI::success( "Removed $removed block catalog term(s)." );
-		} else {
-			\WP_CLI::warning( 'No block catalog terms to remove.' );
-		}
-
-		if ( ! empty( $errors ) ) {
-			\WP_CLI::warning( "Failed to removed $errors block catalog terms(s)." );
-		}
+	public function deleteIndex( $args = [], $opts = [] ) {
+		$builder = new CatalogBuilder();
+		$builder->delete_index( $opts );
 	}
 
 	/**

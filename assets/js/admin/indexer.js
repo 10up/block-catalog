@@ -1,14 +1,65 @@
 class Indexer extends EventTarget {
-	load() {
+	load(opts) {
 		this.cancelled = false;
 		this.progress = 0;
 		this.total = 0;
 		this.triggerEvent('loadStart');
 
-		return wp.apiFetch({ path: '/block-catalog/v1/posts' }).then((res) => {
+		const fetchOpts = {
+			path: '/block-catalog/v1/posts',
+			method: 'POST',
+			data: {
+				post_types: opts.postTypes || [],
+			},
+			...opts,
+		};
+
+		return wp.apiFetch(fetchOpts).then((res) => {
 			this.triggerEvent('loadComplete', res);
 			return res;
 		});
+	}
+
+	deleteIndex() {
+		this.cancelled = false;
+		this.triggerEvent('deleteIndexStart');
+
+		const fetchOpts = {
+			path: '/block-catalog/v1/delete-index',
+			method: 'POST',
+		};
+
+		this.deletePromise = wp.apiFetch(fetchOpts)
+		.then((res) => {
+			if (this.deletePromise?.cancelled) {
+				return res;
+			}
+
+			if (res.errors) {
+				this.triggerEvent('deleteIndexError', res);
+			} else if (!res.success && res.data) {
+				this.triggerEvent('deleteIndexError', res);
+			} else {
+				this.triggerEvent('deleteIndexComplete', res);
+			}
+
+			this.deletePromise = null;
+			return res;
+		})
+		.catch((err) => {
+			this.triggerEvent('deleteIndexError', err);
+		});
+
+		return this.deletePromise;
+	}
+
+	cancelDelete(opts) {
+		if (this.deletePromise) {
+			this.deletePromise.cancelled = true;
+		}
+
+		this.cancelled = false;
+		this.triggerEvent('deleteIndexCancel');
 	}
 
 	async index(ids, opts) {
@@ -66,11 +117,14 @@ class Indexer extends EventTarget {
 	}
 
 	toChunks(list, chunkSize = 100) {
+		const first  = list.shift();
 		const output = [];
 
 		for (let i = 0; i < list.length; i += chunkSize) {
 			output.push(list.slice(i, i + chunkSize));
 		}
+
+		output.unshift([first]);
 
 		return output;
 	}

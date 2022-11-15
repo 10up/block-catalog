@@ -13,9 +13,18 @@ class ToolsApp {
 		this.onIndex('indexCancel', 'didIndexCancel');
 		this.onIndex('indexError', 'didIndexError');
 
+		this.onIndex('deleteIndexStart', 'didDeleteIndexStart');
+		this.onIndex('deleteIndexComplete', 'didDeleteIndexComplete');
+		this.onIndex('deleteIndexError', 'didDeleteIndexError');
+		this.onIndex('deleteIndexCancel', 'didDeleteIndexCancel');
+
 		this.on('.block-catalog-post-type', 'change', 'didPostTypesChange');
+
 		this.on('#submit', 'click', 'didSubmitClick');
 		this.on('#cancel', 'click', 'didCancelClick');
+
+		this.on('#delete-index', 'click', 'didDeleteIndexClick');
+		this.on('#cancel-delete', 'click', 'didDeleteCancelClick');
 	}
 
 	setState(state) {
@@ -56,6 +65,27 @@ class ToolsApp {
 				this.hide('#index-status');
 				break;
 
+			case 'deleting':
+				this.hide('#index-settings');
+				this.show('#delete-status');
+				this.setNotice('');
+				break;
+
+			case 'deleted':
+				this.show('#index-settings');
+				this.hide('#delete-status');
+				break;
+
+			case 'delete-error':
+				this.show('#index-settings');
+				this.hide('#delete-status');
+				break;
+
+			case 'delete-cancel':
+				this.show('#index-settings');
+				this.hide('#delete-status');
+				break;
+
 			default:
 				break;
 		}
@@ -87,7 +117,8 @@ class ToolsApp {
 	}
 
 	didIndexComplete(event) {
-		const message = `Indexed ${event.detail.progress} / ${event.detail.total} Posts.`;
+		console.log('complete', event.detail);
+		const message = `Indexed ${event.detail.progress} / ${event.detail.total} Posts Successfully.`;
 		this.setState({ status: 'settings', message: '', ...event.detail });
 		this.setNotice(message, 'success');
 	}
@@ -102,13 +133,80 @@ class ToolsApp {
 		this.addErrorLine(event.detail.error || 'Unexpected error occurred');
 	}
 
+	didDeleteIndexStart(event) {
+		const message = 'Deleting Index ...';
+		this.setState({ status: 'deleting', message, ...event.detail });
+
+		window.scrollTo(0, 0);
+	}
+
+	didDeleteIndexComplete(event) {
+		let message;
+
+		if (event.detail?.errors) {
+			message = `Failed to delete ${event.detail?.errors} catalog term(s).`;
+			this.setNotice(message, 'error');
+		} else if (event.detail?.removed) {
+			message = `Deleted ${event.detail?.removed} block catalog term(s) successfully.`;
+			this.setNotice(message, 'success');
+		} else {
+			message = 'Nothing to delete, block catalog index is empty';
+			this.setNotice(message, 'error');
+		}
+
+		this.setState({ status: 'deleted', message:'', ...event.detail });
+	}
+
+	didDeleteIndexError(event) {
+		const err = event.detail || {};
+
+		let message = 'Deleting Index Failed.';
+
+		if (err.errors) {
+			message = `Failed to delete ${err.errors} block catalog term(s).`;
+		}
+
+		if (err?.message) {
+			message += `  (${err?.code} - ${err.message})`;
+		}
+
+		if (err?.data?.message) {
+			message += `  (${err.data.message})`;
+		} else if ( typeof(err?.data) === 'string') {
+			message += `  (${err.data})`;
+		}
+
+		this.setState({ status: 'delete-error', message:'', error: err });
+		this.setNotice(message, 'error');
+	}
+
+	didDeleteIndexCancel(event) {
+		const message = 'Deleting Index Cancelled.';
+		this.setState({ status: 'delete-cancel', message:'', ...event.detail });
+		this.setNotice(message, 'error');
+	}
+
 	didSubmitClick() {
-		this.indexer.load();
+		const opts = {
+			postTypes: this.getSelectedPostTypes(),
+		};
+
+		this.indexer.load(opts);
 		return false;
 	}
 
 	didCancelClick() {
 		this.indexer.cancel();
+		return false;
+	}
+
+	didDeleteIndexClick() {
+		this.indexer.deleteIndex();
+		return false;
+	}
+
+	didDeleteCancelClick() {
+		this.indexer.cancelDelete();
 		return false;
 	}
 
