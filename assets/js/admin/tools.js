@@ -1,105 +1,26 @@
-class Indexer extends EventTarget {
-
-	load() {
-		this.cancelled = false;
-		this.progress  = 0;
-		this.total     = 0;
-		this.triggerEvent('loadStart');
-
-		return wp.apiFetch({path: '/block-catalog/v1/posts'})
-			.then((res) => {
-				this.triggerEvent('loadComplete', res);
-				return res;
-			});
-	}
-
-	async index(ids, opts) {
-		this.progress = 0;
-		this.total    = ids.length;
-		this.triggerEvent('indexStart', {progress: 0, total: this.total});
-
-		const chunks    = this.toChunks(ids);
-		const n         = chunks.length;
-
-		for (let i = 0; i < n; i++) {
-			if (this.cancelled) {
-				return;
-			}
-
-			const batch = chunks[i];
-			await this.indexBatch(batch, opts);
-		}
-
-		this.triggerEvent('indexComplete', {progress:this.progress, total:this.total});
-	}
-
-	async indexBatch(batch, opts) {
-		const fetchOpts = {
-			path: '/block-catalog/v1/index',
-			method: 'POST',
-			data: {
-				post_ids: batch,
-			}
-		};
-
-		return wp.apiFetch(fetchOpts)
-			.then((changes) => {
-				this.progress += batch.length;
-				this.triggerEvent('indexProgress', {progress:this.progress, total:this.total});
-			});
-	}
-
-	cancel() {
-		this.triggerEvent('indexCancel', {progress:this.progress, total:this.total});
-		this.cancelled = true;
-	}
-
-	triggerEvent(eventName, data = {}) {
-		if (this.cancelled) {
-			return;
-		}
-
-		const event = new CustomEvent(eventName, { detail: data });
-		this.dispatchEvent(event);
-	}
-
-	toChunks(list, chunkSize = 100) {
-		const output = [];
-
-		for (let i = 0; i < list.length; i += chunkSize) {
-			output.push(list.slice(i, i + chunkSize));
-		}
-
-		return output;
-	}
-
-}
+import Indexer from './indexer';
 
 class ToolsApp {
-
 	enable() {
 		this.indexer = new Indexer();
-		this.state   = {status: 'settings', message:''};
+		this.state = { status: 'settings', message: '' };
 
-		this.onIndex('loadStart', 'didLoadStart' );
-		this.onIndex('loadComplete', 'didLoadComplete' );
-		this.onIndex('indexStart', 'didIndexStart' );
-		this.onIndex('indexProgress', 'didIndexProgress' );
-		this.onIndex('indexComplete', 'didIndexComplete' );
-		this.onIndex('indexCancel', 'didIndexCancel' );
-		this.onIndex('indexError', 'didIndexError' );
+		this.onIndex('loadStart', 'didLoadStart');
+		this.onIndex('loadComplete', 'didLoadComplete');
+		this.onIndex('indexStart', 'didIndexStart');
+		this.onIndex('indexProgress', 'didIndexProgress');
+		this.onIndex('indexComplete', 'didIndexComplete');
+		this.onIndex('indexCancel', 'didIndexCancel');
+		this.onIndex('indexError', 'didIndexError');
 
 		this.on('.block-catalog-post-type', 'change', 'didPostTypesChange');
-		this.on('#submit', 'click', 'didSubmitClick' );
-		this.on('#cancel', 'click', 'didCancelClick' );
+		this.on('#submit', 'click', 'didSubmitClick');
+		this.on('#cancel', 'click', 'didCancelClick');
 	}
 
 	setState(state) {
 		this.prevState = this.state;
-		this.state     = state;
-
-		const settingsSection = document.querySelector('#index-settings');
-		const statusSection   = document.querySelector('#index-status');
+		this.state = state;
 
 		switch (state.status) {
 			case 'loading':
@@ -134,51 +55,54 @@ class ToolsApp {
 				this.show('#index-settings');
 				this.hide('#index-status');
 				break;
+
+			default:
+				break;
 		}
 
 		this.setMessage(this.state.message || '');
 	}
 
-	didLoadStart(event) {
-		this.setState({status:'loading', message: 'Loading posts to index ...'});
+	didLoadStart() {
+		this.setState({ status: 'loading', message: 'Loading posts to index ...' });
 		this.hideErrors();
 	}
 
 	didLoadComplete(event) {
-		this.setState({status:'loaded', message: 'Loaded posts, starting ...', ...event.detail});
+		this.setState({ status: 'loaded', message: 'Loaded posts, starting ...', ...event.detail });
 		this.indexer.index(this.state.posts);
 	}
 
 	didIndexStart(event) {
 		const message = `Indexing ${event.detail.progress}/${event.detail.total} Posts ...`;
-		this.setState({status: 'indexing', message, ...event.detail});
+		this.setState({ status: 'indexing', message, ...event.detail });
 	}
 
 	didIndexProgress(event) {
 		const message = `Indexing ${event.detail.progress}/${event.detail.total} Posts ...`;
-		this.setState({status: 'indexing', message, ...event.detail});
+		this.setState({ status: 'indexing', message, ...event.detail });
 	}
 
 	didIndexComplete(event) {
 		const message = `Indexed ${event.detail.progress}/${event.detail.total} Posts.`;
-		this.setState({status: 'settings', message, ...event.detail});
+		this.setState({ status: 'settings', message, ...event.detail });
 	}
 
 	didIndexCancel(event) {
 		const message = 'Index cancelled.';
-		this.setState({status: 'cancelled', message, ...event.detail});
+		this.setState({ status: 'cancelled', message, ...event.detail });
 	}
 
 	didIndexError(event) {
 		this.addErrorLine(event.detail.error || 'Unexpected error occurred');
 	}
 
-	didSubmitClick(event) {
+	didSubmitClick() {
 		this.indexer.load();
 		return false;
 	}
 
-	didCancelClick(event) {
+	didCancelClick() {
 		this.indexer.cancel();
 		return false;
 	}
@@ -202,8 +126,6 @@ class ToolsApp {
 		if (!postTypes) {
 			return [];
 		}
-
-		const values = [];
 
 		return [...postTypes].map((postType) => postType.value);
 	}
@@ -253,7 +175,7 @@ class ToolsApp {
 	}
 
 	updateProgress() {
-		const percent = this.indexer.total ? this.indexer.progress / this.indexer.total * 100 : 0;
+		const percent = this.indexer.total ? (this.indexer.progress / this.indexer.total) * 100 : 0;
 
 		const element = document.querySelector('#index-progress');
 
@@ -278,7 +200,7 @@ class ToolsApp {
 
 	addErrorLine(line) {
 		const container = document.querySelector('#index-errors');
-		const list      = document.querySelector('#index-errors-list');
+		const list = document.querySelector('#index-errors-list');
 
 		if (container) {
 			container.style.display = 'block';
@@ -294,7 +216,6 @@ class ToolsApp {
 		item.appendChild(text);
 		list.appendChild(item);
 	}
-
 }
 
 document.addEventListener('DOMContentLoaded', () => {
