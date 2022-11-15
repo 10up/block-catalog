@@ -123,7 +123,12 @@ class BlockCatalogTaxonomy {
 	 * this taxonomy. Post Type classes declare their supported taxonomies.
 	 */
 	public function get_post_types() {
-		$post_types = get_post_types( [ 'show_in_rest' => true, '_builtin' => false ] );
+		$post_types = get_post_types(
+			[
+				'show_in_rest' => true,
+				'_builtin'     => false,
+			]
+		);
 		$post_types = array_merge( $post_types, [ 'post', 'page' ] );
 
 		/**

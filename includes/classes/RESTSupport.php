@@ -39,15 +39,15 @@ class RESTSupport {
 				'methods'             => 'GET',
 				'callback'            => [ $this, 'get_posts' ],
 				'permission_callback' => function() {
-					return true;//current_user_can( 'edit_posts' );
+					return true;// current_user_can( 'edit_posts' );
 				},
-				'args' => [
+				'args'                => [
 					'post_types' => [
 						'required'          => false,
 						'type'              => 'array',
 						'validate_callback' => [ $this, 'validate_post_types' ],
-					]
-				]
+					],
+				],
 			]
 		);
 
@@ -58,15 +58,15 @@ class RESTSupport {
 				'methods'             => 'POST',
 				'callback'            => [ $this, 'index' ],
 				'permission_callback' => function() {
-					return true;//current_user_can( 'edit_posts' );
+					return true;// current_user_can( 'edit_posts' );
 				},
-				'args' => [
+				'args'                => [
 					'post_ids' => [
 						'required'          => true,
 						'type'              => 'array',
 						'validate_callback' => [ $this, 'validate_post_ids' ],
-					]
-				]
+					],
+				],
 			]
 		);
 	}

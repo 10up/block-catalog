@@ -33,7 +33,7 @@ class CatalogCommand extends \WP_CLI_Command {
 			\WP_CLI::warning( 'Running in Dry Run Mode, changes will not be saved ...' );
 		}
 
-		$post_ids     = $this->get_posts_to_catalog( $opts );
+		$post_ids = $this->get_posts_to_catalog( $opts );
 
 		$total        = count( $post_ids );
 		$message      = "Cataloging $total Posts ...";
@@ -111,7 +111,7 @@ class CatalogCommand extends \WP_CLI_Command {
 		if ( ! empty( $removed ) ) {
 			\WP_CLI::success( "Removed $removed block catalog term(s)." );
 		} else {
-			\WP_CLI::warning( "No block catalog terms to remove." );
+			\WP_CLI::warning( 'No block catalog terms to remove.' );
 		}
 
 		if ( ! empty( $errors ) ) {
@@ -157,7 +157,7 @@ class CatalogCommand extends \WP_CLI_Command {
 		}
 
 		if ( empty( $opts['fields'] ) ) {
-			$opts['fields'] = ['ID', 'post_type', 'post_title'];
+			$opts['fields'] = [ 'ID', 'post_type', 'post_title' ];
 		} else {
 			$opts['fields'] = explode( ',', $opts['fields'] );
 		}
@@ -200,9 +200,9 @@ class CatalogCommand extends \WP_CLI_Command {
 					'taxonomy' => BLOCK_CATALOG_TAXONOMY,
 					'field'    => 'slug',
 					'terms'    => $slugs,
-				]
+				],
 			],
-			'output'
+			'output',
 		];
 
 		$query = new \WP_Query( $query_params );
@@ -213,7 +213,7 @@ class CatalogCommand extends \WP_CLI_Command {
 		}
 
 		if ( empty( $posts ) ) {
-			\WP_CLI::error( __( "No posts found.", 'block-catalog' ) );
+			\WP_CLI::error( __( 'No posts found.', 'block-catalog' ) );
 		}
 
 		\WP_CLI\Utils\format_items( $opts['format'], $posts, $opts['fields'] );
@@ -253,9 +253,12 @@ class CatalogCommand extends \WP_CLI_Command {
 			\WP_CLI::error( __( "No blocks found in $post_id", 'block-catalog' ) );
 		}
 
-		$block_items = array_map( function( $block_name ) {
-			return [ 'Block' => $block_name ];
-		}, $blocks );
+		$block_items = array_map(
+			function( $block_name ) {
+				return [ 'Block' => $block_name ];
+			},
+			$blocks
+		);
 
 		\WP_CLI\Utils\format_items( 'table', $block_items, [ 'Block' ] );
 	}

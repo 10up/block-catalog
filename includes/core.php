@@ -37,7 +37,7 @@ function setup() {
 	wp_register_script(
 		'block_catalog_plugin_tools',
 		script_url( 'tools', 'admin' ),
-		['wp-api-fetch', 'wp-polyfill'],
+		[ 'wp-api-fetch', 'wp-polyfill' ],
 		BLOCK_CATALOG_PLUGIN_VERSION,
 		true
 	);
@@ -73,11 +73,14 @@ function init() {
 	$block_catalog_taxonomy = new BlockCatalogTaxonomy();
 	$block_catalog_taxonomy->register();
 
-	add_action( 'save_post', function( $post_id ) {
-		$builder = new CatalogBuilder();
+	add_action(
+		'save_post',
+		function( $post_id ) {
+			$builder = new CatalogBuilder();
 
-		$terms = $builder->catalog( $post_id );
-	} );
+			$terms = $builder->catalog( $post_id );
+		}
+	);
 
 }
 
