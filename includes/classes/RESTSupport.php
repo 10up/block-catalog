@@ -39,7 +39,7 @@ class RESTSupport {
 				'methods'             => 'GET',
 				'callback'            => [ $this, 'get_posts' ],
 				'permission_callback' => function() {
-					return true;// current_user_can( 'edit_posts' );
+					return current_user_can( 'edit_posts' );
 				},
 				'args'                => [
 					'post_types' => [
@@ -58,7 +58,7 @@ class RESTSupport {
 				'methods'             => 'POST',
 				'callback'            => [ $this, 'index' ],
 				'permission_callback' => function() {
-					return true;// current_user_can( 'edit_posts' );
+					return current_user_can( 'edit_posts' );
 				},
 				'args'                => [
 					'post_ids' => [

@@ -194,7 +194,7 @@ class CatalogCommand extends \WP_CLI_Command {
 		$query_params = [
 			'post_type'      => ! empty( $opts['post_type'] ) ? $opts['post_type'] : $taxonomy->get_post_types(),
 			'post_status'    => ! empty( $opts['post_status'] ) ? $opts['post_status'] : 'publish',
-			'posts_per_page' => intval( $opts['posts_per_page'] ),
+			'posts_per_page' => intval( $opts['posts_per_page'] ), // phpcs:ignore
 			'tax_query'      => [
 				[
 					'taxonomy' => BLOCK_CATALOG_TAXONOMY,
@@ -250,7 +250,7 @@ class CatalogCommand extends \WP_CLI_Command {
 		$blocks = $builder->get_post_block_terms( $post_id, $opts );
 
 		if ( empty( $blocks ) ) {
-			\WP_CLI::error( __( "No blocks found in $post_id", 'block-catalog' ) );
+			\WP_CLI::error( __( 'No blocks found.', 'block-catalog' ) );
 		}
 
 		$block_items = array_map(

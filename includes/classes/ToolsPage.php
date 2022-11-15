@@ -12,12 +12,23 @@ namespace BlockCatalog;
  */
 class ToolsPage {
 
+	/**
+	 * The tools page name
+	 *
+	 * @var string
+	 */
 	public $slug = 'block-catalog-tools';
 
+	/**
+	 * Registers the menu with WP.
+	 */
 	public function register() {
 		add_action( 'admin_menu', [ $this, 'register_page' ] );
 	}
 
+	/**
+	 * Adds tools submenu page.
+	 */
 	public function register_page() {
 		add_submenu_page(
 			apply_filters( 'block_catalog_tools_page_parent', 'tools.php' ),
@@ -29,6 +40,9 @@ class ToolsPage {
 		);
 	}
 
+	/**
+	 * Outputs the menu page contents.
+	 */
 	public function render() {
 		$taxonomy   = new BlockCatalogTaxonomy();
 		$post_types = $taxonomy->get_post_types();

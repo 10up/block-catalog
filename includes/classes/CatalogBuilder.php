@@ -128,8 +128,7 @@ class CatalogBuilder {
 	/**
 	 * Flattens the list of blocks into a single array.
 	 *
-	 * @param array $output The list of blocks found.
-	 * @param array $block The list of blocks
+	 * @param array $blocks The list of blocks
 	 * @return array
 	 */
 	public function to_block_list( $blocks ) {
@@ -199,7 +198,7 @@ class CatalogBuilder {
 	/**
 	 * Finds the label of the block term from its blockName.
 	 *
-	 * @param string $name The block data
+	 * @param string $block The block data
 	 * @return string
 	 */
 	public function get_block_label( $block ) {
