@@ -20,19 +20,26 @@ class CatalogBuilder {
 	 * @return array|WP_Error
 	 */
 	public function catalog( $post_id, $opts = [] ) {
-		if ( empty( $post_id ) ) {
-			return [];
+		try {
+			if ( empty( $post_id ) ) {
+				return [];
+			}
+
+			$terms = $this->get_post_block_terms( $post_id, $opts );
+
+			if ( empty( $terms ) ) {
+				return wp_set_object_terms( $post_id, [], BLOCK_CATALOG_TAXONOMY );
+			}
+
+			$result = $this->set_post_block_terms( $post_id, $terms );
+
+			return $result;
+		} catch ( Exception $e ) {
+			if ( defined( 'WP_CLI' ) && WP_CLI ) {
+				\WP_CLI::warning( "Failed to catalog: $post_id - " . $e->getMessage() );
+			}
+			return new \WP_Error( 'catalog_failed', $e->getMessage() );
 		}
-
-		$terms = $this->get_post_block_terms( $post_id, $opts );
-
-		if ( empty( $terms ) ) {
-			return wp_set_object_terms( $post_id, [], BLOCK_CATALOG_TAXONOMY );
-		}
-
-		$result = $this->set_post_block_terms( $post_id, $terms );
-
-		return $result;
 	}
 
 	/**
@@ -265,6 +272,11 @@ class CatalogBuilder {
 		$name       = $block['blockName'] ?? '';
 		$registered = \WP_Block_Type_Registry::get_instance()->get_registered( $name );
 		$title      = ! empty( $registered->title ) ? $registered->title : $block['blockName'];
+
+		// if we got here, the block is incorrectly registered, try to guess at the name
+		if ( false !== stripos( $title, '/' ) ) {
+			$title = ucwords( explode( '/', $title )[1] );
+		}
 
 		/**
 		 * Allows plugins/themes to change the block title for the specified block

@@ -62,11 +62,18 @@ class ToolsPage {
 
 		<h4>Select Post Type(s)</h4>
 		<form method="post" novalidate="novalidate">
-		<?php foreach ( $post_types as $post_type ) { ?>
+		<?php foreach ( $post_types as $post_type ) {
+			if ( ! post_type_exists( $post_type ) ) {
+				continue;
+			}
+
+			$post_type_obj = get_post_type_object( $post_type );
+			$label         = $post_type_obj->labels->singular_name;
+		?>
 			<p>
 				<label>
 					<input checked type="checkbox" id="block-catalog-post-type" class="block-catalog-post-type" name="post_types[]" value="<?php echo esc_attr( $post_type ); ?>">
-					<?php echo esc_html( get_post_type_object( $post_type )->labels->singular_name ); ?>
+					<?php echo esc_html( $label ); ?>
 				</label>
 			</p>
 		<?php } ?>

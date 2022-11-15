@@ -133,6 +133,21 @@ class BlockCatalogTaxonomy {
 				'_builtin'     => false,
 			]
 		);
+
+		/**
+		 * List of other post types that don't need indexing.
+		 */
+		$excluded_post_types = [
+			// Jetpack
+			'feedback',
+			'jp_pay_order',
+			'jp_pay_product',
+
+			// Distributor
+			'dt_subscription',
+		];
+
+		$post_types = array_diff( $post_types, $excluded_post_types );
 		$post_types = array_merge( $post_types, [ 'post', 'page' ] );
 
 		/**
@@ -140,8 +155,8 @@ class BlockCatalogTaxonomy {
 		 *
 		 * @param array  $options  Default post types.
 		 */
-		$options = apply_filters(
-			'block_catalog_taxonomy_post_types',
+		$post_types = apply_filters(
+			'block_catalog_post_types',
 			$post_types,
 		);
 
