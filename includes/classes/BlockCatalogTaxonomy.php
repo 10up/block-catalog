@@ -66,6 +66,8 @@ class BlockCatalogTaxonomy {
 			$options
 		);
 
+		add_action( 'restrict_manage_posts', [ $this, 'render_block_catalog_filter' ], 10000 );
+
 		return true;
 	}
 
@@ -143,4 +145,38 @@ class BlockCatalogTaxonomy {
 
 		return $post_types;
 	}
+
+	/**
+	 * Outputs the Block catalog post listing dropdown
+	 */
+	public function render_block_catalog_filter() {
+		global $typenow;
+
+		if ( is_object_in_taxonomy( $typenow, BLOCK_CATALOG_TAXONOMY ) ) {
+			$taxonomy  = get_taxonomy( BLOCK_CATALOG_TAXONOMY );
+			$term_opts = [
+				'taxonomy'   => BLOCK_CATALOG_TAXONOMY,
+				'hide_empty' => true,
+			];
+
+			$terms     = get_terms( $term_opts );
+			$selection = isset( $_GET['block-catalog'] ) ? sanitize_text_field( $_GET['block-catalog'] ) : ''; // phpcs:ignore
+			$html      = '<select name="block-catalog" id="block-catalog" class=\"postform\">';
+			$html     .= sprintf( '<option %s value="">All Block Catalog Terms</option>', selected( $selection, '', false ) );
+
+			foreach ( $terms as $term ) {
+				$html .= sprintf(
+					'<option %s value="%s">%s</option>',
+					selected( $selection, $term->slug, false ),
+					$term->slug,
+					$term->name
+				);
+			}
+
+			$html .= '</select>';
+
+			echo $html; // phpcs:ignore
+		}
+	}
+
 }
