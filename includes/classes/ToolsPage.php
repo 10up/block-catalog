@@ -126,11 +126,11 @@ class ToolsPage {
 	public function get_settings() {
 		return [
 			'settings' => [
-				'index_batch_size' => apply_filters( 'block_catalog_index_batch_size', 50 ),
-				'posts_endpoint' => rest_url( 'block-catalog/v1/posts' ),
-				'index_endpoint' => rest_url( 'block-catalog/v1/index' ),
+				'index_batch_size'      => apply_filters( 'block_catalog_index_batch_size', 50 ),
+				'posts_endpoint'        => rest_url( 'block-catalog/v1/posts' ),
+				'index_endpoint'        => rest_url( 'block-catalog/v1/index' ),
 				'delete_index_endpoint' => rest_url( 'block-catalog/v1/delete-index' ),
-				'catalog_page' => admin_url( 'edit-tags.php?taxonomy=' . BLOCK_CATALOG_TAXONOMY ),
+				'catalog_page'          => admin_url( 'edit-tags.php?taxonomy=' . BLOCK_CATALOG_TAXONOMY ),
 			],
 		];
 	}
