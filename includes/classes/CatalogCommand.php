@@ -117,6 +117,9 @@ class CatalogCommand extends \WP_CLI_Command {
 	 * [--count=<count>]
 	 * : Prints total found posts, default true
 	 *
+	 * [--operator=<operator>]
+	 * : The query operator to be used in the search clause. Default IN.
+	 *
 	 * @param array $args Command args
 	 * @param array $opts Command opts
 	 */
@@ -159,6 +162,7 @@ class CatalogCommand extends \WP_CLI_Command {
 
 		$taxonomy = new BlockCatalogTaxonomy();
 		$slugs    = array_map( 'sanitize_title', $args );
+		$operator = ! empty( $opts['operator'] ) ? $opts['operator'] : 'IN';
 
 		$query_params = [
 			'post_type'      => ! empty( $opts['post_type'] ) ? $opts['post_type'] : $taxonomy->get_post_types(),
@@ -169,6 +173,7 @@ class CatalogCommand extends \WP_CLI_Command {
 					'taxonomy' => BLOCK_CATALOG_TAXONOMY,
 					'field'    => 'slug',
 					'terms'    => $slugs,
+					'operator' => $operator,
 				],
 			],
 			'output',
