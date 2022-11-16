@@ -108,6 +108,20 @@ class ToolsPage {
 		<?php
 
 		wp_enqueue_script( 'block_catalog_plugin_tools' );
+		wp_localize_script( 'block_catalog_plugin_tools', 'block_catalog', $this->get_settings() );
+	}
+
+	/**
+	 * Returns the settings to send to the tools page.
+	 *
+	 * @return array
+	 */
+	public function get_settings() {
+		return [
+			'settings' => [
+				'index_batch_size' => apply_filters( 'block_catalog_index_batch_size', 100 ),
+			]
+		];
 	}
 
 }

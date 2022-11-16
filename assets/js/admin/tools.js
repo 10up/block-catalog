@@ -1,6 +1,11 @@
 import Indexer from './indexer';
 
 class ToolsApp {
+
+	constructor(settings) {
+		this.settings = settings;
+	}
+
 	enable() {
 		this.indexer = new Indexer();
 		this.state = { status: 'settings', message: '' };
@@ -109,7 +114,12 @@ class ToolsApp {
 
 	didLoadComplete(event) {
 		this.setState({ status: 'loaded', message: 'Loaded posts, starting ...', ...event.detail });
-		this.indexer.index(this.state.posts);
+
+		const opts = {
+			batchSize: this.settings?.index_batch_size,
+		};
+
+		this.indexer.index(this.state.posts, opts);
 	}
 
 	didLoadError(event) {
@@ -385,9 +395,12 @@ class ToolsApp {
 		item.innerHTML = line;
 		list.appendChild(item);
 	}
+
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-	const app = new ToolsApp();
+	const settings = window.block_catalog?.settings || {};
+	const app      = new ToolsApp(settings);
+
 	app.enable();
 });

@@ -1,6 +1,5 @@
 class Indexer extends EventTarget {
 	load(opts) {
-		this.cancelled = false;
 		this.progress = 0;
 		this.total = 0;
 		this.triggerEvent('loadStart');
@@ -14,7 +13,7 @@ class Indexer extends EventTarget {
 			...opts,
 		};
 
-		return wp.apiFetch(fetchOpts)
+		return this.apiFetch(fetchOpts)
 		.then((res) => {
 			if (res.errors) {
 				this.triggerEvent('loadError', res);
@@ -34,7 +33,6 @@ class Indexer extends EventTarget {
 	}
 
 	deleteIndex() {
-		this.cancelled = false;
 		this.triggerEvent('deleteIndexStart');
 
 		const fetchOpts = {
@@ -42,36 +40,27 @@ class Indexer extends EventTarget {
 			method: 'POST',
 		};
 
-		this.deletePromise = wp.apiFetch(fetchOpts)
-		.then((res) => {
-			if (this.deletePromise?.cancelled) {
+		const promise = this.apiFetch(fetchOpts)
+			.then((res) => {
+				if (res.errors) {
+					this.triggerEvent('deleteIndexError', res);
+				} else if (!res.success && res.data) {
+					this.triggerEvent('deleteIndexError', res);
+				} else {
+					this.triggerEvent('deleteIndexComplete', res);
+				}
+
 				return res;
-			}
+			})
+			.catch((err) => {
+				this.triggerEvent('deleteIndexError', err);
+			});
 
-			if (res.errors) {
-				this.triggerEvent('deleteIndexError', res);
-			} else if (!res.success && res.data) {
-				this.triggerEvent('deleteIndexError', res);
-			} else {
-				this.triggerEvent('deleteIndexComplete', res);
-			}
-
-			this.deletePromise = null;
-			return res;
-		})
-		.catch((err) => {
-			this.triggerEvent('deleteIndexError', err);
-		});
-
-		return this.deletePromise;
+		return promise;
 	}
 
 	cancelDelete(opts) {
-		if (this.deletePromise) {
-			this.deletePromise.cancelled = true;
-		}
-
-		this.cancelled = false;
+		this.cancelPending();
 		this.triggerEvent('deleteIndexCancel');
 	}
 
@@ -82,14 +71,10 @@ class Indexer extends EventTarget {
 		this.total = ids.length;
 		this.triggerEvent('indexStart', { progress: 0, total: this.total });
 
-		const chunks = this.toChunks(ids);
+		const chunks = this.toChunks(ids, opts.batchSize || 50);
 		const n = chunks.length;
 
 		for (let i = 0; i < n; i++) {
-			if (this.cancelled) {
-				return;
-			}
-
 			const batch = chunks[i];
 			await this.indexBatch(batch, opts); // eslint-disable-line no-await-in-loop
 		}
@@ -107,8 +92,9 @@ class Indexer extends EventTarget {
 			...opts,
 		};
 
-		return wp.apiFetch(fetchOpts)
-		.then((res) => {
+		const promise = this.apiFetch(fetchOpts)
+
+		promise.then((res) => {
 			if (res.errors) {
 				this.failures += batch.length;
 				this.triggerEvent('indexError', res);
@@ -130,23 +116,21 @@ class Indexer extends EventTarget {
 			this.failures += batch.length;
 			this.triggerEvent('indexError', err);
 		});
+
+		return promise;
 	}
 
 	cancel() {
+		this.cancelPending();
 		this.triggerEvent('indexCancel', { progress: this.progress, total: this.total });
-		this.cancelled = true;
 	}
 
 	triggerEvent(eventName, data = {}) {
-		if (this.cancelled) {
-			return;
-		}
-
 		const event = new CustomEvent(eventName, { detail: data });
 		this.dispatchEvent(event);
 	}
 
-	toChunks(list, chunkSize = 100) {
+	toChunks(list, chunkSize = 50) {
 		const first  = list.shift();
 		const output = [];
 
@@ -158,6 +142,56 @@ class Indexer extends EventTarget {
 
 		return output;
 	}
+
+	cancelPending() {
+		if (this.pending?.length) {
+			for (let i = 0; i < this.pending.length; i++) {
+				const promise = this.pending[i];
+				promise.cancelled = true;
+			}
+		}
+
+		this.pending = [];
+	}
+
+	apiFetch(opts) {
+		if (!this.pending) {
+			this.pending = [];
+		}
+
+		this.cancelPending();
+
+		const promise = this.apiFetchWithCancel(opts);
+		this.pending.push(promise);
+
+		return promise;
+	}
+
+	apiFetchWithCancel(opts) {
+		const request = wp.apiFetch(opts);
+		const wrapper = new Promise((resolve, reject) => {
+			request
+				.then((res) => {
+					if (wrapper?.cancelled) {
+						return;
+					}
+
+					resolve(res);
+				})
+				.catch((err) => {
+					if (wrapper?.cancelled) {
+						return;
+					}
+
+					reject(err);
+				});
+		});
+
+		wrapper.request = request;
+
+		return wrapper;
+	}
+
 }
 
 export default Indexer;
