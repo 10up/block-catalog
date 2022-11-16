@@ -64,13 +64,13 @@ class CatalogCommand extends \WP_CLI_Command {
 		$progress_bar->finish();
 
 		if ( ! empty( $updated ) ) {
-			\WP_CLI::success( sprintf( 'Block Catalog updated for %d block(s) across $total post(s)', 'block-catalog' ), $updated );
+			\WP_CLI::success( sprintf( __( 'Block Catalog updated for %d block(s) across %d post(s).', 'block-catalog' ), $updated, $total ) );
 		} else {
-			\WP_CLI::warning( sprintf( 'No updates were made across %d post(s)', 'block-catalog' ), $total );
+			\WP_CLI::warning( sprintf( __( 'No updates were made across %d post(s).', 'block-catalog' ), $total ) );
 		}
 
 		if ( ! empty( $errors ) ) {
-			\WP_CLI::warning( sprintf( 'Failed to catalog %d post(s).', 'block-catalog' ), $errors );
+			\WP_CLI::warning( sprintf( __( 'Failed to catalog %d post(s).', 'block-catalog' ), $errors ) );
 		}
 	}
 
@@ -257,7 +257,7 @@ class CatalogCommand extends \WP_CLI_Command {
 
 		$query_params = [
 			'post_type'      => $taxonomy->get_post_types(),
-			'post_status'    => 'publish',
+			'post_status'    => 'any',
 			'fields'         => 'ids',
 			'posts_per_page' => -1,
 		];

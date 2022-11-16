@@ -80,6 +80,18 @@ function init() {
  * @param int $post_id The post id
  */
 function update_post_block_catalog( $post_id ) {
+	$block_catalog_taxonomy = new BlockCatalogTaxonomy();
+	$supported = $block_catalog_taxonomy->get_post_types();
+	$post_type = get_post_type( $post_id );
+
+	if ( ! in_array( $post_type, $supported, true ) ) {
+		return;
+	}
+
+	if ( wp_is_post_revision( $post_id ) ) {
+		return;
+	}
+
 	$builder = new CatalogBuilder();
 	$builder->catalog( $post_id );
 }
