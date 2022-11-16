@@ -178,7 +178,7 @@ class BlockCatalogTaxonomy {
 			$terms     = get_terms( $term_opts );
 			$selection = isset( $_GET['block-catalog'] ) ? sanitize_text_field( $_GET['block-catalog'] ) : ''; // phpcs:ignore
 			$html      = '<select name="block-catalog" id="block-catalog" class="postform">';
-			$all_label = __( 'All Block Catalog Terms', 'block-catalog' );
+			$all_label = __( 'All Blocks', 'block-catalog' );
 			$html     .= sprintf( '<option %s value="">%s</option>', selected( $selection, '', false ), esc_attr( $all_label ) );
 
 			foreach ( $terms as $term ) {
