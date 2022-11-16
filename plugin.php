@@ -36,6 +36,8 @@ if ( $is_local && file_exists( __DIR__ . '/dist/fast-refresh.php' ) ) {
 // Require Composer autoloader if it exists.
 if ( file_exists( BLOCK_CATALOG_PLUGIN_PATH . 'vendor/autoload.php' ) ) {
 	require_once BLOCK_CATALOG_PLUGIN_PATH . 'vendor/autoload.php';
+} else {
+	require_once BLOCK_CATALOG_PLUGIN_PATH . 'autoload.php';
 }
 
 // Include files.
