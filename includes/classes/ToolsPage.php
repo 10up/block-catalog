@@ -119,7 +119,7 @@ class ToolsPage {
 	public function get_settings() {
 		return [
 			'settings' => [
-				'index_batch_size' => apply_filters( 'block_catalog_index_batch_size', 100 ),
+				'index_batch_size' => apply_filters( 'block_catalog_index_batch_size', 50 ),
 			]
 		];
 	}

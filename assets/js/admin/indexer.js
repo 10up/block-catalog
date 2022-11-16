@@ -32,38 +32,6 @@ class Indexer extends EventTarget {
 		});
 	}
 
-	deleteIndex() {
-		this.triggerEvent('deleteIndexStart');
-
-		const fetchOpts = {
-			path: '/block-catalog/v1/delete-index',
-			method: 'POST',
-		};
-
-		const promise = this.apiFetch(fetchOpts)
-			.then((res) => {
-				if (res.errors) {
-					this.triggerEvent('deleteIndexError', res);
-				} else if (!res.success && res.data) {
-					this.triggerEvent('deleteIndexError', res);
-				} else {
-					this.triggerEvent('deleteIndexComplete', res);
-				}
-
-				return res;
-			})
-			.catch((err) => {
-				this.triggerEvent('deleteIndexError', err);
-			});
-
-		return promise;
-	}
-
-	cancelDelete(opts) {
-		this.cancelPending();
-		this.triggerEvent('deleteIndexCancel');
-	}
-
 	async index(ids, opts) {
 		this.progress = 0;
 		this.completed = 0;
@@ -123,6 +91,38 @@ class Indexer extends EventTarget {
 	cancel() {
 		this.cancelPending();
 		this.triggerEvent('indexCancel', { progress: this.progress, total: this.total });
+	}
+
+	deleteIndex() {
+		this.triggerEvent('deleteIndexStart');
+
+		const fetchOpts = {
+			path: '/block-catalog/v1/delete-index',
+			method: 'POST',
+		};
+
+		const promise = this.apiFetch(fetchOpts)
+			.then((res) => {
+				if (res.errors) {
+					this.triggerEvent('deleteIndexError', res);
+				} else if (!res.success && res.data) {
+					this.triggerEvent('deleteIndexError', res);
+				} else {
+					this.triggerEvent('deleteIndexComplete', res);
+				}
+
+				return res;
+			})
+			.catch((err) => {
+				this.triggerEvent('deleteIndexError', err);
+			});
+
+		return promise;
+	}
+
+	cancelDelete(opts) {
+		this.cancelPending();
+		this.triggerEvent('deleteIndexCancel');
 	}
 
 	triggerEvent(eventName, data = {}) {
