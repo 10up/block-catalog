@@ -10,7 +10,6 @@ namespace BlockCatalog;
 use \WP_Error;
 use BlockCatalog\Utility;
 
-
 /**
  * Default setup routine
  *
@@ -26,6 +25,7 @@ function setup() {
 	add_action( 'wp_enqueue_scripts', $n( 'styles' ) );
 	add_action( 'admin_enqueue_scripts', $n( 'admin_scripts' ) );
 	add_action( 'admin_enqueue_scripts', $n( 'admin_styles' ) );
+	add_action( 'save_post', $n( 'update_post_block_catalog' ) );
 
 	// Hook to allow async or defer on asset loading.
 	add_filter( 'script_loader_tag', $n( 'script_loader_tag' ), 10, 2 );
@@ -57,9 +57,9 @@ function setup() {
  * @return void
  */
 function i18n() {
-	$locale = apply_filters( 'plugin_locale', get_locale(), 'block-catalog-plugin' );
-	load_textdomain( 'block-catalog-plugin', WP_LANG_DIR . '/block-catalog-plugin/block-catalog-plugin-' . $locale . '.mo' );
-	load_plugin_textdomain( 'block-catalog-plugin', false, plugin_basename( BLOCK_CATALOG_PLUGIN_PATH ) . '/languages/' );
+	$locale = apply_filters( 'plugin_locale', get_locale(), 'block-catalog' );
+	load_textdomain( 'block-catalog', WP_LANG_DIR . '/block-catalog/block-catalog-' . $locale . '.mo' );
+	load_plugin_textdomain( 'block-catalog', false, plugin_basename( BLOCK_CATALOG_PLUGIN_PATH ) . '/languages/' );
 }
 
 /**
@@ -72,16 +72,11 @@ function init() {
 
 	$block_catalog_taxonomy = new BlockCatalogTaxonomy();
 	$block_catalog_taxonomy->register();
+}
 
-	add_action(
-		'save_post',
-		function( $post_id ) {
-			$builder = new CatalogBuilder();
-
-			$terms = $builder->catalog( $post_id );
-		}
-	);
-
+function update_post_block_catalog( $post_id ) {
+	$builder = new CatalogBuilder();
+	$builder->catalog( $post_id );
 }
 
 /**
@@ -145,7 +140,7 @@ function script_url( $script, $context ) {
 function style_url( $stylesheet, $context ) {
 
 	if ( ! in_array( $context, get_enqueue_contexts(), true ) ) {
-		return new WP_Error( 'invalid_enqueue_context', 'Invalid $context specified in BlockCatalog stylesheet loader.' );
+		return new WP_Error( 'invalid_enqueue_context', __( 'Invalid $context specified in BlockCatalog stylesheet loader.', 'block-catalog' ) );
 	}
 
 	return BLOCK_CATALOG_PLUGIN_URL . "dist/css/${stylesheet}.css";

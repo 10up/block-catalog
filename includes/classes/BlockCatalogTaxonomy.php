@@ -86,7 +86,7 @@ class BlockCatalogTaxonomy {
 			'show_admin_column' => true,
 			'query_var'         => true,
 			'show_in_rest'      => false,
-			'public'            => true,
+			'public'            => false,
 		);
 	}
 
@@ -135,7 +135,7 @@ class BlockCatalogTaxonomy {
 		);
 
 		/**
-		 * List of other post types that don't need indexing.
+		 * List of other misc post types that don't need indexing.
 		 */
 		$excluded_post_types = [
 			// Jetpack
@@ -170,7 +170,6 @@ class BlockCatalogTaxonomy {
 		global $typenow;
 
 		if ( is_object_in_taxonomy( $typenow, BLOCK_CATALOG_TAXONOMY ) ) {
-			$taxonomy  = get_taxonomy( BLOCK_CATALOG_TAXONOMY );
 			$term_opts = [
 				'taxonomy'   => BLOCK_CATALOG_TAXONOMY,
 				'hide_empty' => true,
@@ -179,7 +178,8 @@ class BlockCatalogTaxonomy {
 			$terms     = get_terms( $term_opts );
 			$selection = isset( $_GET['block-catalog'] ) ? sanitize_text_field( $_GET['block-catalog'] ) : ''; // phpcs:ignore
 			$html      = '<select name="block-catalog" id="block-catalog" class="postform">';
-			$html     .= sprintf( '<option %s value="">All Block Catalog Terms</option>', selected( $selection, '', false ) );
+			$all_label = __( 'All Block Catalog Terms', 'block-catalog' );
+			$html     .= sprintf( '<option %s value="">%s</option>', selected( $selection, '', false ), esc_attr( $all_label ) );
 
 			foreach ( $terms as $term ) {
 				$html .= sprintf(

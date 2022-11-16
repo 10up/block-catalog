@@ -36,8 +36,9 @@ class CatalogBuilder {
 			return $result;
 		} catch ( Exception $e ) {
 			if ( defined( 'WP_CLI' ) && WP_CLI ) {
-				\WP_CLI::warning( "Failed to catalog: $post_id - " . $e->getMessage() );
+				\WP_CLI::warning( __( 'Failed to catalog', 'block-catalog' ), ": $post_id - " . $e->getMessage() );
 			}
+
 			return new \WP_Error( 'catalog_failed', $e->getMessage() );
 		}
 	}
@@ -60,7 +61,7 @@ class CatalogBuilder {
 		$errors  = 0;
 		$is_cli  = defined( 'WP_CLI' ) && WP_CLI;
 
-		$message = "Removing $total block catalog terms ...";
+		$message = sprintf( __( 'Removing %d block catalog terms ...', 'block-catalog' ), $total );
 
 		if ( $is_cli ) {
 			$progress_bar = \WP_CLI\Utils\make_progress_bar( $message, $total );
@@ -86,13 +87,13 @@ class CatalogBuilder {
 
 		if ( $is_cli ) {
 			if ( ! empty( $removed ) ) {
-				\WP_CLI::success( "Removed $removed block catalog term(s)." );
+				\WP_CLI::success( sprintf( 'Removed %d block catalog term(s).', 'block-catalog' ), $removed );
 			} else {
-				\WP_CLI::warning( 'No block catalog terms to remove.' );
+				\WP_CLI::warning( __( 'No block catalog terms to remove.', 'block-catalog' ) );
 			}
 
 			if ( ! empty( $errors ) ) {
-				\WP_CLI::warning( "Failed to remove $errors block catalog terms(s)." );
+				\WP_CLI::warning( sprintf( 'Failed to remove %d block catalog terms(s).', 'block-catalog' ), $errors );
 			}
 		}
 

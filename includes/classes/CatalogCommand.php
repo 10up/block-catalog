@@ -30,13 +30,13 @@ class CatalogCommand extends \WP_CLI_Command {
 		$dry_run = ! empty( $opts['dry-run'] );
 
 		if ( $dry_run ) {
-			\WP_CLI::warning( 'Running in Dry Run Mode, changes will not be saved ...' );
+			\WP_CLI::warning( __( 'Running in Dry Run Mode, changes will not be saved ...', 'block-catalog' ) );
 		}
 
 		$post_ids = $this->get_posts_to_catalog( $opts );
 
 		$total        = count( $post_ids );
-		$message      = "Cataloging $total Posts ...";
+		$message      = sprintf( __( 'Cataloging %d Posts ...', 'block-catalog' ), $total );
 		$progress_bar = \WP_CLI\Utils\make_progress_bar( $message, $total );
 		$updated      = 0;
 		$errors       = 0;
@@ -62,13 +62,13 @@ class CatalogCommand extends \WP_CLI_Command {
 		$progress_bar->finish();
 
 		if ( ! empty( $updated ) ) {
-			\WP_CLI::success( "Block Catalog updated for $updated block(s) across $total post(s)" );
+			\WP_CLI::success( sprintf( 'Block Catalog updated for %d block(s) across $total post(s)', 'block-catalog' ), $updated );
 		} else {
-			\WP_CLI::warning( "No updates were made across $total post(s)" );
+			\WP_CLI::warning( sprintf( 'No updates were made across %d post(s)', 'block-catalog' ), $total );
 		}
 
 		if ( ! empty( $errors ) ) {
-			\WP_CLI::warning( "Failed to catalog $errors post(s)." );
+			\WP_CLI::warning( sprintf( 'Failed to catalog %d post(s).', 'block-catalog' ), $errors );
 		}
 	}
 
@@ -176,7 +176,7 @@ class CatalogCommand extends \WP_CLI_Command {
 		$posts = $query->posts;
 
 		if ( ! empty( $opts['count'] ) ) {
-			\WP_CLI::success( 'Found ' . $query->found_posts . ' post(s)' );
+			\WP_CLI::success( sprintf( __( 'Found %d post(s)', 'block-catalog' ), $query->found_posts ) );
 		}
 
 		if ( empty( $posts ) ) {
@@ -258,7 +258,7 @@ class CatalogCommand extends \WP_CLI_Command {
 		$posts = $query->posts;
 
 		if ( empty( $posts ) ) {
-			\WP_CLI::warning( 'No posts to catalog.' );
+			\WP_CLI::warning( __( 'No posts to catalog.', 'block-catalog' ) );
 		}
 
 		return $posts;

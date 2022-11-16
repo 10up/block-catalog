@@ -47,11 +47,10 @@ class ToolsPage {
 		$taxonomy   = new BlockCatalogTaxonomy();
 		$post_types = $taxonomy->get_post_types();
 		?>
-		<h1>Block Catalog - Index</h1>
+		<h1><?php echo esc_html( __( 'Block Catalog - Index', 'block-catalog' ) ); ?></h1>
 
 		<div id="index-notice" class="notice" style="display:none; margin-left: 0">
 			<p id="index-notice-body">
-				Testing
 			</h4>
 		</div>
 
@@ -60,8 +59,12 @@ class ToolsPage {
 
 		<div id="index-settings">
 
-		<h4>Select Post Type(s)</h4>
+		<h4>
+			<?php echo esc_html( __( 'Select Post Type(s)', 'block-catalog' ) ); ?>
+		</h4>
+
 		<form method="post" novalidate="novalidate">
+
 		<?php foreach ( $post_types as $post_type ) {
 			if ( ! post_type_exists( $post_type ) ) {
 				continue;
@@ -87,6 +90,7 @@ class ToolsPage {
 		<div id="index-status" style="display:none">
 			<progress class="index-progress-bar" id="index-progress" value="50" max="100">
 	    </progress>
+
 			<p class="cancel">
 				<input type="button" name="cancel" id="cancel" class="button button-primary" value="Cancel">
 			</p>
@@ -99,12 +103,13 @@ class ToolsPage {
 		</div>
 
 		<div id="index-errors" style="display:none">
-			<h4>Errors</h4>
+			<h4><?php echo esc_html( __( 'Errors', 'block-catalog' ) ); ?></h4>
 			<ul id="index-errors-list">
 			</ul>
 		</div>
 
 		</form>
+
 		<?php
 
 		wp_enqueue_script( 'block_catalog_plugin_tools' );
