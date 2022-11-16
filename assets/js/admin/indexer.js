@@ -5,7 +5,7 @@ class Indexer extends EventTarget {
 		this.triggerEvent('loadStart');
 
 		const fetchOpts = {
-			path: '/block-catalog/v1/posts',
+			url: opts.endpoint,
 			method: 'POST',
 			data: {
 				post_types: opts.postTypes || [],
@@ -60,7 +60,7 @@ class Indexer extends EventTarget {
 
 	async indexBatch(batch, opts = {}) {
 		const fetchOpts = {
-			path: '/block-catalog/v1/index',
+			url: opts.endpoint,
 			method: 'POST',
 			data: {
 				post_ids: batch,
@@ -102,11 +102,11 @@ class Indexer extends EventTarget {
 		this.triggerEvent('indexCancel', { progress: this.progress, total: this.total });
 	}
 
-	deleteIndex() {
+	deleteIndex(opts) {
 		this.triggerEvent('deleteIndexStart');
 
 		const fetchOpts = {
-			path: '/block-catalog/v1/delete-index',
+			url: opts.endpoint,
 			method: 'POST',
 		};
 

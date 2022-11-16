@@ -121,6 +121,7 @@ class ToolsApp {
 
 		const opts = {
 			batchSize: this.settings?.index_batch_size,
+			endpoint: this.settings?.index_endpoint,
 		};
 
 		this.indexer.index(this.state.posts, opts);
@@ -170,14 +171,21 @@ class ToolsApp {
 
 		if (event.detail.failures === 0) {
 			message = sprintf(
-				__('Indexed %d / %d Posts Successfully.', 'block-catalog'),
+				__(
+					'Indexed %d / %d Posts Successfully. <a href="%s">View Block Catalog</a>',
+					'block-catalog',
+				),
 				event.detail.completed,
 				event.detail.total,
+				this.settings.catalog_page,
 			);
 			type = 'success';
 		} else if (event.detail.failures > 0 && event.detail.completed > 0) {
 			message = sprintf(
-				__('Indexed %d Posts successfully with %d Errors.', 'block-catalog'),
+				__(
+					'Indexed %d Posts successfully with %d Errors. <a href="%s">View Block Catalog</a>',
+					'block-catalog',
+				),
 				event.detail.completed,
 				event.detail.failures,
 			);
@@ -282,6 +290,7 @@ class ToolsApp {
 	didSubmitClick() {
 		const opts = {
 			postTypes: this.getSelectedPostTypes(),
+			endpoint: this.settings.posts_endpoint,
 		};
 
 		this.indexer.load(opts);
@@ -304,7 +313,11 @@ class ToolsApp {
 			return false;
 		}
 
-		this.indexer.deleteIndex();
+		const opts = {
+			endpoint: this.settings.delete_index_endpoint,
+		};
+
+		this.indexer.deleteIndex(opts);
 		return false;
 	}
 
