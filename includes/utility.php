@@ -35,3 +35,63 @@ function get_asset_info( $slug, $attribute = null ) {
 
 	return $asset;
 }
+
+/**
+ * Start bulk operation global updates.
+ *
+ * @props VIP
+ */
+function start_bulk_operation() {
+	// Do not send notification when post is updated to 'published'
+	add_filter( 'wpcom_pushpress_should_send_ping', '__return_false' );
+
+	// Disable term count updates for speed
+	wp_defer_term_counting( true );
+
+	if ( class_exists( 'ES_WP_Indexing_Trigger' ) ){
+		ES_WP_Indexing_Trigger::get_instance()->disable(); //disconnects the wp action hooks that trigger indexing jobs
+	}
+
+	if ( ! defined( 'WP_IMPORTING' ) ) {
+		define( 'WP_IMPORTING', true );
+	}
+
+	if ( ! defined( 'DOING_AUTOSAVE' ) ) {
+		define( 'DOING_AUTOSAVE', true );
+	}
+}
+
+/**
+ * Stop bulk operation global updates
+ *
+ * @props VIP
+ */
+function stop_bulk_operation() {
+	wp_defer_term_counting( false );
+}
+
+/**
+ * Clear object caches to avoid oom errors
+ *
+ * @props VIP
+ */
+function clear_caches() {
+	/**
+	 * @var \WP_Object_Cache $wp_object_cache
+	 * @var \wpdb $wpdb
+	 */
+	global $wpdb, $wp_object_cache;
+
+	$wpdb->queries = array();
+
+	if ( is_object( $wp_object_cache ) ) {
+		$wp_object_cache->group_ops = array();
+		$wp_object_cache->stats = array();
+		$wp_object_cache->memcache_debug = array();
+		$wp_object_cache->cache = array();
+
+		if ( method_exists( $wp_object_cache, '__remoteset' ) ) {
+			$wp_object_cache->__remoteset(); // important
+		}
+	}
+}

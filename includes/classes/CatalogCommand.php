@@ -27,6 +27,8 @@ class CatalogCommand extends \WP_CLI_Command {
 	 * @param array $opts Command opts
 	 */
 	public function index( $args = [], $opts = [] ) {
+		\BlockCatalog\Utility\start_bulk_operation();
+
 		$dry_run = ! empty( $opts['dry-run'] );
 
 		if ( $dry_run ) {
@@ -50,6 +52,8 @@ class CatalogCommand extends \WP_CLI_Command {
 
 			if ( ! $dry_run ) {
 				$result = $builder->catalog( $post_id, $opts );
+
+				\BlockCatalog\Utility\clear_caches();
 			} else {
 				$result = $builder->get_post_block_terms( $post_id );
 			}
@@ -72,6 +76,8 @@ class CatalogCommand extends \WP_CLI_Command {
 		if ( ! empty( $errors ) ) {
 			\WP_CLI::warning( sprintf( __( 'Failed to catalog %d post(s).', 'block-catalog' ), $errors ) );
 		}
+
+		\BlockCatalog\Utility\stop_bulk_operation();
 	}
 
 	/**

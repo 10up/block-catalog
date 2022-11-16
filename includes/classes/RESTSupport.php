@@ -111,7 +111,8 @@ class RESTSupport {
 			'post_type'      => $post_types,
 			'post_status'    => 'publish',
 			'fields'         => 'ids',
-			'posts_per_page' => -1, // required to build the subsequent pagination
+			// required to build the subsequent pagination
+			'posts_per_page' => -1, // phpcs:ignore
 		];
 
 		$query = new \WP_Query( $query_params );
@@ -127,6 +128,8 @@ class RESTSupport {
 	 * @return bool
 	 */
 	public function index( $request ) {
+		\BlockCatalog\Utility\start_bulk_operation();
+
 		$post_ids = $request->get_param( 'post_ids' );
 		$builder  = new CatalogBuilder();
 
@@ -137,12 +140,16 @@ class RESTSupport {
 		foreach ( $post_ids as $post_id ) {
 			$result = $builder->catalog( $post_id );
 
+			\BlockCatalog\Utility\clear_caches();
+
 			if ( is_wp_error( $result ) ) {
 				$errors++;
 			} else {
 				$updated += count( $result );
 			}
 		}
+
+		\BlockCatalog\Utility\stop_bulk_operation();
 
 		return [
 			'updated' => $updated,

@@ -50,6 +50,8 @@ class CatalogBuilder {
 	 * @param array $opts Optional opts
 	 */
 	public function delete_index( $opts = [] ) {
+		\BlockCatalog\Utility\start_bulk_operation();
+
 		$term_opts = [
 			'taxonomy'   => BLOCK_CATALOG_TAXONOMY,
 			'fields'     => 'ids',
@@ -76,6 +78,8 @@ class CatalogBuilder {
 
 			$result = wp_delete_term( $term_id, BLOCK_CATALOG_TAXONOMY );
 
+			\BlockCatalog\Utility\clear_caches();
+
 			if ( ! is_wp_error( $result ) ) {
 				$removed++;
 			} else {
@@ -98,6 +102,8 @@ class CatalogBuilder {
 				\WP_CLI::warning( sprintf( 'Failed to remove %d block catalog terms(s).', 'block-catalog' ), $errors );
 			}
 		}
+
+		\BlockCatalog\Utility\stop_bulk_operation();
 
 		return [
 			'removed' => $removed,
