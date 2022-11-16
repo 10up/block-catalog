@@ -171,7 +171,7 @@ class CatalogCommand extends \WP_CLI_Command {
 		$operator = ! empty( $opts['operator'] ) ? $opts['operator'] : 'IN';
 
 		$query_params = [
-			'post_type'      => ! empty( $opts['post_type'] ) ? $opts['post_type'] : $taxonomy->get_post_types(),
+			'post_type'      => ! empty( $opts['post_type'] ) ? $opts['post_type'] : \BlockCatalog\Utility\get_supported_post_types(),
 			'post_status'    => ! empty( $opts['post_status'] ) ? $opts['post_status'] : 'publish',
 			'posts_per_page' => intval( $opts['posts_per_page'] ), // phpcs:ignore
 			'tax_query'      => [
@@ -259,10 +259,8 @@ class CatalogCommand extends \WP_CLI_Command {
 			return $only;
 		}
 
-		$taxonomy = new BlockCatalogTaxonomy();
-
 		$query_params = [
-			'post_type'      => $taxonomy->get_post_types(),
+			'post_type'      => \BlockCatalog\Utility\get_supported_post_types(),
 			'post_status'    => 'any',
 			'fields'         => 'ids',
 			'posts_per_page' => -1,

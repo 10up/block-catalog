@@ -95,3 +95,46 @@ function clear_caches() {
 		}
 	}
 }
+
+/**
+ * Returns the list of post types supported by the BlockCatalog plugin
+ *
+ * @return array
+ */
+function get_supported_post_types() {
+	$post_types = get_post_types(
+		[
+			'show_in_rest' => true,
+			'_builtin'     => false,
+		]
+	);
+
+	/**
+	 * List of other misc post types that don't need indexing.
+	 */
+	$excluded_post_types = [
+		// Jetpack
+		'feedback',
+		'jp_pay_order',
+		'jp_pay_product',
+
+		// Distributor
+		'dt_subscription',
+	];
+
+	$post_types = array_diff( $post_types, $excluded_post_types );
+	$post_types = array_merge( $post_types, [ 'post', 'page' ] );
+
+	/**
+	 * Allow plugins/themes to update post types for the block catalog taxonomy.
+	 *
+	 * @param array  $options  Default post types.
+	 */
+	$post_types = apply_filters(
+		'block_catalog_post_types',
+		$post_types,
+	);
+
+	return $post_types;
+}
+

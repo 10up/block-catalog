@@ -100,11 +100,10 @@ class RESTSupport {
 	 * @return array
 	 */
 	public function get_posts( $request ) {
-		$taxonomy   = new BlockCatalogTaxonomy();
 		$post_types = $request->get_param( 'post_types' );
 
 		if ( empty( $post_types ) ) {
-			$post_types = $taxonomy->get_post_types();
+			$post_types = \BlockCatalog\Utility\get_supported_post_types();
 		}
 
 		$query_params = [
@@ -164,8 +163,7 @@ class RESTSupport {
 	 * @return bool
 	 */
 	public function validate_post_types( $post_types ) {
-		$taxonomy  = new BlockCatalogTaxonomy();
-		$supported = $taxonomy->get_post_types();
+		$supported = \BlockCatalog\Utility\get_supported_post_types();
 
 		if ( empty( $post_types ) ) {
 			return true;

@@ -44,8 +44,7 @@ class ToolsPage {
 	 * Outputs the menu page contents.
 	 */
 	public function render() {
-		$taxonomy   = new BlockCatalogTaxonomy();
-		$post_types = $taxonomy->get_post_types();
+		$post_types = \BlockCatalog\Utility\get_supported_post_types();
 		?>
 		<h1><?php echo esc_html( __( 'Block Catalog - Index', 'block-catalog' ) ); ?></h1>
 
