@@ -36,7 +36,8 @@ class CatalogBuilder {
 			return $result;
 		} catch ( Exception $e ) {
 			if ( defined( 'WP_CLI' ) && WP_CLI ) {
-				\WP_CLI::warning( __( 'Failed to catalog', 'block-catalog' ), ": $post_id - " . $e->getMessage() );
+				// translators: %1$d is post_id, %2$s is error message
+				\WP_CLI::warning( sprintf( __( 'Failed to catalog %1$d - %2$s', 'block-catalog' ), $post_id, $e->getMessage() ) );
 			}
 
 			return new \WP_Error( 'catalog_failed', $e->getMessage() );
@@ -61,6 +62,7 @@ class CatalogBuilder {
 		$errors  = 0;
 		$is_cli  = defined( 'WP_CLI' ) && WP_CLI;
 
+		// translators: %d is number of block catalog terms
 		$message = sprintf( __( 'Removing %d block catalog terms ...', 'block-catalog' ), $total );
 
 		if ( $is_cli ) {

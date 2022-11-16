@@ -65,18 +65,20 @@ class ToolsPage {
 
 		<form method="post" novalidate="novalidate">
 
-		<?php foreach ( $post_types as $post_type ) {
+		<?php
+		foreach ( $post_types as $post_type ) {
+
 			if ( ! post_type_exists( $post_type ) ) {
 				continue;
 			}
 
 			$post_type_obj = get_post_type_object( $post_type );
 			$label         = $post_type_obj->labels->singular_name;
-		?>
+			?>
 			<p>
 				<label>
 					<input checked type="checkbox" id="block-catalog-post-type" class="block-catalog-post-type" name="post_types[]" value="<?php echo esc_attr( $post_type ); ?>">
-					<?php echo esc_html( $label ); ?>
+				<?php echo esc_html( $label ); ?>
 				</label>
 			</p>
 		<?php } ?>
@@ -125,7 +127,7 @@ class ToolsPage {
 		return [
 			'settings' => [
 				'index_batch_size' => apply_filters( 'block_catalog_index_batch_size', 50 ),
-			]
+			],
 		];
 	}
 

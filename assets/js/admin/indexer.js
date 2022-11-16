@@ -14,22 +14,25 @@ class Indexer extends EventTarget {
 		};
 
 		return this.apiFetch(fetchOpts)
-		.then((res) => {
-			if (res.errors) {
-				this.triggerEvent('loadError', res);
-			} else if (!res.success && res.data) {
-				this.triggerEvent('loadError', res);
-			} else if (res?.posts.length === 0) {
-				this.triggerEvent('loadError', {code: 'invalid_response', message: 'Server returned empty posts.'});
-			} else {
-				this.triggerEvent('loadComplete', res);
-			}
+			.then((res) => {
+				if (res.errors) {
+					this.triggerEvent('loadError', res);
+				} else if (!res.success && res.data) {
+					this.triggerEvent('loadError', res);
+				} else if (res?.posts.length === 0) {
+					this.triggerEvent('loadError', {
+						code: 'invalid_response',
+						message: 'Server returned empty posts.',
+					});
+				} else {
+					this.triggerEvent('loadComplete', res);
+				}
 
-			return res;
-		})
-		.catch((err) => {
-			this.triggerEvent('loadError', err);
-		});
+				return res;
+			})
+			.catch((err) => {
+				this.triggerEvent('loadError', err);
+			});
 	}
 
 	async index(ids, opts) {
@@ -47,7 +50,12 @@ class Indexer extends EventTarget {
 			await this.indexBatch(batch, opts); // eslint-disable-line no-await-in-loop
 		}
 
-		this.triggerEvent('indexComplete', { progress: this.progress, total: this.total, completed: this.completed, failures: this.failures });
+		this.triggerEvent('indexComplete', {
+			progress: this.progress,
+			total: this.total,
+			completed: this.completed,
+			failures: this.failures,
+		});
 	}
 
 	async indexBatch(batch, opts = {}) {
@@ -60,30 +68,31 @@ class Indexer extends EventTarget {
 			...opts,
 		};
 
-		const promise = this.apiFetch(fetchOpts)
+		const promise = this.apiFetch(fetchOpts);
 
-		promise.then((res) => {
-			if (res.errors) {
-				this.failures += batch.length;
-				this.triggerEvent('indexError', res);
-			} else if (!res.success && res.data) {
-				this.failures += batch.length;
-				this.triggerEvent('indexError', res);
-			} else {
-				this.completed += batch.length;
-			}
+		promise
+			.then((res) => {
+				if (res.errors) {
+					this.failures += batch.length;
+					this.triggerEvent('indexError', res);
+				} else if (!res.success && res.data) {
+					this.failures += batch.length;
+					this.triggerEvent('indexError', res);
+				} else {
+					this.completed += batch.length;
+				}
 
-			this.progress += batch.length;
-			this.triggerEvent('indexProgress', {
-				progress: this.progress,
-				total: this.total,
-				...res,
+				this.progress += batch.length;
+				this.triggerEvent('indexProgress', {
+					progress: this.progress,
+					total: this.total,
+					...res,
+				});
+			})
+			.catch((err) => {
+				this.failures += batch.length;
+				this.triggerEvent('indexError', err);
 			});
-		})
-		.catch((err) => {
-			this.failures += batch.length;
-			this.triggerEvent('indexError', err);
-		});
 
 		return promise;
 	}
@@ -120,7 +129,7 @@ class Indexer extends EventTarget {
 		return promise;
 	}
 
-	cancelDelete(opts) {
+	cancelDelete() {
 		this.cancelPending();
 		this.triggerEvent('deleteIndexCancel');
 	}
@@ -131,7 +140,7 @@ class Indexer extends EventTarget {
 	}
 
 	toChunks(list, chunkSize = 50) {
-		const first  = list.shift();
+		const first = list.shift();
 		const output = [];
 
 		for (let i = 0; i < list.length; i += chunkSize) {
@@ -191,7 +200,6 @@ class Indexer extends EventTarget {
 
 		return wrapper;
 	}
-
 }
 
 export default Indexer;

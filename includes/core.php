@@ -37,7 +37,7 @@ function setup() {
 	wp_register_script(
 		'block_catalog_plugin_tools',
 		script_url( 'tools', 'admin' ),
-		[ 'wp-api-fetch', 'wp-polyfill' ],
+		[ 'wp-api-fetch', 'wp-polyfill', 'wp-i18n' ],
 		BLOCK_CATALOG_PLUGIN_VERSION,
 		true
 	);
@@ -74,6 +74,11 @@ function init() {
 	$block_catalog_taxonomy->register();
 }
 
+/**
+ * Updates the block catalog for the specified post.
+ *
+ * @param int $post_id The post id
+ */
 function update_post_block_catalog( $post_id ) {
 	$builder = new CatalogBuilder();
 	$builder->catalog( $post_id );

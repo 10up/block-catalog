@@ -35,7 +35,9 @@ class CatalogCommand extends \WP_CLI_Command {
 
 		$post_ids = $this->get_posts_to_catalog( $opts );
 
-		$total        = count( $post_ids );
+		$total = count( $post_ids );
+
+		// translators: %d is number of posts found
 		$message      = sprintf( __( 'Cataloging %d Posts ...', 'block-catalog' ), $total );
 		$progress_bar = \WP_CLI\Utils\make_progress_bar( $message, $total );
 		$updated      = 0;
@@ -176,6 +178,7 @@ class CatalogCommand extends \WP_CLI_Command {
 		$posts = $query->posts;
 
 		if ( ! empty( $opts['count'] ) ) {
+			// translators: %d is number of found posts
 			\WP_CLI::success( sprintf( __( 'Found %d post(s)', 'block-catalog' ), $query->found_posts ) );
 		}
 
