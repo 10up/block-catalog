@@ -79,7 +79,7 @@ class BlockCatalogTaxonomy {
 	 * @return array
 	 */
 	public function get_options() {
-		return array(
+		$options = array(
 			'labels'            => $this->get_labels(),
 			'hierarchical'      => false,
 			'show_ui'           => true,
@@ -88,6 +88,14 @@ class BlockCatalogTaxonomy {
 			'show_in_rest'      => false,
 			'public'            => false,
 		);
+
+		/**
+		 * Allows plugins/themes to customize the block catalog taxonomy options.
+		 *
+		 * @param array $options The taxonomy options
+		 * @return array
+		 */
+		return apply_filters( 'block_catalog_taxonomy_options', $options );
 	}
 
 	/**
