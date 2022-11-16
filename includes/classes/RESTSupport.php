@@ -39,7 +39,7 @@ class RESTSupport {
 				'methods'             => 'POST',
 				'callback'            => [ $this, 'get_posts' ],
 				'permission_callback' => function() {
-					return current_user_can( 'edit_posts' );
+					return current_user_can( \BlockCatalog\Utility\get_required_capability() );
 				},
 				'args'                => [
 					'post_types' => [
@@ -58,7 +58,7 @@ class RESTSupport {
 				'methods'             => 'POST',
 				'callback'            => [ $this, 'index' ],
 				'permission_callback' => function() {
-					return current_user_can( 'edit_posts' );
+					return current_user_can( \BlockCatalog\Utility\get_required_capability() );
 				},
 				'args'                => [
 					'post_ids' => [
@@ -77,7 +77,7 @@ class RESTSupport {
 				'methods'             => 'POST',
 				'callback'            => [ $this, 'delete_index' ],
 				'permission_callback' => function() {
-					return current_user_can( 'edit_posts' );
+					return current_user_can( \BlockCatalog\Utility\get_required_capability() );
 				},
 			]
 		);

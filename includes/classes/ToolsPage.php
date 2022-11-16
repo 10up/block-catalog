@@ -34,7 +34,7 @@ class ToolsPage {
 			apply_filters( 'block_catalog_tools_page_parent', 'tools.php' ),
 			__( 'Block Catalog', 'block-catalog' ),
 			__( 'Block Catalog', 'block-catalog' ),
-			apply_filters( 'block_catalog_tools_page_cap', 'edit_posts' ),
+			\BlockCatalog\Utility\get_required_capability(),
 			$this->slug,
 			[ $this, 'render' ]
 		);

@@ -138,3 +138,11 @@ function get_supported_post_types() {
 	return $post_types;
 }
 
+/**
+ * Returns the capability name required to manage block catalogs
+ *
+ * @return string
+ */
+function get_required_capability() {
+	return apply_filters( 'block_catalog_capability', 'edit_posts' );
+}
