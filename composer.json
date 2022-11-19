@@ -1,10 +1,18 @@
 {
   "name": "10up/block-catalog-plugin",
+  "description": "Easily keep track of which Gutenberg Blocks are used across your site.",
   "type": "wordpress-plugin",
+  "license": "GPLv2 or later",
   "authors": [
     {
+      "name": "Darshan Sawardekar",
+      "email": "darshan@10up.com",
+      "role": "developer"
+    },
+    {
       "name": "10up",
-      "email": "info@10up.com"
+      "email": "opensource@10up.com",
+      "role": "developer"
     }
   ],
   "require": {
