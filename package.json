@@ -21,7 +21,6 @@
   },
   "10up-toolkit": {
     "entry": {
-      "admin": "./assets/js/admin/admin.js",
       "tools": "./assets/js/admin/tools.js"
     }
   }
