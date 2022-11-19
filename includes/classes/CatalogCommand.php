@@ -8,7 +8,7 @@
 namespace BlockCatalog;
 
 /**
- * BlockCatalog provides custom WP CLI commands catalog blocks used across a site.
+ * The Block Catalog WP CLI allows you to index & find blocks used across a site.
  */
 class CatalogCommand extends \WP_CLI_Command {
 
