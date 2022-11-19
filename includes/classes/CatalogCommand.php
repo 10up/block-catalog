@@ -98,7 +98,7 @@ class CatalogCommand extends \WP_CLI_Command {
 	}
 
 	/**
-	 * Finds the list of posts having the specified block(s)
+	 * Finds the list of posts having the specified block(s).
 	 *
 	 * ## OPTIONS
 	 *
@@ -106,25 +106,25 @@ class CatalogCommand extends \WP_CLI_Command {
 	 * : The block names to search for, eg:- core/embed
 	 *
 	 * [--index]
-	 * : Where to re-index before searching.
+	 * : Whether to re-index before searching.
 	 *
-	 * [--fields]
-	 * : List of post fields to display
+	 * [--fields=<fields>]
+	 * : List of post fields to display. Comma delimited.
 	 *
-	 * [--format]
-	 * : Output format, default table
+	 * [--format=<format>]
+	 * : Output format, default table.
 	 *
-	 * [--post_type]
-	 * : Limit search to specified post types
+	 * [--post_type=<post_type>]
+	 * : Limit search to specified post types. Comma delimited.
 	 *
 	 * [--posts_per_page]
-	 * : Number of posts to find per page, default 20
+	 * : Number of posts to find per page, default 20.
 	 *
 	 * [--post_status]
-	 * : Post status of posts to search, default 'publish'
+	 * : Post status of posts to search, default 'publish'.
 	 *
 	 * [--count=<count>]
-	 * : Prints total found posts, default true
+	 * : Prints total found posts, default true.
 	 *
 	 * [--operator=<operator>]
 	 * : The query operator to be used in the search clause. Default IN.
@@ -237,7 +237,7 @@ class CatalogCommand extends \WP_CLI_Command {
 	 * : The post id to lookup blocks for.
 	 *
 	 * [--index]
-	 * : Where to re-catalog the post before printing.
+	 * : Where to re-index the post before printing.
 	 *
 	 * @subcommand post-blocks
 	 * @param array $args Command args

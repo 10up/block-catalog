@@ -1,7 +1,7 @@
 # Block Catalog
 > Easily keep track of which Gutenberg Blocks are used across your site.
 
-![WordPress tested up to version](https://img.shields.io/badge/WordPress-v6.0%20tested-success.svg)
+![WordPress tested up to version](https://img.shields.io/badge/WordPress-v6.1%20tested-success.svg)
 [![GPLv2 License](https://img.shields.io/github/license/10up/block-catalog.svg)](https://github.com/10up/block-catalog/blob/develop/LICENSE.md)
 
 ## Table of Contents
@@ -20,8 +20,7 @@
 * Fully Integrated with the WordPress Admin.
 * Use filters to see Posts that use a specific block.
 * Find Posts that use Reusable Blocks.
-* Use the WP CLI to quickly run search queries from the command line.
-* Use WP CLI to find posts that use a combination of blocks, don't use a specific block etc.
+* Use the WP CLI to quickly find blocks from the command line.
 * Use custom WordPress filters to extend the Block Catalog.
 
 ## Requirements
@@ -41,7 +40,57 @@
 
 ## WP CLI Commands
 
-- Check out the [Block Catalog docs](https://10up.github.io/block-catalog/).
+The following WP CLI commands are supported by the Block Catalog plugin.
+
+* `wp block-catalog index [--only=<only>] [--dry-run]`
+
+	Iterates through all posts and catalogs them one at a time.
+
+  * [--only=\<only\>]
+    Limits the command to the specified comma delimited post ids
+
+  * [--dry-run]
+    Runs catalog without saving changes to the DB.
+
+* `wp block-catalog find <blocks>... [--index] [--fields] [--format] [--post_type] [--posts_per_page] [--post_status] [--count=<count>] [--operator=<operator>]`
+   Finds the list of posts having the specified block(s)
+  * \<blocks\>...
+    The block names to search for, eg:- core/embed
+
+  * [--index]
+    Whether to re-index before searching.
+
+  * [--fields=\<fields\>]
+    List of post fields to display.
+
+  * [--format=\<format\>]
+    Output format, default table.
+
+  * [--post_type=\<post_type\>]
+    Limit search to specified post types.
+
+  * [--posts_per_page=\<posts_per_page\>]
+    Number of posts to find per page, default 20
+
+  * [--post_status=\<post_status\>]
+    Post status of posts to search, default 'publish'
+
+  * [--count=\<count\>]
+    Prints total found posts, default true
+
+  * [--operator=\<operator\>]
+    The query operator to be used in the search clause. Default IN.
+
+* `wp block-catalog delete-index`
+   Resets the Block Catalog by removing all catalog terms.
+* `wp block-catalog post-blocks <post-id> [--index]`
+   Prints the list of blocks in the specified post.
+  * \<post-id\>
+    The post id to lookup blocks for.
+
+  * [--index]
+    Where to re-index the post before printing.
+
 
 ## Frequently Asked Questions
 
