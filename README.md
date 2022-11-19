@@ -126,7 +126,9 @@ When the plugin detects such a missing `title`, it uses the `blockName` suffix i
 
 To address this you need to update your custom block registration. If this is outside your control, you can also use the `block_catalog_block_title` filter hook to override the title as seen below.
 
-```<?php
+```php
+<?php
+
 add_filter( 'block_catalog_block_title', function( $title, $block_name, $block ) {
 	$map = [
 		"xyz/custom-block" => "My Custom Block",
