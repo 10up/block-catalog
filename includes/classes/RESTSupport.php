@@ -29,7 +29,7 @@ class RESTSupport {
 	}
 
 	/**
-	 * Registes the /publix/v1/site-settings/ REST endpoint.
+	 * Registes the REST endpoint with WP.
 	 */
 	public function register_endpoint() {
 		register_rest_route(
@@ -89,7 +89,6 @@ class RESTSupport {
 	 * @return array
 	 */
 	public function delete_index() {
-		sleep(10);
 		$builder = new CatalogBuilder();
 		return $builder->delete_index();
 	}
