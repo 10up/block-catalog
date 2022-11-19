@@ -147,11 +147,11 @@ add_filter( 'block_catalog_block_title', function( $title, $block_name, $block )
 
 ## Changelog
 
-A complete listing of all notable changes to Block Catalog are documented in [CHANGELOG.md](https://github.com/10up/block-catalog/blob/develop/CHANGELOG.md).
+A complete listing of all notable changes to Block Catalog are documented in [CHANGELOG.md](CHANGELOG.md).
 
 ## Contributing
 
-Please read [CODE_OF_CONDUCT.md](https://github.com/10up/block-catalog/blob/develop/CODE_OF_CONDUCT.md) for details on our code of conduct, [CONTRIBUTING.md](https://github.com/10up/block-catalog/blob/develop/CONTRIBUTING.md) for details on the process for submitting pull requests to us, and [CREDITS.md](https://github.com/10up/block-catalog/blob/develop/CREDITS.md) for a listing of maintainers, contributors, and libraries for Block Catalog.
+Please read [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) for details on our code of conduct, [CONTRIBUTING.md](CONTRIBUTING.md) for details on the process for submitting pull requests to us, and [CREDITS.md](CREDITS.md) for a listing of maintainers, contributors, and libraries for Block Catalog.
 
 ## Like what you see?
 
