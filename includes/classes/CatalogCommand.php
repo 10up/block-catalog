@@ -137,10 +137,15 @@ class CatalogCommand extends \WP_CLI_Command {
 			\WP_CLI::error( __( 'Please enter atleast one block name.', 'block-catalog' ) );
 		}
 
-		$catalog_terms = wp_count_terms( [ 'taxonomy' => BLOCK_CATALOG_TAXONOMY, 'hide_empty' => false ] );
+		$catalog_terms = wp_count_terms(
+			[
+				'taxonomy'   => BLOCK_CATALOG_TAXONOMY,
+				'hide_empty' => false,
+			]
+		);
 
 		if ( empty( $catalog_terms ) && empty( $opts['index'] ) ) {
-			\WP_CLI::error( __('Block Catalog index is empty, please run with --index.', 'block-catalog' ) );
+			\WP_CLI::error( __( 'Block Catalog index is empty, please run with --index.', 'block-catalog' ) );
 		}
 
 		if ( empty( $opts['fields'] ) ) {
