@@ -231,10 +231,10 @@ class CatalogCommand extends \WP_CLI_Command {
 	 * <post-id>
 	 * : The post id to lookup blocks for.
 	 *
-	 * [--catalog]
+	 * [--index]
 	 * : Where to re-catalog the post before printing.
 	 *
-	 * @subcommand list-post-blocks
+	 * @subcommand post-blocks
 	 * @param array $args Command args
 	 * @param array $opts Command opts
 	 */
@@ -247,7 +247,7 @@ class CatalogCommand extends \WP_CLI_Command {
 
 		$builder = new CatalogBuilder();
 
-		if ( ! empty( $opts['catalog'] ) ) {
+		if ( ! empty( $opts['index'] ) ) {
 			$builder->catalog( $post_id );
 		}
 
