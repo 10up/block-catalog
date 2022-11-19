@@ -134,7 +134,13 @@ class CatalogCommand extends \WP_CLI_Command {
 	 */
 	public function find( $args = [], $opts = [] ) {
 		if ( empty( $args ) ) {
-			\WP_CLI::error( __( 'Please enter atleast one block name', 'block-catalog' ) );
+			\WP_CLI::error( __( 'Please enter atleast one block name.', 'block-catalog' ) );
+		}
+
+		$catalog_terms = wp_count_terms( [ 'taxonomy' => BLOCK_CATALOG_TAXONOMY, 'hide_empty' => false ] );
+
+		if ( empty( $catalog_terms ) && empty( $opts['index'] ) ) {
+			\WP_CLI::error( __('Block Catalog index is empty, please run with --index.', 'block-catalog' ) );
 		}
 
 		if ( empty( $opts['fields'] ) ) {
@@ -169,13 +175,28 @@ class CatalogCommand extends \WP_CLI_Command {
 			$this->index();
 		}
 
+		$slugs = array_map( 'sanitize_title', $args );
+
+		foreach ( $slugs as $index => $slug ) {
+			$slug_term = get_term_by( 'slug', $slug, BLOCK_CATALOG_TAXONOMY );
+
+			if ( false === $slug_term ) {
+				unset( $slugs[ $index ] );
+			}
+		}
+
+		$slugs = array_values( $slugs );
+
+		if ( empty( $slugs ) ) {
+			\WP_CLI::error( __( 'No posts found.', 'block-catalog' ) );
+		}
+
 		$taxonomy = new BlockCatalogTaxonomy();
-		$slugs    = array_map( 'sanitize_title', $args );
 		$operator = ! empty( $opts['operator'] ) ? $opts['operator'] : 'IN';
 
 		$query_params = [
 			'post_type'      => ! empty( $opts['post_type'] ) ? $opts['post_type'] : \BlockCatalog\Utility\get_supported_post_types(),
-			'post_status'    => ! empty( $opts['post_status'] ) ? $opts['post_status'] : 'publish',
+			'post_status'    => ! empty( $opts['post_status'] ) ? $opts['post_status'] : 'any',
 			'posts_per_page' => intval( $opts['posts_per_page'] ), // phpcs:ignore
 			'tax_query'      => [
 				[
@@ -185,7 +206,6 @@ class CatalogCommand extends \WP_CLI_Command {
 					'operator' => $operator,
 				],
 			],
-			'output',
 		];
 
 		$query = new \WP_Query( $query_params );
