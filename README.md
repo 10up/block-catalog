@@ -38,6 +38,26 @@
 
 #### 2. Activate Plugin
 
+## Getting Started
+
+On activation, the plugin will prompt you to index your content. You need to do this first before you will be able to see the various blocks used on your site. You can also go to *WP-Admin > Tools > Block Catalog* to do this yourself.
+
+![Screenshot of Block Catalog Tools](assets/screenshot-1.png)
+
+Alternately, you can run the WP CLI command `wp block-catalog index` to index your content from the command line.
+
+Once indexed, you will be able to see the different blocks used on your site in the Block Catalog Taxonomy.
+
+![Screenshot of Block Catalog Terms](assets/screenshot-2.png)
+
+Navigating to an Block Editor post type will also show you the list of blocks present in a post.
+
+![Screenshot of Post listing with Blocks](assets/screenshot-3.png)
+
+You can also filter the listing to only show Posts that have a specific block.
+
+![Screenshot of Block Catalog Filter](assets/screenshot-4.png)
+
 ## WP CLI Commands
 
 The following WP CLI commands are supported by the Block Catalog plugin.
