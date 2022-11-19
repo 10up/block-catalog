@@ -21,6 +21,8 @@ class CatalogBuilder {
 	 */
 	public function catalog( $post_id, $opts = [] ) {
 		try {
+			update_option( 'block_catalog_indexed', 1 );
+
 			if ( empty( $post_id ) ) {
 				return [];
 			}

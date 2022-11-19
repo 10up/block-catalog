@@ -68,12 +68,15 @@ class CatalogCommand extends \WP_CLI_Command {
 		$progress_bar->finish();
 
 		if ( ! empty( $updated ) ) {
-			\WP_CLI::success( sprintf( __( 'Block Catalog updated for %d block(s) across %d post(s).', 'block-catalog' ), $updated, $total ) );
+			// translators: %1$d is the number of blocks updated, %2$d is the total posts
+			\WP_CLI::success( sprintf( __( 'Block Catalog updated for %1$d block(s) across %2$d post(s).', 'block-catalog' ), $updated, $total ) );
 		} else {
+			// translators: %d is the total posts
 			\WP_CLI::warning( sprintf( __( 'No updates were made across %d post(s).', 'block-catalog' ), $total ) );
 		}
 
 		if ( ! empty( $errors ) ) {
+			// translators: %d is the total posts
 			\WP_CLI::warning( sprintf( __( 'Failed to catalog %d post(s).', 'block-catalog' ), $errors ) );
 		}
 

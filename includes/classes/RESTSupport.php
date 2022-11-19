@@ -89,6 +89,7 @@ class RESTSupport {
 	 * @return array
 	 */
 	public function delete_index() {
+		sleep(10);
 		$builder = new CatalogBuilder();
 		return $builder->delete_index();
 	}

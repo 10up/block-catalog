@@ -48,8 +48,8 @@ function start_bulk_operation() {
 	// Disable term count updates for speed
 	wp_defer_term_counting( true );
 
-	if ( class_exists( 'ES_WP_Indexing_Trigger' ) ){
-		ES_WP_Indexing_Trigger::get_instance()->disable(); //disconnects the wp action hooks that trigger indexing jobs
+	if ( class_exists( 'ES_WP_Indexing_Trigger' ) ) {
+		ES_WP_Indexing_Trigger::get_instance()->disable(); // disconnects the wp action hooks that trigger indexing jobs
 	}
 
 	if ( ! defined( 'WP_IMPORTING' ) ) {
@@ -76,19 +76,15 @@ function stop_bulk_operation() {
  * @props VIP
  */
 function clear_caches() {
-	/**
-	 * @var \WP_Object_Cache $wp_object_cache
-	 * @var \wpdb $wpdb
-	 */
 	global $wpdb, $wp_object_cache;
 
 	$wpdb->queries = array();
 
 	if ( is_object( $wp_object_cache ) ) {
-		$wp_object_cache->group_ops = array();
-		$wp_object_cache->stats = array();
+		$wp_object_cache->group_ops      = array();
+		$wp_object_cache->stats          = array();
 		$wp_object_cache->memcache_debug = array();
-		$wp_object_cache->cache = array();
+		$wp_object_cache->cache          = array();
 
 		if ( method_exists( $wp_object_cache, '__remoteset' ) ) {
 			$wp_object_cache->__remoteset(); // important

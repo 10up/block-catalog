@@ -26,6 +26,7 @@ function setup() {
 	add_action( 'admin_enqueue_scripts', $n( 'admin_scripts' ) );
 	add_action( 'admin_enqueue_scripts', $n( 'admin_styles' ) );
 	add_action( 'save_post', $n( 'update_post_block_catalog' ) );
+	add_action( 'admin_notices', $n( 'render_index_notice' ) );
 
 	// Hook to allow async or defer on asset loading.
 	add_filter( 'script_loader_tag', $n( 'script_loader_tag' ), 10, 2 );
@@ -104,6 +105,29 @@ function activate() {
 	// First load the init scripts in case any rewrite functionality is being loaded
 	init();
 	flush_rewrite_rules();
+
+}
+
+/**
+ * Displays a notice message if not indexed.
+ */
+function render_index_notice() {
+	$notice_shown = filter_var( get_option( 'block_catalog_notice_shown' ), FILTER_VALIDATE_BOOLEAN );
+
+	if ( $notice_shown ) {
+		return;
+	}
+
+	update_option( 'block_catalog_notice_shown', 1 );
+
+	?>
+	<div class="notice notice-success is-dismissible">
+		<p>
+			<?php /* translators: %s is the tools page url */ ?>
+			<?php echo wp_kses_post( sprintf( __( 'The Block Catalog needs to be indexed. <a href="%s">Index Now</a>', 'block-catalog' ), esc_url( admin_url( 'tools.php?page=block-catalog-tools' ) ) ) ); ?>
+		</p>
+	</div>
+	<?php
 }
 
 /**
