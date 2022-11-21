@@ -13,7 +13,9 @@
     "format-js": "10up-toolkit format-js assets/js",
     "lint-js": "10up-toolkit lint-js assets/js",
     "lint-style": "10up-toolkit lint-style assets/css",
-    "clean-dist": "rm -rf ./dist"
+    "clean-dist": "rm -rf ./dist",
+    "build-release": "npm install && composer install --no-dev -o && npm run build && npm run build-release-zip",
+    "build-release-zip": "bin/build-release-zip.sh $npm_package_version"
   },
   "engines": {
     "node": ">=12.0.0"
