@@ -109,6 +109,9 @@ function get_supported_post_types() {
 	 * List of other misc post types that don't need indexing.
 	 */
 	$excluded_post_types = [
+		// Core
+		'wp_navigation',
+
 		// Jetpack
 		'feedback',
 		'jp_pay_order',
