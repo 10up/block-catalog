@@ -1,5 +1,14 @@
 === Block Catalog ===
-> Easily keep track of which Gutenberg Blocks are used across your site.
+Contributors:      Darshan Sawardekar, 10up
+Tags:              Easily keep track of which Gutenberg Blocks are used across your site.
+Requires at least: 5.7
+Tested up to:      6.1
+Requires PHP:      7.4
+Stable tag:        1.0.1
+License:           GPLv2 or later
+License URI:       http://www.gnu.org/licenses/gpl-2.0.html
+
+Easily keep track of which Gutenberg Blocks are used across your site.
 
 ![WordPress tested up to version](https://img.shields.io/badge/WordPress-v6.1%20tested-success.svg)
 [![GPLv2 License](https://img.shields.io/github/license/10up/block-catalog.svg)](https://github.com/10up/block-catalog/blob/develop/LICENSE.md)
@@ -31,12 +40,12 @@
 
 == Installation via GitHub ==
 
- 1. Download or Clone this repo, install dependencies and build. 
+ 1. Download or Clone this repo, install dependencies and build.
 
 - `git clone https://github.com/10up/block-catalog.git && cd block-catalog`
 - `composer install && npm install && npm run build`
 
- 2. Activate Plugin 
+ 2. Activate Plugin
 
 == Getting Started ==
 
