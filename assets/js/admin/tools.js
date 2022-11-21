@@ -1,3 +1,4 @@
+import '../../css/admin/tools-style.css';
 import Indexer from './indexer';
 
 const { __, sprintf } = wp.i18n;

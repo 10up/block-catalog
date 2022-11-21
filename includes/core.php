@@ -193,15 +193,6 @@ function style_url( $stylesheet, $context ) {
  * @return void
  */
 function admin_scripts() {
-
-	wp_enqueue_script(
-		'block_catalog_plugin_admin',
-		script_url( 'admin', 'admin' ),
-		Utility\get_asset_info( 'admin', 'dependencies' ),
-		BLOCK_CATALOG_PLUGIN_VERSION,
-		true
-	);
-
 }
 
 /**
@@ -210,14 +201,6 @@ function admin_scripts() {
  * @return void
  */
 function styles() {
-	if ( is_admin() ) {
-		wp_enqueue_style(
-			'block_catalog_plugin_admin',
-			style_url( 'admin', 'admin' ),
-			[],
-			BLOCK_CATALOG_PLUGIN_VERSION
-		);
-	}
 }
 
 /**
@@ -227,8 +210,8 @@ function styles() {
  */
 function admin_styles() {
 	wp_enqueue_style(
-		'block_catalog_plugin_admin',
-		style_url( 'admin', 'admin' ),
+		'block_catalog_plugin_tools',
+		style_url( 'tools', 'admin' ),
 		[],
 		BLOCK_CATALOG_PLUGIN_VERSION
 	);
