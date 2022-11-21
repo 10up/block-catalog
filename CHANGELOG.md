@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file, per [the Ke
 
 - todo
 
-## [1.0.0] - 2020-11-00
+## [1.0.0] - 2022-11-21
+
 - Initial release
 
