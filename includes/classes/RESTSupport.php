@@ -72,6 +72,18 @@ class RESTSupport {
 
 		register_rest_route(
 			'block-catalog/v1',
+			'/terms/',
+			[
+				'methods'             => 'POST',
+				'callback'            => [ $this, 'get_terms' ],
+				'permission_callback' => function() {
+					return current_user_can( \BlockCatalog\Utility\get_required_capability() );
+				},
+			]
+		);
+
+		register_rest_route(
+			'block-catalog/v1',
 			'/delete-index/',
 			[
 				'methods'             => 'POST',
@@ -79,18 +91,81 @@ class RESTSupport {
 				'permission_callback' => function() {
 					return current_user_can( \BlockCatalog\Utility\get_required_capability() );
 				},
+				'args'                => [
+					'term_ids' => [
+						'required'          => true,
+						'type'              => 'array',
+						'validate_callback' => [ $this, 'validate_term_ids' ],
+					],
+				],
 			]
 		);
 	}
 
 	/**
-	 * Deletes the Block catalog index.
+	 * Returns the list of block catalog terms
 	 *
 	 * @return array
 	 */
-	public function delete_index() {
+	public function get_terms() {
+
+		$term_opts = [
+			'taxonomy'   => BLOCK_CATALOG_TAXONOMY,
+			'hide_empty' => false,
+		];
+
+		$terms = get_terms( $term_opts );
+
+		if ( empty( $terms ) ) {
+			return [ 'terms' => [] ];
+		}
+
+		$output = [];
+
+		foreach ( $terms as $term ) {
+			$output[] = [
+				'id'   => intval( $term->term_id ),
+				'slug' => $term->slug,
+				'name'  => $term->name,
+				'count' => $term->count,
+			];
+		}
+
+		return [ 'terms' => $output ];
+	}
+
+	/**
+	 * Deletes the Block catalog index.
+	 *
+	 * @param \WP_REST_Request $request The request object
+	 * @return array
+	 */
+	public function delete_index( $request ) {
+		\BlockCatalog\Utility\start_bulk_operation();
+
+		$term_ids = $request->get_param( 'term_ids' );
+		$updated = 0;
+		$errors  = 0;
 		$builder = new CatalogBuilder();
-		return $builder->delete_index();
+
+		foreach ( $term_ids as $term_id ) {
+			$result = $builder->delete_term_index( $term_id );
+
+			\BlockCatalog\Utility\clear_caches();
+
+			if ( is_wp_error( $result ) ) {
+				$errors++;
+			} else {
+				$updated += 1;
+			}
+		}
+
+		\BlockCatalog\Utility\stop_bulk_operation();
+
+		return [
+			'removed' => $updated,
+			'errors'  => $errors,
+		];
 	}
 
 	/**
@@ -169,8 +244,6 @@ class RESTSupport {
 		\BlockCatalog\Utility\start_bulk_operation();
 
 		$post_ids = $request->get_param( 'post_ids' );
-		$builder  = new CatalogBuilder();
-
 		$updated = 0;
 		$errors  = 0;
 		$builder = new CatalogBuilder();
@@ -232,6 +305,23 @@ class RESTSupport {
 		$post_ids = array_filter( $post_ids );
 
 		return ! empty( $post_ids );
+	}
+
+	/**
+	 * Validates the specified term ids.
+	 *
+	 * @param array $post_ids The term ids to validate
+	 * @return bool
+	 */
+	public function validate_term_ids( $term_ids ) {
+		if ( empty( $term_ids ) ) {
+			return true;
+		}
+
+		$term_ids = array_map( 'intval', $term_ids );
+		$term_ids = array_filter( $term_ids );
+
+		return ! empty( $term_ids );
 	}
 
 }

@@ -78,7 +78,7 @@ class CatalogBuilder {
 				$progress_bar->tick();
 			}
 
-			$result = wp_delete_term( $term_id, BLOCK_CATALOG_TAXONOMY );
+			$result = $this->delete_term_index( $term_id );
 
 			\BlockCatalog\Utility\clear_caches();
 
@@ -111,6 +111,16 @@ class CatalogBuilder {
 			'removed' => $removed,
 			'errors'  => $errors,
 		];
+	}
+
+	/**
+	 * Deletes the specified term id and its associations.
+	 *
+	 * @param int   $term_id The term id to delete.
+	 * @param array $opts Optional opts
+	 */
+	public function delete_term_index( $term_id, $opts = [] ) {
+		return wp_delete_term( $term_id, BLOCK_CATALOG_TAXONOMY );
 	}
 
 	/**

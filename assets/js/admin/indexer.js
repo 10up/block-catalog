@@ -19,7 +19,7 @@ class Indexer extends EventTarget {
 					this.triggerEvent('loadError', res);
 				} else if (!res.success && res.data) {
 					this.triggerEvent('loadError', res);
-				} else if (res?.posts.length === 0) {
+				} else if (res?.posts === undefined || res?.posts.length === 0) {
 					this.triggerEvent('loadError', {
 						code: 'invalid_response',
 						message: 'Server returned empty posts.',
@@ -47,7 +47,19 @@ class Indexer extends EventTarget {
 
 		for (let i = 0; i < n; i++) {
 			const batch = chunks[i];
-			await this.indexBatch(batch, opts); // eslint-disable-line no-await-in-loop
+			try {
+				await this.indexBatch(batch, opts); // eslint-disable-line no-await-in-loop
+			} catch (err) {
+				this.failures += batch.length;
+				this.progress += batch.length;
+
+				this.triggerEvent('indexProgress', {
+					progress: this.progress,
+					total: this.total,
+				});
+
+				this.triggerEvent('indexError', err);
+			};
 		}
 
 		this.triggerEvent('indexComplete', {
@@ -78,6 +90,12 @@ class Indexer extends EventTarget {
 				} else if (!res.success && res.data) {
 					this.failures += batch.length;
 					this.triggerEvent('indexError', res);
+				} else if (res?.updated === undefined) {
+					this.failures += batch.length;
+					this.triggerEvent('indexError', {
+						code: 'invalid_response',
+						message: 'Failed to index some posts',
+					});
 				} else {
 					this.completed += batch.length;
 				}
@@ -88,10 +106,6 @@ class Indexer extends EventTarget {
 					total: this.total,
 					...res,
 				});
-			})
-			.catch((err) => {
-				this.failures += batch.length;
-				this.triggerEvent('indexError', err);
 			});
 
 		return promise;
@@ -102,7 +116,105 @@ class Indexer extends EventTarget {
 		this.triggerEvent('indexCancel', { progress: this.progress, total: this.total });
 	}
 
-	deleteIndex(opts) {
+	loadTerms(opts) {
+		this.progress = 0;
+		this.total = 0;
+		this.triggerEvent('loadTermsStart');
+
+		const fetchOpts = {
+			url: opts.endpoint,
+			method: 'POST',
+			data: {},
+			...opts,
+		};
+
+		return this.apiFetch(fetchOpts)
+			.then((res) => {
+				if (res.errors) {
+					this.triggerEvent('loadTermsError', res);
+				} else if (!res.success && res.data) {
+					this.triggerEvent('loadTermsError', res);
+				} else if (res?.terms === undefined || res?.terms.length === 0) {
+					this.triggerEvent('loadTermsError', {
+						code: 'invalid_response',
+						message: 'Server returned empty terms.',
+						...res
+					});
+				} else {
+					this.triggerEvent('loadTermsComplete', res);
+				}
+
+				return res;
+			})
+			.catch((err) => {
+				this.triggerEvent('loadTermsError', err);
+			});
+	}
+
+	async deleteIndex(ids, opts) {
+		this.progress = 0;
+		this.completed = 0;
+		this.failures = 0;
+		this.total = ids.length;
+		this.triggerEvent('deleteIndexStart', { progress: 0, total: this.total });
+
+		const chunks = this.toChunks(ids, opts.batchSize || 50);
+		const n = chunks.length;
+
+		for (let i = 0; i < n; i++) {
+			const batch = chunks[i];
+			try {
+				await this.deleteIndexBatch(batch, opts); // eslint-disable-line no-await-in-loop
+			} catch (e) {
+				this.failures += batch.length;
+				this.triggerEvent('deleteIndexError', e);
+			}
+		}
+
+		this.triggerEvent('deleteIndexComplete', {
+			progress: this.progress,
+			total: this.total,
+			completed: this.completed,
+			failures: this.failures,
+		});
+	}
+
+	async deleteIndexBatch(batch, opts = {}) {
+		const fetchOpts = {
+			url: opts.endpoint,
+			method: 'POST',
+			data: {
+				term_ids: batch,
+			},
+			...opts,
+		};
+
+		const promise = this.apiFetch(fetchOpts);
+
+		promise
+			.then((res) => {
+				if (res.errors) {
+					this.failures += batch.length;
+					this.triggerEvent('deleteIndexError', res);
+				} else if (!res.success && res.data) {
+					this.failures += batch.length;
+					this.triggerEvent('deleteIndexError', res);
+				} else {
+					this.completed += batch.length;
+				}
+
+				this.progress += batch.length;
+				this.triggerEvent('deleteIndexProgress', {
+					progress: this.progress,
+					total: this.total,
+					...res,
+				});
+			});
+
+		return promise;
+	}
+
+	deleteIndexBulk(opts) {
 		this.triggerEvent('deleteIndexStart');
 
 		const fetchOpts = {

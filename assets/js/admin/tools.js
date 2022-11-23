@@ -15,13 +15,19 @@ class ToolsApp {
 		this.onIndex('loadStart', 'didLoadStart');
 		this.onIndex('loadComplete', 'didLoadComplete');
 		this.onIndex('loadError', 'didLoadError');
+
 		this.onIndex('indexStart', 'didIndexStart');
 		this.onIndex('indexProgress', 'didIndexProgress');
 		this.onIndex('indexComplete', 'didIndexComplete');
 		this.onIndex('indexCancel', 'didIndexCancel');
 		this.onIndex('indexError', 'didIndexError');
 
+		this.onIndex('loadTermsStart', 'didLoadTermsStart');
+		this.onIndex('loadTermsComplete', 'didLoadTermsComplete');
+		this.onIndex('loadTermsError', 'didLoadTermsError');
+
 		this.onIndex('deleteIndexStart', 'didDeleteIndexStart');
+		this.onIndex('deleteIndexProgress', 'didDeleteIndexProgress');
 		this.onIndex('deleteIndexComplete', 'didDeleteIndexComplete');
 		this.onIndex('deleteIndexError', 'didDeleteIndexError');
 		this.onIndex('deleteIndexCancel', 'didDeleteIndexCancel');
@@ -78,10 +84,27 @@ class ToolsApp {
 				this.hide('#index-status');
 				break;
 
+			case 'loading-terms':
+				this.hide('#index-settings');
+				this.show('#delete-status');
+				this.updateDeleteProgress();
+				break;
+
+			case 'loaded-terms':
+				this.hide('#index-settings');
+				this.show('#delete-status');
+				break;
+
+			case 'load-terms-error':
+				this.show('#index-settings');
+				this.hide('#delete-status');
+				break;
+
+
 			case 'deleting':
 				this.hide('#index-settings');
 				this.show('#delete-status');
-				this.setNotice('');
+				this.updateDeleteProgress();
 				break;
 
 			case 'deleted':
@@ -222,6 +245,58 @@ class ToolsApp {
 		}
 
 		this.addErrorLine(message);
+		this.updateProgress();
+	}
+
+	didLoadTermsStart() {
+		const message = __('Loading block catalog terms to delete ...', 'block-catalog');
+
+		this.setState({ status: 'loading-terms', message });
+		this.hideErrors();
+		this.setNotice('');
+
+		window.scrollTo(0, 0);
+	}
+
+	didLoadTermsComplete(event) {
+		const message = __('Loaded terms to delete, starting ...', 'block-catalog');
+		this.setState({ status: 'loaded-terms', message, ...event.detail });
+
+		const opts = {
+			batchSize: this.settings?.delete_index_batch_size,
+			endpoint: this.settings?.delete_index_endpoint,
+		};
+
+		let terms = this.state.terms;
+		terms = terms.map((term) => term.id);
+
+		this.indexer.deleteIndex(terms, opts);
+	}
+
+	didLoadTermsError(event) {
+		const err = event.detail || {};
+
+		let message = __('Failed to load terms to delete.', 'block-catalog');
+
+		if (err?.terms?.length === 0) {
+			message = __('Block catalog is empty, nothing to delete.', 'block-catalog');
+			this.setState({status: 'load-terms-error', message: '', error: ''});
+			this.setNotice(message, 'error' );
+			return;
+		}
+
+		if (err?.message) {
+			message += `  (${err?.code} - ${err.message})`;
+		}
+
+		if (err?.data?.message) {
+			message += `  (${err.data.message})`;
+		} else if (typeof err?.data === 'string') {
+			message += `  (${err.data})`;
+		}
+
+		this.setState({ status: 'load-terms-error', message: '', error: err });
+		this.setNotice(message, 'error');
 	}
 
 	didDeleteIndexStart(event) {
@@ -231,20 +306,29 @@ class ToolsApp {
 		window.scrollTo(0, 0);
 	}
 
+	didDeleteIndexProgress(event) {
+		const message = sprintf(
+			'Deleting %d / %d Block Catalog Terms ...',
+			event.detail.progress,
+			event.detail.total,
+		);
+		this.setState({ status: 'deleting', message, ...event.detail });
+	}
+
 	didDeleteIndexComplete(event) {
 		let message;
 
-		if (event.detail?.errors) {
+		if (event.detail?.failures) {
 			message = sprintf(
 				__('Failed to delete %d catalog term(s).', 'block-catalog'),
-				event.detail?.errors,
+				event.detail?.failures,
 			);
 
 			this.setNotice(message, 'error');
-		} else if (event.detail?.removed) {
+		} else if (event.detail?.completed) {
 			message = sprintf(
 				__('Deleted %d block catalog term(s) successfully.', 'block-catalog'),
-				event.detail?.removed,
+				event.detail?.completed,
 			);
 
 			this.setNotice(message, 'success');
@@ -259,14 +343,7 @@ class ToolsApp {
 	didDeleteIndexError(event) {
 		const err = event.detail || {};
 
-		let message = __('Deleting Index Failed.', 'block-catalog');
-
-		if (err.errors) {
-			message = sprintf(
-				__('Failed to delete %d block catalog term(s).', 'block-catalog'),
-				err.errors,
-			);
-		}
+		let message = __('Failed to delete block catalog terms. ', 'block-catalog');
 
 		if (err?.message) {
 			message += `  (${err?.code} - ${err.message})`;
@@ -278,8 +355,7 @@ class ToolsApp {
 			message += `  (${err.data})`;
 		}
 
-		this.setState({ status: 'delete-error', message: '', error: err });
-		this.setNotice(message, 'error');
+		this.addErrorLine(message);
 	}
 
 	didDeleteIndexCancel(event) {
@@ -315,10 +391,10 @@ class ToolsApp {
 		}
 
 		const opts = {
-			endpoint: this.settings.delete_index_endpoint,
+			endpoint: this.settings.terms_endpoint,
 		};
 
-		this.indexer.deleteIndex(opts);
+		this.indexer.loadTerms(opts);
 		return false;
 	}
 
@@ -407,6 +483,16 @@ class ToolsApp {
 		const percent = this.indexer.total ? (this.indexer.progress / this.indexer.total) * 100 : 0;
 
 		const element = document.querySelector('#index-progress');
+
+		if (element) {
+			element.value = percent;
+		}
+	}
+
+	updateDeleteProgress() {
+		const percent = this.indexer.total ? (this.indexer.progress / this.indexer.total) * 100 : 0;
+
+		const element = document.querySelector('#delete-progress');
 
 		if (element) {
 			element.value = percent;
