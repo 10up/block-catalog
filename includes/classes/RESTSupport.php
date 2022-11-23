@@ -111,7 +111,7 @@ class RESTSupport {
 		$page_size   = apply_filters( 'block_catalog_posts_to_index_page_size', 500 );
 		$total_pages = ceil( $total / $page_size );
 
-		$query_params['posts_per_page'] = $page_size;
+		$query_params['posts_per_page'] = $page_size; // phpcs:ignore
 
 		if ( empty( $total ) ) {
 			return [ 'posts' => [] ];
