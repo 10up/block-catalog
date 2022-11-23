@@ -100,6 +100,50 @@ class RESTSupport {
 	 * @return array
 	 */
 	public function get_posts( $request ) {
+		\BlockCatalog\Utility\start_bulk_operation();
+
+		$query_params                   = $this->get_posts_to_index_query( $request );
+		$query_params['posts_per_page'] = 1;
+
+		$count_query = new \WP_Query( $query_params );
+		$total       = $count_query->found_posts;
+
+		$page_size   = apply_filters( 'block_catalog_posts_to_index_page_size', 500 );
+		$total_pages = ceil( $total / $page_size );
+
+		$query_params['posts_per_page'] = $page_size;
+
+		if ( empty( $total ) ) {
+			return [ 'posts' => [] ];
+		}
+
+		$results = [];
+
+		for ( $i = 0; $i < $total_pages; $i++ ) {
+			$query_params['paged'] = $i + 1;
+
+			$query = new \WP_Query( $query_params );
+			$posts = $query->posts;
+
+			if ( ! empty( $posts ) ) {
+				$results = array_merge( $results, $posts );
+			}
+
+			\BlockCatalog\Utility\clear_caches();
+		}
+
+		\BlockCatalog\Utility\stop_bulk_operation();
+
+		return [ 'posts' => $results ];
+	}
+
+	/**
+	 * Returns the WP Query params used to fetch the posts to index.
+	 *
+	 * @param \WP_REST_Request $request The request object
+	 * @return array
+	 */
+	public function get_posts_to_index_query( $request ) {
 		$post_types = $request->get_param( 'post_types' );
 
 		if ( empty( $post_types ) ) {
@@ -107,17 +151,12 @@ class RESTSupport {
 		}
 
 		$query_params = [
-			'post_type'      => $post_types,
-			'post_status'    => 'publish',
-			'fields'         => 'ids',
-			// required to build the subsequent pagination
-			'posts_per_page' => -1, // phpcs:ignore
+			'post_type'   => $post_types,
+			'post_status' => 'any',
+			'fields'      => 'ids',
 		];
 
-		$query = new \WP_Query( $query_params );
-		$posts = $query->posts;
-
-		return [ 'posts' => $posts ];
+		return apply_filters( 'block_catalog_posts_to_index_query_params', $query_params, $request );
 	}
 
 	/**
