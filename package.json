@@ -10,6 +10,8 @@
     "start": "npm run watch",
     "watch": "10up-toolkit watch --port=5010 --hot",
     "build": "10up-toolkit build",
+    "dev": "10up-toolkit build --watch",
+    "watch": "10up-toolkit build --watch",
     "format-js": "10up-toolkit format-js assets/js",
     "lint-js": "10up-toolkit lint-js assets/js",
     "lint-style": "10up-toolkit lint-style assets/css",
