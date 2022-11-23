@@ -100,7 +100,6 @@ class ToolsApp {
 				this.hide('#delete-status');
 				break;
 
-
 			case 'deleting':
 				this.hide('#index-settings');
 				this.show('#delete-status');
@@ -267,7 +266,7 @@ class ToolsApp {
 			endpoint: this.settings?.delete_index_endpoint,
 		};
 
-		let terms = this.state.terms;
+		let { terms } = this.state;
 		terms = terms.map((term) => term.id);
 
 		this.indexer.deleteIndex(terms, opts);
@@ -280,8 +279,8 @@ class ToolsApp {
 
 		if (err?.terms?.length === 0) {
 			message = __('Block catalog is empty, nothing to delete.', 'block-catalog');
-			this.setState({status: 'load-terms-error', message: '', error: ''});
-			this.setNotice(message, 'error' );
+			this.setState({ status: 'load-terms-error', message: '', error: '' });
+			this.setNotice(message, 'error');
 			return;
 		}
 

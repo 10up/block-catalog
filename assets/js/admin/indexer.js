@@ -59,7 +59,7 @@ class Indexer extends EventTarget {
 				});
 
 				this.triggerEvent('indexError', err);
-			};
+			}
 		}
 
 		this.triggerEvent('indexComplete', {
@@ -82,31 +82,30 @@ class Indexer extends EventTarget {
 
 		const promise = this.apiFetch(fetchOpts);
 
-		promise
-			.then((res) => {
-				if (res.errors) {
-					this.failures += batch.length;
-					this.triggerEvent('indexError', res);
-				} else if (!res.success && res.data) {
-					this.failures += batch.length;
-					this.triggerEvent('indexError', res);
-				} else if (res?.updated === undefined) {
-					this.failures += batch.length;
-					this.triggerEvent('indexError', {
-						code: 'invalid_response',
-						message: 'Failed to index some posts',
-					});
-				} else {
-					this.completed += batch.length;
-				}
-
-				this.progress += batch.length;
-				this.triggerEvent('indexProgress', {
-					progress: this.progress,
-					total: this.total,
-					...res,
+		promise.then((res) => {
+			if (res.errors) {
+				this.failures += batch.length;
+				this.triggerEvent('indexError', res);
+			} else if (!res.success && res.data) {
+				this.failures += batch.length;
+				this.triggerEvent('indexError', res);
+			} else if (res?.updated === undefined) {
+				this.failures += batch.length;
+				this.triggerEvent('indexError', {
+					code: 'invalid_response',
+					message: 'Failed to index some posts',
 				});
+			} else {
+				this.completed += batch.length;
+			}
+
+			this.progress += batch.length;
+			this.triggerEvent('indexProgress', {
+				progress: this.progress,
+				total: this.total,
+				...res,
 			});
+		});
 
 		return promise;
 	}
@@ -138,7 +137,7 @@ class Indexer extends EventTarget {
 					this.triggerEvent('loadTermsError', {
 						code: 'invalid_response',
 						message: 'Server returned empty terms.',
-						...res
+						...res,
 					});
 				} else {
 					this.triggerEvent('loadTermsComplete', res);
@@ -191,25 +190,24 @@ class Indexer extends EventTarget {
 
 		const promise = this.apiFetch(fetchOpts);
 
-		promise
-			.then((res) => {
-				if (res.errors) {
-					this.failures += batch.length;
-					this.triggerEvent('deleteIndexError', res);
-				} else if (!res.success && res.data) {
-					this.failures += batch.length;
-					this.triggerEvent('deleteIndexError', res);
-				} else {
-					this.completed += batch.length;
-				}
+		promise.then((res) => {
+			if (res.errors) {
+				this.failures += batch.length;
+				this.triggerEvent('deleteIndexError', res);
+			} else if (!res.success && res.data) {
+				this.failures += batch.length;
+				this.triggerEvent('deleteIndexError', res);
+			} else {
+				this.completed += batch.length;
+			}
 
-				this.progress += batch.length;
-				this.triggerEvent('deleteIndexProgress', {
-					progress: this.progress,
-					total: this.total,
-					...res,
-				});
+			this.progress += batch.length;
+			this.triggerEvent('deleteIndexProgress', {
+				progress: this.progress,
+				total: this.total,
+				...res,
 			});
+		});
 
 		return promise;
 	}
