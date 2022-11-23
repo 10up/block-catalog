@@ -124,8 +124,8 @@ class RESTSupport {
 
 		foreach ( $terms as $term ) {
 			$output[] = [
-				'id'   => intval( $term->term_id ),
-				'slug' => $term->slug,
+				'id'    => intval( $term->term_id ),
+				'slug'  => $term->slug,
 				'name'  => $term->name,
 				'count' => $term->count,
 			];
@@ -144,9 +144,9 @@ class RESTSupport {
 		\BlockCatalog\Utility\start_bulk_operation();
 
 		$term_ids = $request->get_param( 'term_ids' );
-		$updated = 0;
-		$errors  = 0;
-		$builder = new CatalogBuilder();
+		$updated  = 0;
+		$errors   = 0;
+		$builder  = new CatalogBuilder();
 
 		foreach ( $term_ids as $term_id ) {
 			$result = $builder->delete_term_index( $term_id );
@@ -156,7 +156,7 @@ class RESTSupport {
 			if ( is_wp_error( $result ) ) {
 				$errors++;
 			} else {
-				$updated += 1;
+				$updated++;
 			}
 		}
 
@@ -244,9 +244,9 @@ class RESTSupport {
 		\BlockCatalog\Utility\start_bulk_operation();
 
 		$post_ids = $request->get_param( 'post_ids' );
-		$updated = 0;
-		$errors  = 0;
-		$builder = new CatalogBuilder();
+		$updated  = 0;
+		$errors   = 0;
+		$builder  = new CatalogBuilder();
 
 		foreach ( $post_ids as $post_id ) {
 			$result = $builder->catalog( $post_id );
@@ -310,7 +310,7 @@ class RESTSupport {
 	/**
 	 * Validates the specified term ids.
 	 *
-	 * @param array $post_ids The term ids to validate
+	 * @param array $term_ids The term ids to validate
 	 * @return bool
 	 */
 	public function validate_term_ids( $term_ids ) {
