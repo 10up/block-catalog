@@ -6,6 +6,10 @@ All notable changes to this project will be documented in this file, per [the Ke
 
 - todo
 
+## [1.2.0] - 2022-11-24
+
+- Improves filter output with wp_kses.
+
 ## [1.1.0] - 2022-11-23
 
 - Improves batch indexing for larger sites.
