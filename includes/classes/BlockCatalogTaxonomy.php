@@ -159,8 +159,34 @@ class BlockCatalogTaxonomy {
 
 			$html .= '</select>';
 
-			echo $html; // phpcs:ignore
+			echo wp_kses( $html, $this->get_allowed_html() );
 		}
+	}
+
+	/**
+	 * Returns the list of allowed html within the block catalog filter.
+	 *
+	 * @return array
+	 */
+	public function get_allowed_html() {
+		$allowed = [];
+
+		// select
+		$allowed['select'] = [
+			'class' => [],
+			'id'    => [],
+			'name'  => [],
+			'value' => [],
+			'type'  => [],
+		];
+
+		// select options
+		$allowed['option'] = [
+			'selected' => [],
+			'value'    => [],
+		];
+
+		return $allowed;
 	}
 
 }
