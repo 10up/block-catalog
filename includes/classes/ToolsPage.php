@@ -31,6 +31,12 @@ class ToolsPage {
 	 */
 	public function register_page() {
 		add_submenu_page(
+			/**
+			 * Filters the name of the block catalog parent menu.
+			 *
+			 * @param string $name The parent menu name
+			 * @return string The new parent menu name
+			 */
 			apply_filters( 'block_catalog_tools_page_parent', 'tools.php' ),
 			__( 'Block Catalog', 'block-catalog' ),
 			__( 'Block Catalog', 'block-catalog' ),
@@ -128,7 +134,19 @@ class ToolsPage {
 	public function get_settings() {
 		return [
 			'settings' => [
+				/**
+				 * Filters the number of posts indexed by the block catalog plugin per REST request.
+				 *
+				 * @param int $batch_size The batch size
+				 * @return int The new batch size
+				 */
 				'index_batch_size'        => apply_filters( 'block_catalog_index_batch_size', 50 ),
+				/**
+				 * The number of terms deleted by the block catalog plugin per REST request.
+				 *
+				 * @param int $batch_size The batch size
+				 * @return int The new batch size
+				 */
 				'delete_index_batch_size' => apply_filters( 'block_catalog_delete_index_batch_size', 2 ),
 				'posts_endpoint'          => rest_url( 'block-catalog/v1/posts' ),
 				'index_endpoint'          => rest_url( 'block-catalog/v1/index' ),

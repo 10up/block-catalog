@@ -49,23 +49,18 @@ class BlockCatalogTaxonomy {
 	 * @return bool
 	 */
 	public function register() {
-		/**
-		 * Allow plugins/themes to update options for the block catalog taxonomy.
-		 *
-		 * @param array  $options  Default taxonomy options.
-		 * @param string $name Taxonomy name.
-		 */
-		$options = apply_filters(
-			'block_catalog_taxonomy_options',
-			$this->get_options(),
-		);
-
 		\register_taxonomy(
 			$this->get_name(),
 			\BlockCatalog\Utility\get_supported_post_types(),
 			$options
 		);
 
+		/**
+		 * Filters the availability of the block catalog filter on the post listing screen.
+		 *
+		 * @param bool $enabled The enabled state
+		 * @return bool The new enabled state
+		 */
 		if ( apply_filters( 'block_catalog_filter_enabled', true ) ) {
 			add_action( 'restrict_manage_posts', [ $this, 'render_block_catalog_filter' ], 10000 );
 		}
@@ -90,12 +85,15 @@ class BlockCatalogTaxonomy {
 		);
 
 		/**
-		 * Allows plugins/themes to customize the block catalog taxonomy options.
+		 * Filters the options for the block catalog taxonomy.
 		 *
-		 * @param array $options The taxonomy options
-		 * @return array
+		 * @param array  $options  Default taxonomy options.
+		 * @param string $name Taxonomy name.
+		 * @return array The new taxonomy options
 		 */
-		return apply_filters( 'block_catalog_taxonomy_options', $options );
+		$options = apply_filters( 'block_catalog_taxonomy_options', $options );
+
+		return $options;
 	}
 
 	/**
@@ -136,7 +134,7 @@ class BlockCatalogTaxonomy {
 	public function render_block_catalog_filter() {
 		global $typenow;
 
-		if ( is_object_in_taxonomy( $typenow, BLOCK_CATALOG_TAXONOMY ) ) {
+		if ( ! empty( $typenow ) && is_object_in_taxonomy( $typenow, BLOCK_CATALOG_TAXONOMY ) ) {
 			$selection = isset( $_GET['block-catalog'] ) ? sanitize_text_field( $_GET['block-catalog'] ) : ''; // phpcs:ignore
 
 			$dropdown_args = [
@@ -151,6 +149,14 @@ class BlockCatalogTaxonomy {
 				'show_option_all'  => __( 'All Blocks', 'block-catalog' ),
 				'aria_describedby' => 'parent-description',
 			];
+
+			/**
+			 * Filters the block catalog taxonomy filter dropdown options.
+			 *
+			 * @param array $dropdown_args The dropdown filter options
+			 * @return array The new dropdown filter options
+			 */
+			$dropdown_args = apply_filters( 'block_catalog_filter_dropdown_args', $dropdown_args );
 
 			wp_dropdown_categories( $dropdown_args );
 		}

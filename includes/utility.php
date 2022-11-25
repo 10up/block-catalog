@@ -125,9 +125,10 @@ function get_supported_post_types() {
 	$post_types = array_merge( $post_types, [ 'post', 'page' ] );
 
 	/**
-	 * Allow plugins/themes to update post types for the block catalog taxonomy.
+	 * Filters the post types supported by the block catalog plugin.
 	 *
-	 * @param array  $options  Default post types.
+	 * @param array $options Default post types
+	 * @return array New list of post types
 	 */
 	$post_types = apply_filters(
 		'block_catalog_post_types',
@@ -143,5 +144,11 @@ function get_supported_post_types() {
  * @return string
  */
 function get_required_capability() {
+	/**
+	 * Filters the capability name required to use the block catalog plugin.
+	 *
+	 * @param string $cap The capability name
+	 * @return string The new capability name
+	 */
 	return apply_filters( 'block_catalog_capability', 'edit_posts' );
 }

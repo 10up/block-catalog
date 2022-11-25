@@ -211,10 +211,11 @@ class CatalogBuilder {
 		$terms = array_unique( $terms );
 
 		/**
-		 * Allows plugins/themes to filter the computed list of block terms for a post
+		 * Filters the computed list of block terms for a post.
 		 *
 		 * @param array $terms The computed block terms list
 		 * @param int   $post_id The post id
+		 * @return int The new list of block terms
 		 */
 		$terms = apply_filters( 'block_catalog_post_block_terms', $terms, $post_id );
 
@@ -263,11 +264,11 @@ class CatalogBuilder {
 		$label = $this->get_block_label( $block );
 
 		/**
-		 * Allows plugins/themes to change the term label corresponding to the
-		 * block in the catalog.
+		 * Filters the term label corresponding to the block in the catalog.
 		 *
 		 * @param array $terms The term names corresponding to the block in the catalog
 		 * @param array $block The block data
+		 * @return string
 		 */
 		$label = apply_filters( 'block_catalog_block_term_label', $label, $block );
 
@@ -279,12 +280,14 @@ class CatalogBuilder {
 		}
 
 		/**
-		 * Allows plugins/themes to change the term labels corresponding to the
-		 * block in the catalog. This is useful to build multiple terms from a
-		 * single block. eg:- embed & special-type-of-embed
+		 * Filters the term labels corresponding to the block in the catalog. This
+		 * is useful to build multiple terms from a single block.
+		 *
+		 * eg:- embed & special-type-of-embed
 		 *
 		 * @param array $terms The term names corresponding to the block in the catalog
 		 * @param array $block The block data
+		 * @return array The new list of terms
 		 */
 		$terms = apply_filters( 'block_catalog_block_terms', $terms, $block );
 
@@ -312,11 +315,12 @@ class CatalogBuilder {
 		}
 
 		/**
-		 * Allows plugins/themes to change the block title for the specified block
+		 * Filters the block title for the specified block.
 		 *
 		 * @param string $title The block title
 		 * @param string $name The block name
 		 * @param array  $block The block data
+		 * @return string The new block title
 		 */
 		$title = apply_filters( 'block_catalog_block_title', $title, $name, $block );
 
@@ -354,6 +358,15 @@ class CatalogBuilder {
 			return '';
 		}
 
+		/**
+		 * Filters the namespace label shown on the parent block term.
+		 *
+		 * eg:- core/embed => Core
+		 *
+		 * @param string $namespace The block namespace
+		 * @param string $name The full block name
+		 * @return string
+		 */
 		return apply_filters( 'block_catalog_namespace_label', $namespace, $name );
 	}
 

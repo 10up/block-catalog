@@ -58,6 +58,12 @@ function setup() {
  * @return void
  */
 function i18n() {
+	/**
+	 * Filters the plugin locale
+	 *
+	 * @param string $locale The plugin locale
+	 * @param string $slug The plugin slug
+	 */
 	$locale = apply_filters( 'plugin_locale', get_locale(), 'block-catalog' );
 	load_textdomain( 'block-catalog', WP_LANG_DIR . '/block-catalog/block-catalog-' . $locale . '.mo' );
 	load_plugin_textdomain( 'block-catalog', false, plugin_basename( BLOCK_CATALOG_PLUGIN_PATH ) . '/languages/' );

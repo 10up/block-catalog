@@ -183,6 +183,12 @@ class RESTSupport {
 		$count_query = new \WP_Query( $query_params );
 		$total       = $count_query->found_posts;
 
+		/**
+		 * Filters the number of posts fetched in the paginated ids query.
+		 *
+		 * @param int $page_size The page size
+		 * @return int The new page size
+		 */
 		$page_size   = apply_filters( 'block_catalog_posts_to_index_page_size', 500 );
 		$total_pages = ceil( $total / $page_size );
 
@@ -231,6 +237,13 @@ class RESTSupport {
 			'fields'      => 'ids',
 		];
 
+		/**
+		 * Filters the query params used to lookup the posts to index.
+		 *
+		 * @param array       $query_params The query params
+		 * @param \WP_REST_Request $request The rest request object
+		 * @return array The new query params
+		 */
 		return apply_filters( 'block_catalog_posts_to_index_query_params', $query_params, $request );
 	}
 
