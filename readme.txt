@@ -4,7 +4,7 @@ Tags:              gutenberg, developer, blocks, custom blocks
 Requires at least: 5.7
 Tested up to:      6.1
 Requires PHP:      7.4
-Stable tag:        1.2.2
+Stable tag:        1.3.0
 License:           GPLv2 or later
 License URI:       http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -68,6 +68,13 @@ add_filter( 'block_catalog_block_title', function( $title, $block_name, $block )
 </pre>
 
 == Changelog ==
+
+= 1.3.0 - 2022-11-25 =
+
+- Adds support for hierarchical classification
+- Improves WP CLI find command
+- Adds inline filter hook documentation
+- Updates screenshots
 
 = 1.2.2 - 2022-11-25 =
 

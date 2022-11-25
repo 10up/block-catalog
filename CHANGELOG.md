@@ -6,6 +6,13 @@ All notable changes to this project will be documented in this file, per [the Ke
 
 - todo
 
+## [1.3.0] - 2022-11-25
+
+- Adds support for hierarchical classification
+- Improves WP CLI find command
+- Adds inline filter hook documentation
+- Updates screenshots
+
 ## [1.2.2] - 2022-11-25
 
 - Updates Documentation
