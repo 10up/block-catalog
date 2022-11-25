@@ -36,7 +36,7 @@
 * To install the plugin using [composer](https://getcomposer.org) and [wpackagist](https://wpackagist.org/), add the following to your composer.json.
 
 ```json
-"wpackagist-plugin/block-catalog":"~1.2.0"
+"wpackagist-plugin/block-catalog":"~1.3.1"
 ```
 
 ## Getting Started
