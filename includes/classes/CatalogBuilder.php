@@ -35,7 +35,7 @@ class CatalogBuilder {
 
 			$result = $this->set_post_block_terms( $post_id, $terms );
 
-			return $result;
+			return $terms;
 		} catch ( Exception $e ) {
 			if ( defined( 'WP_CLI' ) && WP_CLI ) {
 				// translators: %1$d is post_id, %2$s is error message
@@ -157,6 +157,10 @@ class CatalogBuilder {
 
 				if ( ! empty( $result ) ) {
 					$term_ids[] = intval( $result->term_id );
+				}
+
+				if ( ! empty( $result->parent ) ) {
+					$term_ids[] = $result->parent;
 				}
 			}
 		}

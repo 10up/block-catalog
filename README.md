@@ -112,10 +112,6 @@ The following WP CLI commands are supported by the Block Catalog plugin.
   * \<post-id\>
     The post id to lookup blocks for.
 
-  * [--index]
-    Where to re-index the post before printing.
-
-
 ## Frequently Asked Questions
 
 ### 1) Why does the Plugin require indexing?

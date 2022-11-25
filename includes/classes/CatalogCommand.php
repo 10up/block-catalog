@@ -246,9 +246,6 @@ class CatalogCommand extends \WP_CLI_Command {
 	 * <post-id>
 	 * : The post id to lookup blocks for.
 	 *
-	 * [--index]
-	 * : Where to re-index the post before printing.
-	 *
 	 * @subcommand post-blocks
 	 * @param array $args Command args
 	 * @param array $opts Command opts
@@ -261,25 +258,22 @@ class CatalogCommand extends \WP_CLI_Command {
 		$post_id = intval( $args[0] );
 
 		$builder = new CatalogBuilder();
+		$builder->catalog( $post_id );
 
-		if ( ! empty( $opts['index'] ) ) {
-			$builder->catalog( $post_id );
-		}
-
-		$blocks = $builder->get_post_block_terms( $post_id, $opts );
+		$blocks = wp_get_object_terms( $post_id, BLOCK_CATALOG_TAXONOMY );
 
 		if ( empty( $blocks ) ) {
 			\WP_CLI::error( __( 'No blocks found.', 'block-catalog' ) );
 		}
 
 		$block_items = array_map(
-			function( $block_name ) {
-				return [ 'Block' => $block_name ];
+			function( $term ) {
+				return [ 'Block' => $term->name, 'ID' => $term->term_id ];
 			},
 			$blocks
 		);
 
-		\WP_CLI\Utils\format_items( 'table', $block_items, [ 'Block' ] );
+		\WP_CLI\Utils\format_items( 'table', $block_items, [ 'ID', 'Block' ] );
 	}
 
 	/**
