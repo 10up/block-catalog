@@ -67,8 +67,11 @@ The following WP CLI commands are supported by the Block Catalog plugin.
 
 	Iterates through all posts and catalogs them one at a time.
 
+  * [--reset]
+    Deletes the previous index before starting.
+
   * [--only=\<only\>]
-    Limits the command to the specified comma delimited post ids
+    Limits the command to the specified comma delimited post ids.
 
   * [--dry-run]
     Runs catalog without saving changes to the DB.
