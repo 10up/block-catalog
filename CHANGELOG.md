@@ -6,6 +6,10 @@ All notable changes to this project will be documented in this file, per [the Ke
 
 - todo
 
+## [1.3.2] - 2022-11-25
+
+- Updates readme.txt
+
 ## [1.3.1] - 2022-11-25
 
 - Minor docs updates

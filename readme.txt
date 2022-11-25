@@ -4,7 +4,7 @@ Tags:              gutenberg, developer, blocks, custom blocks
 Requires at least: 5.7
 Tested up to:      6.1
 Requires PHP:      7.4
-Stable tag:        1.3.1
+Stable tag:        1.3.2
 License:           GPLv2 or later
 License URI:       http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -53,6 +53,10 @@ When the plugin detects such a missing `title`, it uses the `blockName` suffix i
 To address this you need to update your custom block registration. If this is outside your control, you can also use the `block_catalog_block_title` filter hook to [override the title as seen here](https://gist.github.com/dsawardekar/676d0d4c5d7f688351e199fdc54484d6).
 
 == Changelog ==
+
+= 1.3.2 - 2022-11-25 =
+
+- Updates readme.txt
 
 = 1.3.1 - 2022-11-25 =
 
