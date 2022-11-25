@@ -296,7 +296,7 @@ class CatalogBuilder {
 
 		// if we got here, the block is incorrectly registered, try to guess at the name
 		if ( $title === $name ) {
-			$title = ucwords( explode( '/', $title )[1] );
+			$title = ucwords( str_replace( '-', ' ', explode( '/', $title )[1] ) );
 		}
 
 		/**
