@@ -137,56 +137,23 @@ class BlockCatalogTaxonomy {
 		global $typenow;
 
 		if ( is_object_in_taxonomy( $typenow, BLOCK_CATALOG_TAXONOMY ) ) {
-			$term_opts = [
-				'taxonomy'   => BLOCK_CATALOG_TAXONOMY,
-				'hide_empty' => true,
+			$selection = isset( $_GET['block-catalog'] ) ? sanitize_text_field( $_GET['block-catalog'] ) : ''; // phpcs:ignore
+
+			$dropdown_args = [
+				'taxonomy'         => BLOCK_CATALOG_TAXONOMY,
+				'name'             => 'block-catalog',
+				'value_field'      => 'slug',
+				'selected'         => $selection,
+				'orderby'          => 'name',
+				'hierarchical'     => true,
+				'hide_empty'       => 0,
+				'hide_if_empty'    => false,
+				'show_option_all'  => __( 'All Blocks', 'block-catalog' ),
+				'aria_describedby' => 'parent-description',
 			];
 
-			$terms     = get_terms( $term_opts );
-			$selection = isset( $_GET['block-catalog'] ) ? sanitize_text_field( $_GET['block-catalog'] ) : ''; // phpcs:ignore
-			$html      = '<select name="block-catalog" id="block-catalog" class="postform">';
-			$all_label = __( 'All Blocks', 'block-catalog' );
-			$html     .= sprintf( '<option %s value="">%s</option>', selected( $selection, '', false ), esc_attr( $all_label ) );
-
-			foreach ( $terms as $term ) {
-				$html .= sprintf(
-					'<option %s value="%s">%s</option>',
-					selected( $selection, $term->slug, false ),
-					esc_attr( $term->slug ),
-					esc_attr( $term->name )
-				);
-			}
-
-			$html .= '</select>';
-
-			echo wp_kses( $html, $this->get_allowed_html() );
+			wp_dropdown_categories( $dropdown_args );
 		}
-	}
-
-	/**
-	 * Returns the list of allowed html within the block catalog filter.
-	 *
-	 * @return array
-	 */
-	public function get_allowed_html() {
-		$allowed = [];
-
-		// select
-		$allowed['select'] = [
-			'class' => [],
-			'id'    => [],
-			'name'  => [],
-			'value' => [],
-			'type'  => [],
-		];
-
-		// select options
-		$allowed['option'] = [
-			'selected' => [],
-			'value'    => [],
-		];
-
-		return $allowed;
 	}
 
 }
