@@ -7,7 +7,8 @@
 ## Table of Contents
 * [Features](#features)
 * [Requirements](#requirements)
-* [Installation via GitHub](#installation-via-github)
+* [Installation](#installation)
+* [Getting Started](#getting-started)
 * [WP CLI Commands](#wp-cli-commands)
 * [FAQs](#frequently-asked-questions)
 * [Support](#support-level)
@@ -28,15 +29,17 @@
 * PHP 7.4+
 * [WordPress](http://wordpress.org) 5.7+
 
+## Installation
 
-## Installation via GitHub
+* Block Catalog can be installed like any other plugin from the [WordPress.org plugin directory](https://wordpress.org/plugins/block-catalog).
+* You can also install the plugin manually by [downloading a zip file](https://github.com/10up/block-catalog/releases/latest).
+* To install the plugin using [composer](https://getcomposer.org) and [wpackagist](https://wpackagist.org/), add the following to your composer.json.
 
-#### 1. Download or Clone this repo, install dependencies and build.
-
-- `git clone https://github.com/10up/block-catalog.git && cd block-catalog`
-- `composer install && npm install && npm run build`
-
-#### 2. Activate Plugin
+```json
+{
+	"wpackagist-plugin/block-catalog":"~1.2.0"
+}
+```
 
 ## Getting Started
 
