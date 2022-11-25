@@ -95,6 +95,7 @@ class CatalogBuilder {
 
 		if ( $is_cli ) {
 			if ( ! empty( $removed ) ) {
+				/* translators: %d is number of catalog terms removed */
 				\WP_CLI::success( sprintf( __( 'Removed %d block catalog term(s).', 'block-catalog' ), $removed ) );
 			} else {
 				\WP_CLI::warning( __( 'No block catalog terms to remove.', 'block-catalog' ) );
@@ -143,7 +144,7 @@ class CatalogBuilder {
 
 				if ( ! empty( $parent_id ) ) {
 					$term_args['parent'] = $parent_id;
-					$term_ids[] = $parent_id;
+					$term_ids[]          = $parent_id;
 				}
 
 				$result = wp_insert_term( $label, BLOCK_CATALOG_TAXONOMY, $term_args );
@@ -329,7 +330,7 @@ class CatalogBuilder {
 	 * @return string
 	 */
 	public function get_display_title( $title ) {
-		$title = str_replace( '-', ' ' , $title );
+		$title = str_replace( '-', ' ', $title );
 		$title = ucwords( $title );
 
 		return $title;
@@ -346,7 +347,7 @@ class CatalogBuilder {
 			return __( 'Reusable block', 'block-catalog' );
 		}
 
-		$parts = explode( '/', $name );
+		$parts     = explode( '/', $name );
 		$namespace = $parts[0] ?? '';
 
 		if ( empty( $namespace ) ) {
