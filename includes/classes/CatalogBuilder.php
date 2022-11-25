@@ -354,7 +354,7 @@ class CatalogBuilder {
 			return '';
 		}
 
-		return $namespace;
+		return apply_filters( 'block_catalog_namespace_label', $namespace, $name );
 	}
 
 	/**
