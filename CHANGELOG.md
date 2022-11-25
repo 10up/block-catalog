@@ -6,6 +6,10 @@ All notable changes to this project will be documented in this file, per [the Ke
 
 - todo
 
+## [1.3.1] - 2022-11-25
+
+- Minor docs updates
+
 ## [1.3.0] - 2022-11-25
 
 - Adds support for hierarchical classification

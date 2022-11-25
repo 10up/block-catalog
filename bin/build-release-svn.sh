@@ -11,6 +11,7 @@ rsync \
 	--exclude ".*" \
 	--exclude "package*.json" \
 	--exclude "phpcs*" \
+	--exclude "assets" \
 	. releases/svn/trunk
 
 rsync \
