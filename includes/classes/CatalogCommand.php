@@ -224,16 +224,18 @@ class CatalogCommand extends \WP_CLI_Command {
 		$query = new \WP_Query( $query_params );
 		$posts = $query->posts;
 
-		if ( ! empty( $opts['count'] ) ) {
+		if ( ! empty( $opts['count'] ) && ! empty( $posts ) ) {
 			// translators: %d is number of found posts
 			\WP_CLI::success( sprintf( __( 'Found %d post(s)', 'block-catalog' ), $query->found_posts ) );
 		}
 
 		if ( empty( $posts ) ) {
-			\WP_CLI::error( __( 'No posts found.', 'block-catalog' ) );
+			\WP_CLI::warning( __( 'No posts found.', 'block-catalog' ) );
 		}
 
-		\WP_CLI\Utils\format_items( $opts['format'], $posts, $opts['fields'] );
+		if ( ! empty( $posts ) ) {
+			\WP_CLI\Utils\format_items( $opts['format'], $posts, $opts['fields'] );
+		}
 	}
 
 	/**
