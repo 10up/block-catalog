@@ -268,7 +268,10 @@ class CatalogCommand extends \WP_CLI_Command {
 
 		$block_items = array_map(
 			function( $term ) {
-				return [ 'Block' => $term->name, 'ID' => $term->term_id ];
+				return [
+					'Block' => $term->name,
+					'ID'    => $term->term_id,
+				];
 			},
 			$blocks
 		);
