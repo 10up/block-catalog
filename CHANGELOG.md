@@ -6,6 +6,11 @@ All notable changes to this project will be documented in this file, per [the Ke
 
 - todo
 
+## [1.2.1] - 2022-11-25
+
+- Improves block title detection when default title is missing.
+- Initial svn release
+
 ## [1.2.0] - 2022-11-24
 
 - Improves filter output with wp_kses.
