@@ -6,6 +6,10 @@ All notable changes to this project will be documented in this file, per [the Ke
 
 - todo
 
+## [1.2.2] - 2022-11-25
+
+- Updates Documentation
+
 ## [1.2.1] - 2022-11-25
 
 - Improves block title detection when default title is missing.
