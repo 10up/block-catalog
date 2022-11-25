@@ -52,7 +52,7 @@ class BlockCatalogTaxonomy {
 		\register_taxonomy(
 			$this->get_name(),
 			\BlockCatalog\Utility\get_supported_post_types(),
-			$options
+			$this->get_options()
 		);
 
 		/**
