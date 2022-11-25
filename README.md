@@ -51,7 +51,7 @@ Once indexed, you will be able to see the different blocks used on your site in 
 
 ![Screenshot of Block Catalog Terms](assets/screenshot-2.png)
 
-Navigating to an Block Editor post type will also show you the list of blocks present in a post.
+Navigating to any Block Editor post type will also show you the list of blocks present in a post.
 
 ![Screenshot of Post listing with Blocks](assets/screenshot-3.png)
 

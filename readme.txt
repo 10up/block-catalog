@@ -1,6 +1,6 @@
 === Block Catalog ===
 Contributors:      dsawardekar, 10up
-Tags:              Easily keep track of which Gutenberg Blocks are used across your site.
+Tags:              gutenberg, developer, blocks, custom blocks
 Requires at least: 5.7
 Tested up to:      6.1
 Requires PHP:      7.4
@@ -10,7 +10,7 @@ License URI:       http://www.gnu.org/licenses/gpl-2.0.html
 
 Easily keep track of which Gutenberg Blocks are used across your site.
 
-== Features ==
+== Description ==
 
 * Find which blocks are used across your site.
 * Fully Integrated with the WordPress Admin.
@@ -18,6 +18,8 @@ Easily keep track of which Gutenberg Blocks are used across your site.
 * Find Posts that use Reusable Blocks.
 * Use the WP CLI to quickly find blocks from the command line.
 * Use custom WordPress filters to extend the Block Catalog.
+
+[Fork on GitHub](https://github.com/10up/block-catalog)
 
 == Screenshots ==
 
@@ -32,7 +34,7 @@ Easily keep track of which Gutenberg Blocks are used across your site.
 
 2. Once indexed, you will be able to see the different blocks used on your site in the Block Catalog Taxonomy.
 
-3. Navigating to an Block Editor post type will also show you the list of blocks present in a post.
+3. Navigating to any Block Editor post type will also show you the list of blocks present in a post.
 
 4. You can also filter the listing to only show Posts that have a specific block.
 
@@ -67,22 +69,23 @@ add_filter( 'block_catalog_block_title', function( $title, $block_name, $block )
 
 == Changelog ==
 
-## [1.2.1] - 2022-11-25
+= 1.2.1 - 2022-11-25 =
 
 - Improves block title detection when default title is missing.
 - Initial svn release
 
-## [1.2.0] - 2022-11-24
+= 1.2.0 - 2022-11-24 =
 
 - Improves filter output with wp_kses.
 
-## [1.1.0] - 2022-11-23
+= 1.1.0 - 2022-11-23 =
 
 - Improves batch indexing for larger sites.
-- Refactor delete index use batch mode.
+- Refactor delete index to use batch mode.
 - Improves error handling during indexing & deleting via WP-Admin.
 
-## [1.0.1] - 2022-11-21
+= 1.0.1 - 2022-11-21 =
 
 - Initial release
+
 

@@ -18,7 +18,7 @@ All notable changes to this project will be documented in this file, per [the Ke
 ## [1.1.0] - 2022-11-23
 
 - Improves batch indexing for larger sites.
-- Refactor delete index use batch mode.
+- Refactor delete index to use batch mode.
 - Improves error handling during indexing & deleting via WP-Admin.
 
 ## [1.0.1] - 2022-11-21
