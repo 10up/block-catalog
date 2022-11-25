@@ -1,5 +1,5 @@
 === Block Catalog ===
-Contributors:      Darshan Sawardekar, 10up
+Contributors:      dsawardekar, 10up
 Tags:              Easily keep track of which Gutenberg Blocks are used across your site.
 Requires at least: 5.7
 Tested up to:      6.1
