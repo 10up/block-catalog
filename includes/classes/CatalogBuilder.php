@@ -95,7 +95,7 @@ class CatalogBuilder {
 
 		if ( $is_cli ) {
 			if ( ! empty( $removed ) ) {
-				\WP_CLI::success( sprintf( 'Removed %d block catalog term(s).', 'block-catalog' ), $removed );
+				\WP_CLI::success( sprintf( __( 'Removed %d block catalog term(s).', 'block-catalog' ), $removed ) );
 			} else {
 				\WP_CLI::warning( __( 'No block catalog terms to remove.', 'block-catalog' ) );
 			}
@@ -138,6 +138,13 @@ class CatalogBuilder {
 				$term_args = [
 					'slug' => $slug,
 				];
+
+				$parent_id = $this->get_block_parent_term( $slug );
+
+				if ( ! empty( $parent_id ) ) {
+					$term_args['parent'] = $parent_id;
+					$term_ids[] = $parent_id;
+				}
 
 				$result = wp_insert_term( $label, BLOCK_CATALOG_TAXONOMY, $term_args );
 
@@ -263,11 +270,11 @@ class CatalogBuilder {
 		 */
 		$label = apply_filters( 'block_catalog_block_term_label', $label, $block );
 
-		$terms[ $block['blockName'] ] = $label;
-
 		if ( ! empty( $block['attrs']['ref'] ) ) {
 			$reusable_slug           = 're-' . intval( $block['attrs']['ref'] );
-			$terms[ $reusable_slug ] = get_the_title( $block['attrs']['ref'] ) . ' - Reusable';
+			$terms[ $reusable_slug ] = get_the_title( $block['attrs']['ref'] );
+		} else {
+			$terms[ $block['blockName'] ] = $label;
 		}
 
 		/**
@@ -294,9 +301,13 @@ class CatalogBuilder {
 		$registered = \WP_Block_Type_Registry::get_instance()->get_registered( $name );
 		$title      = ! empty( $registered->title ) ? $registered->title : $block['blockName'];
 
+		$parts       = explode( '/', $name );
+		$namespace   = $parts[0] ?? '';
+		$short_title = $parts[1] ?? __( 'Untitled', 'block-catalog' );
+
 		// if we got here, the block is incorrectly registered, try to guess at the name
 		if ( $title === $name ) {
-			$title = ucwords( str_replace( '-', ' ', explode( '/', $title )[1] ) );
+			$title = $this->get_display_title( $short_title );
 		}
 
 		/**
@@ -306,7 +317,71 @@ class CatalogBuilder {
 		 * @param string $name The block name
 		 * @param array  $block The block data
 		 */
-		return apply_filters( 'block_catalog_block_title', $title, $name, $block );
+		$title = apply_filters( 'block_catalog_block_title', $title, $name, $block );
+
+		return $title;
 	}
 
+	/**
+	 * Converts phrase to display label.
+	 *
+	 * @param string $title The title string
+	 * @return string
+	 */
+	public function get_display_title( $title ) {
+		$title = str_replace( '-', ' ' , $title );
+		$title = ucwords( $title );
+
+		return $title;
+	}
+
+	/**
+	 * Returns the name of the parent term from the full block name.
+	 *
+	 * @param string $name The full block name
+	 * @return string
+	 */
+	public function get_block_parent_name( $name ) {
+		if ( 0 === stripos( $name, 're-' ) ) {
+			return __( 'Reusable block', 'block-catalog' );
+		}
+
+		$parts = explode( '/', $name );
+		$namespace = $parts[0] ?? '';
+
+		if ( empty( $namespace ) ) {
+			return '';
+		}
+
+		return $namespace;
+	}
+
+	/**
+	 * Returns the parent term id of the specified term.
+	 *
+	 * @param string $name The full block name
+	 * @return int|false
+	 */
+	public function get_block_parent_term( $name ) {
+		$name = $this->get_block_parent_name( $name );
+
+		if ( empty( $name ) ) {
+			return false;
+		}
+
+		$name   = $this->get_display_title( $name );
+		$result = get_term_by( 'name', $name, BLOCK_CATALOG_TAXONOMY );
+
+		if ( ! empty( $result ) ) {
+			return intval( $result->term_id );
+		}
+
+		$result = wp_insert_term( $name, BLOCK_CATALOG_TAXONOMY, [] );
+
+		if ( ! is_wp_error( $result ) ) {
+			return intval( $result['term_id'] );
+		}
+
+		return false;
+	}
 }

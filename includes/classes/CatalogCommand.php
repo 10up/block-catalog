@@ -18,7 +18,10 @@ class CatalogCommand extends \WP_CLI_Command {
 	 * ## OPTIONS
 	 *
 	 * [--only=<only>]
-	 * : Limits the command to the specified comma delimited post ids
+	 * : Limits the command to the specified comma delimited post ids.
+	 *
+	 * [--reset]
+	 * : Deletes the previous index before indexing. Default false.
 	 *
 	 * [--dry-run]
 	 * : Runs catalog without saving changes to the DB.
@@ -30,9 +33,14 @@ class CatalogCommand extends \WP_CLI_Command {
 		\BlockCatalog\Utility\start_bulk_operation();
 
 		$dry_run = ! empty( $opts['dry-run'] );
+		$reset   = ! empty( $opts['reset'] );
 
 		if ( $dry_run ) {
 			\WP_CLI::warning( __( 'Running in Dry Run Mode, changes will not be saved ...', 'block-catalog' ) );
+		}
+
+		if ( ! $dry_run && $reset ) {
+			$this->delete_index();
 		}
 
 		$post_ids = $this->get_posts_to_catalog( $opts );
@@ -92,7 +100,7 @@ class CatalogCommand extends \WP_CLI_Command {
 	 * @param array $args Command args
 	 * @param array $opts Command opts
 	 */
-	public function deleteIndex( $args = [], $opts = [] ) {
+	public function delete_index( $args = [], $opts = [] ) {
 		$builder = new CatalogBuilder();
 		$builder->delete_index( $opts );
 	}
