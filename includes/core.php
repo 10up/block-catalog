@@ -256,3 +256,21 @@ function script_loader_tag( $tag, $handle ) {
 
 	return $tag;
 }
+
+/**
+ * Registers Block variations by classnames.
+ *
+ * @param array $variations The class variations array
+ */
+function register_block_variations_by_class( $variations ) {
+	CatalogBuilder::register_class_variations( $variations );
+}
+
+/**
+ * Registers Block variations by attributes
+ *
+ * @param array $variations The attr variations array
+ */
+function register_block_variations_by_attr( $variations ) {
+	CatalogBuilder::register_attr_variations( $variations );
+}

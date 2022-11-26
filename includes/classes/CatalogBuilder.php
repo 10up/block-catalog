@@ -13,6 +13,45 @@ namespace BlockCatalog;
 class CatalogBuilder {
 
 	/**
+	 * The registered class variations
+	 *
+	 * @var array
+	 */
+	static public $class_variations = [];
+
+	/**
+	 * The registered attr variations
+	 *
+	 * @var array
+	 */
+	static public $attr_variations = [];
+
+	/**
+	 * Saves the class variations for later use.
+	 *
+	 * @param array $variations The class variations array
+	 */
+	static public function register_class_variations( $variations = [] ) {
+		self::$class_variations = array_merge( self::$class_variations, $variations );
+	}
+
+	/**
+	 * Saves the attr variations for later use.
+	 *
+	 * @param array $variations The attr variations array
+	 */
+	static public function register_attr_variations( $variations = [] ) {
+		self::$attr_variations = array_merge( self::$attr_variations, $variations );
+	}
+
+	/**
+	 * Stores the parent_ids of the block variations by slug.
+	 *
+	 * @var array
+	 */
+	static public $variation_parent_ids = [];
+
+	/**
 	 * Catalog's a post based on it's current content.
 	 *
 	 * @param int   $post_id The post id.
@@ -140,7 +179,11 @@ class CatalogBuilder {
 					'slug' => $slug,
 				];
 
-				$parent_id = $this->get_block_parent_term( $slug );
+				if ( ! empty( self::$variation_parent_ids[ $slug ] ) ) {
+					$parent_id = self::$variation_parent_ids[ $slug ];
+				} else {
+					$parent_id = $this->get_block_parent_term( $slug );
+				}
 
 				if ( ! empty( $parent_id ) ) {
 					$term_args['parent'] = $parent_id;
@@ -283,6 +326,24 @@ class CatalogBuilder {
 			$terms[ $block['blockName'] ] = $label;
 		}
 
+		$variations = $this->get_block_variations( $block, $label );
+
+		if ( ! empty( $variations ) ) {
+			$terms = array_merge( $terms, $variations );
+		}
+
+		$class_variations = $this->get_block_variations_by_class( $block, $label );
+
+		if ( ! empty( $class_variations ) ) {
+			$terms = array_merge( $terms, $class_variations );
+		}
+
+		$attr_variations = $this->get_block_variations_by_attr( $block, $label );
+
+		if ( ! empty( $attr_variations ) ) {
+			$terms = array_merge( $terms, $attr_variations );
+		}
+
 		/**
 		 * Filters the term labels corresponding to the block in the catalog. This
 		 * is useful to build multiple terms from a single block.
@@ -402,4 +463,111 @@ class CatalogBuilder {
 
 		return false;
 	}
+
+	/**
+	 * Returns the variations of a block if present.
+	 *
+	 * @param array $block The block data
+	 * @param string $label The block term label
+	 * @return array
+	 */
+	public function get_block_variations( $block, $label ) {
+		/**
+		 * Filters the list of block variations derived from the block data.
+		 *
+		 * @param array $variations The names of the variations
+		 * @param array $block The block data
+		 * @return array The new block variation names
+		 */
+		return apply_filters( 'block_catalog_block_variations', [], $block, $label );
+	}
+
+	/**
+	 * Returns the variations of a block based on className.
+	 *
+	 * @param array  $block The block data
+	 * @param string $label The block term label
+	 * @return array
+	 */
+	public function get_block_variations_by_class( $block, $label ) {
+		$variations = [];
+		$class_list = ! empty( $block['attrs']['className'] ) ? $block['attrs']['className'] : '';
+
+		if ( ! empty( self::$class_variations ) ) {
+			foreach ( self::$class_variations as $class_name => $label ) {
+				if ( false !== stripos( $class_list, $class_name ) ) {
+					$slug                = $block['blockName'] . '-' . $class_name;
+					$variations[ $slug ] = $label;
+				}
+			}
+		}
+
+		/**
+		 * Filters the list of block variations derived from the block data.
+		 *
+		 * @param array $variations The names of the variations
+		 * @param array $block The block data
+		 * @return array The new block variation names
+		 */
+		return apply_filters( 'block_catalog_block_variations_by_class', $variations, $class_list, $block );
+	}
+
+	/**
+	 * Returns the variations of a block based on attribute values.
+	 *
+	 * @param array $block The block data
+	 * @param string $label The block term label
+	 * @return array
+	 */
+	public function get_block_variations_by_attr( $block, $label ) {
+		$variations = [];
+		$attrs      = ! empty( $block['attrs'] ) ? $block['attrs'] : [];
+
+		if ( ! empty( self::$attr_variations ) ) {
+			foreach ( self::$attr_variations as $block_name => $attr_keys ) {
+				if ( $block_name !== $block['blockName'] ) {
+					continue;
+				}
+
+				$slug = $block['blockName'];
+
+				if ( is_string( $attr_keys ) ) {
+					$attr_keys = [ $attr_keys ];
+				}
+
+				if ( empty( $attr_keys ) ) {
+					continue;
+				}
+
+				foreach ( $attr_keys as $attr_key ) {
+					if ( ! empty( $attrs[ $attr_key ] ) ) {
+						$attr_value = $attrs[ $attr_key ];
+
+						if ( is_bool( $attr_value ) ) {
+							$attr_value = $attr_value ? 'true' : 'false';
+						}
+
+						if ( is_scalar( $attr_value ) ) {
+							$slug .= '-' . $attr_key . '-' . $attr_value;
+							$variations[ $slug ] = "${label} - ${attr_key}: $attr_value";
+
+							if ( empty( self::$variation_parent_ids[ $block['blockName'] ] ) ) {
+								self::$variation_parent_ids[ $slug ] = $this->get_block_parent_term( $block['blockName'] );
+							}
+						}
+					}
+				}
+			}
+		}
+
+		/**
+		 * Filters the list of block variations derived from the block data.
+		 *
+		 * @param array $variations The names of the variations
+		 * @param array $block The block data
+		 * @return array The new block variation names
+		 */
+		return apply_filters( 'block_catalog_block_variations_by_class', $variations, $class_list, $block );
+	}
+
 }
