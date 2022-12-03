@@ -202,4 +202,209 @@ class CatalogBuilderTest extends \WP_UnitTestCase {
 		$this->assertEquals( $expected, $actual['terms'] );
 	}
 
+	function test_it_can_build_nested_post_block_terms() {
+		$content = file_get_contents( FIXTURES_DIR . '/nested-blocks.html' );
+		$post_id = $this->factory->post->create( [ 'post_content' => $content ] );
+
+		$actual = $this->builder->get_post_block_terms( $post_id );
+		$expected = [
+			'core/column'    => 'Column',
+			'core/columns'   => 'Columns',
+			'core/list'      => 'List',
+			'core/list-item' => 'List item',
+			'core/paragraph' => 'Paragraph',
+			'core/quote'     => 'Quote',
+		];
+
+		$this->assertEquals( $expected, $actual['terms'] );
+	}
+
+	function test_it_can_build_block_variation_terms() {
+		add_filter( 'block_catalog_block_variations', function( $variations, $block ) {
+			if ( 'core/heading' === $block['blockName'] ) {
+				$level = ! empty( $block['attrs']['level'] ) ? 'h' . $block['attrs']['level'] : 'h2';
+				return [ $level ];
+			}
+
+			return $variations;
+		}, 10, 2 );
+
+		$content = file_get_contents( FIXTURES_DIR . '/all-headings.html' );
+		$post_id = $this->factory->post->create( [ 'post_content' => $content ] );
+
+		$actual = $this->builder->get_post_block_terms( $post_id );
+		$expected = [
+			[ 'h1' ],
+			[ 'h2' ],
+			[ 'h3' ],
+			[ 'h4' ],
+			[ 'h5' ],
+			[ 'h6' ],
+		];
+
+		$this->assertEquals( $expected, array_column( $actual['variations'], 'terms' ) );
+	}
+
+	function test_it_can_set_post_block_terms() {
+		$content = file_get_contents( FIXTURES_DIR . '/all-headings.html' );
+		$post_id = $this->factory->post->create( [ 'post_content' => $content ] );
+
+		$terms = $this->builder->get_post_block_terms( $post_id );
+		$this->builder->set_post_block_terms( $post_id, $terms );
+
+		$actual = wp_get_object_terms( $post_id, BLOCK_CATALOG_TAXONOMY, [ 'fields' => 'names' ] );
+
+		$this->assertContains( 'Core', $actual );
+		$this->assertContains( 'Heading', $actual );
+		$this->assertNotContains( 'Paragraph', $actual );
+	}
+
+	function test_it_can_set_nested_post_block_terms() {
+		$content = file_get_contents( FIXTURES_DIR . '/nested-blocks.html' );
+		$post_id = $this->factory->post->create( [ 'post_content' => $content ] );
+
+		$terms = $this->builder->get_post_block_terms( $post_id );
+		$this->builder->set_post_block_terms( $post_id, $terms );
+
+		$actual = wp_get_object_terms( $post_id, BLOCK_CATALOG_TAXONOMY, [ 'fields' => 'names' ] );
+
+		$this->assertContains( 'Column', $actual );
+		$this->assertContains( 'Columns', $actual );
+		$this->assertContains( 'List', $actual );
+		$this->assertContains( 'List item', $actual );
+		$this->assertContains( 'Paragraph', $actual );
+		$this->assertContains( 'Quote', $actual );
+		$this->assertContains( 'Core', $actual );
+	}
+
+	function test_it_can_set_post_block_terms_with_variations() {
+		add_filter( 'block_catalog_block_variations', function( $variations, $block ) {
+			if ( 'core/heading' === $block['blockName'] ) {
+				$level = ! empty( $block['attrs']['level'] ) ? 'h' . $block['attrs']['level'] : 'h2';
+				return [ $level ];
+			}
+
+			return $variations;
+		}, 10, 2 );
+
+		$content = file_get_contents( FIXTURES_DIR . '/all-headings.html' );
+		$post_id = $this->factory->post->create( [ 'post_content' => $content ] );
+
+		$terms = $this->builder->get_post_block_terms( $post_id );
+		$this->builder->set_post_block_terms( $post_id, $terms );
+
+		$actual = wp_get_object_terms( $post_id, BLOCK_CATALOG_TAXONOMY, [ 'fields' => 'names' ] );
+
+		$this->assertContains( 'Core', $actual );
+		$this->assertContains( 'Heading', $actual );
+		$this->assertContains( 'h1', $actual );
+		$this->assertContains( 'h2', $actual );
+		$this->assertContains( 'h3', $actual );
+		$this->assertContains( 'h4', $actual );
+		$this->assertContains( 'h5', $actual );
+		$this->assertContains( 'h6', $actual );
+
+		$parent = get_term_by( 'slug', 'core', BLOCK_CATALOG_TAXONOMY );
+		$child  = get_term_by( 'slug', 'core/heading', BLOCK_CATALOG_TAXONOMY );
+
+		$this->assertEquals( $child->parent, $parent->term_id );
+
+		$parent = get_term_by( 'slug', 'core/heading', BLOCK_CATALOG_TAXONOMY );
+		$child  = get_term_by( 'slug', 'core/heading-h1', BLOCK_CATALOG_TAXONOMY );
+
+		$this->assertEquals( $child->parent, $parent->term_id );
+	}
+
+	function test_it_can_clear_post_block_terms() {
+		$content = file_get_contents( FIXTURES_DIR . '/nested-blocks.html' );
+		$post_id = $this->factory->post->create( [ 'post_content' => $content ] );
+
+		$terms = $this->builder->get_post_block_terms( $post_id );
+		$this->builder->set_post_block_terms( $post_id, $terms );
+
+		$actual = wp_get_object_terms( $post_id, BLOCK_CATALOG_TAXONOMY, [ 'fields' => 'names' ] );
+
+		$this->assertNotEmpty( $actual );
+
+		wp_update_post( [ 'ID' => $post_id, 'post_content' => ' ' ] );
+
+		$terms = $this->builder->get_post_block_terms( $post_id );
+		$this->builder->set_post_block_terms( $post_id, $terms );
+
+		$actual = wp_get_object_terms( $post_id, BLOCK_CATALOG_TAXONOMY, [ 'fields' => 'names' ] );
+		$this->assertEmpty( $actual );
+	}
+
+	function test_it_can_delete_one_block_catalog_term() {
+		$content = file_get_contents( FIXTURES_DIR . '/nested-blocks.html' );
+		$post_id = $this->factory->post->create( [ 'post_content' => $content ] );
+
+		$terms = $this->builder->get_post_block_terms( $post_id );
+		$this->builder->set_post_block_terms( $post_id, $terms );
+
+		$term = get_term_by( 'slug', 'core/quote', BLOCK_CATALOG_TAXONOMY );
+		$this->builder->delete_term_index( $term->term_id );
+
+		$actual = wp_get_object_terms( $post_id, BLOCK_CATALOG_TAXONOMY, [ 'fields' => 'names' ] );
+
+		$this->assertContains( 'Core', $actual );
+		$this->assertNotContains( 'Quote', $actual );
+	}
+
+	function test_it_can_catalog_post_without_blocks() {
+		$total = 5;
+
+		for ( $i = 0; $i < $total; $i++ ) {
+			$post_id = $this->factory->post->create( [ 'post_content' => '' ] );
+			$this->builder->catalog( $post_id );
+		}
+
+		$actual = wp_get_object_terms( $post_id, BLOCK_CATALOG_TAXONOMY, [ 'fields' => 'names' ] );
+		$this->assertEmpty( $actual );
+	}
+
+	function test_it_can_catalog_post_with_blocks() {
+		$total = 5;
+
+		for ( $i = 0; $i < $total; $i++ ) {
+			$content = file_get_contents( FIXTURES_DIR . '/all-headings.html' );
+			$post_id = $this->factory->post->create( [ 'post_content' => $content ] );
+			$this->builder->catalog( $post_id );
+		}
+
+		$actual = get_term_by( 'slug', 'core', BLOCK_CATALOG_TAXONOMY );
+		$this->assertEquals( 5, $actual->count );
+	}
+
+	function test_it_can_catalog_post_with_nested_blocks() {
+		$total = 5;
+
+		for ( $i = 0; $i < $total; $i++ ) {
+			$content = file_get_contents( FIXTURES_DIR . '/nested-blocks.html' );
+			$post_id = $this->factory->post->create( [ 'post_content' => $content ] );
+			$this->builder->catalog( $post_id );
+		}
+
+		$actual = get_term_by( 'slug', 'core', BLOCK_CATALOG_TAXONOMY );
+		$this->assertEquals( 5, $actual->count );
+
+		$actual = get_term_by( 'slug', 'core/columns', BLOCK_CATALOG_TAXONOMY );
+		$this->assertEquals( 5, $actual->count );
+	}
+
+	function test_it_can_delete_block_catalog_index() {
+		$total = 5;
+
+		for ( $i = 0; $i < $total; $i++ ) {
+			$content = file_get_contents( FIXTURES_DIR . '/nested-blocks.html' );
+			$post_id = $this->factory->post->create( [ 'post_content' => $content ] );
+
+			$this->builder->catalog( $post_id );
+		}
+
+		$this->builder->delete_index();
+
+		$actual = get_terms( [ 'taxonomy' => BLOCK_CATALOG_TAXONOMY ] );
+		$this->assertEmpty( $actual );
+	}
 }

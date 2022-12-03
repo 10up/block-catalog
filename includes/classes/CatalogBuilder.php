@@ -7,15 +7,6 @@
 
 namespace BlockCatalog;
 
-add_filter( 'block_catalog_block_variations', function( $variations, $block ) {
-	if ( 'core/heading' === $block['blockName'] ) {
-		$level = ! empty( $block['attrs']['level'] ) ? 'h' . $block['attrs']['level'] : 'h2';
-		return [ $level ];
-	}
-
-	return $variations;
-}, 10, 2 );
-
 /**
  * CatalogBuilder generates a list of Block terms for a post.
  */
