@@ -69,7 +69,7 @@ class CatalogCommand extends \WP_CLI_Command {
 			if ( is_wp_error( $result ) ) {
 				$errors++;
 			} else {
-				$updated += count( $result );
+				$updated += count( $result['terms'] ?? [] );
 			}
 		}
 
