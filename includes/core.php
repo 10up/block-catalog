@@ -35,14 +35,6 @@ function setup() {
 		\WP_CLI::add_command( 'block-catalog', '\BlockCatalog\CatalogCommand' );
 	}
 
-	wp_register_script(
-		'block_catalog_plugin_tools',
-		script_url( 'tools', 'admin' ),
-		[ 'wp-api-fetch', 'wp-polyfill', 'wp-i18n' ],
-		BLOCK_CATALOG_PLUGIN_VERSION,
-		true
-	);
-
 	$tools_page = new ToolsPage();
 	$tools_page->register();
 

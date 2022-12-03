@@ -122,7 +122,14 @@ class ToolsPage {
 
 		<?php
 
-		wp_enqueue_script( 'block_catalog_plugin_tools' );
+		wp_enqueue_script(
+			'block_catalog_plugin_tools',
+			script_url( 'tools', 'admin' ),
+			[ 'wp-api-fetch', 'wp-polyfill', 'wp-i18n' ],
+			BLOCK_CATALOG_PLUGIN_VERSION,
+			true
+		);
+
 		wp_localize_script( 'block_catalog_plugin_tools', 'block_catalog', $this->get_settings() );
 	}
 
