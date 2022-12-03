@@ -16,7 +16,7 @@ class RESTSupport {
 	 * Registers with WordPress REST api.
 	 */
 	public function register() {
-		add_action( 'rest_api_init', [ $this, 'register_endpoint' ] );
+		add_action( 'rest_api_init', [ $this, 'register_endpoints' ] );
 	}
 
 	/**
@@ -31,7 +31,7 @@ class RESTSupport {
 	/**
 	 * Registes the REST endpoint with WP.
 	 */
-	public function register_endpoint() {
+	public function register_endpoints() {
 		register_rest_route(
 			'block-catalog/v1',
 			'/posts/',
@@ -108,7 +108,6 @@ class RESTSupport {
 	 * @return array
 	 */
 	public function get_terms() {
-
 		$term_opts = [
 			'taxonomy'   => BLOCK_CATALOG_TAXONOMY,
 			'hide_empty' => false,
