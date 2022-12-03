@@ -7,6 +7,8 @@ class BlockCatalogTaxonomyTest extends \WP_UnitTestCase {
 	public $taxonomy;
 
 	function setUp() {
+		parent::setUp();
+
 		$this->taxonomy = new BlockCatalogTaxonomy();
 	}
 
