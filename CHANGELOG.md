@@ -6,6 +6,14 @@ All notable changes to this project will be documented in this file, per [the Ke
 
 - todo
 
+## [1.4.0] - 2022-12-03
+
+- Improves Core Block Display Titles logic
+- Fixes parent term for blocks registered without namespace
+- Improve Reusable Block detection
+- Add hooks to support nested variations
+- Adds unit tests
+
 ## [1.3.2] - 2022-11-25
 
 - Updates readme.txt
