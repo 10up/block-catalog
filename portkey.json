@@ -1,0 +1,10 @@
+{
+	"includes/classes/*.php": {
+		"type": "plugin",
+		"test": "tests/classes/%sTest.php"
+	},
+	"tests/classes/*Test.php": {
+		"type": "test",
+		"alternate": "includes/classes/%s.php"
+	}
+}
