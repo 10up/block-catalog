@@ -7,6 +7,15 @@
 
 namespace BlockCatalog;
 
+add_filter( 'block_catalog_block_variations', function( $variations, $block ) {
+	if ( 'core/heading' === $block['blockName'] ) {
+		$level = ! empty( $block['attrs']['level'] ) ? 'h' . $block['attrs']['level'] : 'h2';
+		return [ $level ];
+	}
+
+	return $variations;
+}, 10, 2 );
+
 /**
  * CatalogBuilder generates a list of Block terms for a post.
  */
@@ -27,15 +36,10 @@ class CatalogBuilder {
 				return [];
 			}
 
-			$terms = $this->get_post_block_terms( $post_id, $opts );
+			$output = $this->get_post_block_terms( $post_id, $opts );
+			$result = $this->set_post_block_terms( $post_id, $output );
 
-			if ( empty( $terms ) ) {
-				return wp_set_object_terms( $post_id, [], BLOCK_CATALOG_TAXONOMY );
-			}
-
-			$result = $this->set_post_block_terms( $post_id, $terms );
-
-			return $terms;
+			return $output;
 		} catch ( Exception $e ) {
 			if ( defined( 'WP_CLI' ) && WP_CLI ) {
 				// translators: %1$d is post_id, %2$s is error message
@@ -128,13 +132,17 @@ class CatalogBuilder {
 	 * Sets the blocks terms of the post. Creates the terms if absent.
 	 *
 	 * @param int   $post_id The post id
-	 * @param array $terms The block terms
+	 * @param array $output The block terms & variations
 	 * @return array|WP_Error
 	 */
-	public function set_post_block_terms( $post_id, $terms ) {
+	public function set_post_block_terms( $post_id, $output ) {
+		if ( empty( $output['terms'] ) ) {
+			return wp_set_object_terms( $post_id, [], BLOCK_CATALOG_TAXONOMY );
+		}
+
 		$term_ids = [];
 
-		foreach ( $terms as $slug => $label ) {
+		foreach ( $output['terms'] ?? [] as $slug => $label ) {
 			if ( ! term_exists( $slug, BLOCK_CATALOG_TAXONOMY ) ) {
 				$term_args = [
 					'slug' => $slug,
@@ -161,6 +169,48 @@ class CatalogBuilder {
 
 				if ( ! empty( $result->parent ) ) {
 					$term_ids[] = $result->parent;
+				}
+			}
+		}
+
+		foreach ( $output['variations'] ?? [] as $variation ) {
+			$blockName = $variation['blockName'];
+			$terms     = $variation['terms'] ?? [];
+
+			if ( empty( $blockName ) || empty( $terms ) ) {
+				continue;
+			}
+
+			foreach ( $terms as $label ) {
+				$slug = $blockName . '-' . $label;
+
+				if ( ! term_exists( $slug, BLOCK_CATALOG_TAXONOMY ) ) {
+					$term_args = [
+						'slug' => $slug,
+					];
+
+					$parent_id = $this->get_variation_parent_term( $blockName );
+
+					if ( ! empty( $parent_id ) ) {
+						$term_args['parent'] = $parent_id;
+						$term_ids[]          = $parent_id;
+					}
+
+					$result = wp_insert_term( $label, BLOCK_CATALOG_TAXONOMY, $term_args );
+
+					if ( ! is_wp_error( $result ) ) {
+						$term_ids[] = intval( $result['term_id'] );
+					}
+				} else {
+					$result = get_term_by( 'slug', $slug, BLOCK_CATALOG_TAXONOMY );
+
+					if ( ! empty( $result ) ) {
+						$term_ids[] = intval( $result->term_id );
+					}
+
+					if ( ! empty( $result->parent ) ) {
+						$term_ids[] = $result->parent;
+					}
 				}
 			}
 		}
@@ -201,18 +251,24 @@ class CatalogBuilder {
 			return [];
 		}
 
-		$terms = [];
+		$post_terms = [];
+		$variations = [];
 
 		foreach ( $blocks as $block ) {
 			$block_terms = $this->block_to_terms( $block );
 
-			if ( ! empty( $block_terms ) ) {
-				$terms = array_replace( $terms, $block_terms );
+			if ( ! empty( $block_terms['terms'] ) ) {
+				$post_terms = array_replace( $post_terms, $block_terms['terms'] );
+			}
+
+			if ( ! empty( $block_terms['variations'] ) ) {
+				$variations[] = array_merge( $variations, [
+					'blockName' => $block['blockName'],
+					'block'     => $block,
+					'terms'     => $block_terms['variations'],
+				] );
 			}
 		}
-
-		$terms = array_filter( $terms );
-		$terms = array_unique( $terms );
 
 		/**
 		 * Filters the computed list of block terms for a post.
@@ -221,9 +277,12 @@ class CatalogBuilder {
 		 * @param int   $post_id The post id
 		 * @return int The new list of block terms
 		 */
-		$terms = apply_filters( 'block_catalog_post_block_terms', $terms, $post_id );
+		$post_terms = apply_filters( 'block_catalog_post_block_terms', $post_terms, $post_id );
 
-		return $terms;
+		return [
+			'terms'      => $post_terms,
+			'variations' => $variations,
+		];
 	}
 
 	/**
@@ -240,6 +299,11 @@ class CatalogBuilder {
 		$output = [];
 
 		foreach ( $blocks as $block ) {
+			// ignore empty blocks
+			if ( empty( $block['blockName'] ) ) {
+				continue;
+			}
+
 			// add current block to output
 			$output[] = $block;
 
@@ -261,7 +325,7 @@ class CatalogBuilder {
 	 */
 	public function block_to_terms( $block, $opts = [] ) {
 		if ( empty( $block ) || empty( $block['blockName'] ) ) {
-			return [];
+			return [ 'terms' => [], 'variations' => [] ];
 		}
 
 		$terms = [];
@@ -276,7 +340,7 @@ class CatalogBuilder {
 		 */
 		$label = apply_filters( 'block_catalog_block_term_label', $label, $block );
 
-		if ( ! empty( $block['attrs']['ref'] ) ) {
+		if ( 'core/block' === $block['blockName'] && ! empty( $block['attrs']['ref'] ) ) {
 			$reusable_slug           = 're-' . intval( $block['attrs']['ref'] );
 			$terms[ $reusable_slug ] = get_the_title( $block['attrs']['ref'] );
 		} else {
@@ -295,7 +359,17 @@ class CatalogBuilder {
 		 */
 		$terms = apply_filters( 'block_catalog_block_terms', $terms, $block );
 
-		return $terms;
+		/**
+		 * Filters the term variations for a given block.
+		 *
+		 * @param array $block The block data
+		 */
+		$variations = apply_filters( 'block_catalog_block_variations', [], $block );
+
+		return [
+			'terms'      => $terms,
+			'variations' => $variations,
+		];
 	}
 
 	/**
@@ -311,7 +385,7 @@ class CatalogBuilder {
 
 		$parts       = explode( '/', $name );
 		$namespace   = $parts[0] ?? '';
-		$short_title = $parts[1] ?? __( 'Untitled', 'block-catalog' );
+		$short_title = $parts[1] ?? ( $namespace ?? __( 'Untitled', 'block-catalog' ) );
 
 		// if we got here, the block is incorrectly registered, try to guess at the name
 		if ( $title === $name ) {
@@ -339,6 +413,7 @@ class CatalogBuilder {
 	 */
 	public function get_display_title( $title ) {
 		$title = str_replace( '-', ' ', $title );
+		$title = str_replace( '_', ' ', $title );
 		$title = ucwords( $title );
 
 		return $title;
@@ -356,7 +431,7 @@ class CatalogBuilder {
 		}
 
 		$parts     = explode( '/', $name );
-		$namespace = $parts[0] ?? '';
+		$namespace = count( $parts ) > 1 ? $parts[0] : '';
 
 		if ( empty( $namespace ) ) {
 			return '';
@@ -367,7 +442,7 @@ class CatalogBuilder {
 		 *
 		 * eg:- core/embed => Core
 		 *
-		 * @param string $namespace The block namespace
+		 * @param string $label The block namespace label
 		 * @param string $name The full block name
 		 * @return string
 		 */
@@ -401,5 +476,25 @@ class CatalogBuilder {
 		}
 
 		return false;
+	}
+
+	/**
+	 * Returns the parent variation term or false if absent.
+	 *
+	 * @param string $name The parent block name
+	 * @return int|false
+	 */
+	public function get_variation_parent_term( $name ) {
+		if ( empty( $name ) ) {
+			return false;
+		}
+
+		$result = get_term_by( 'slug', sanitize_title( $name ), BLOCK_CATALOG_TAXONOMY );
+
+		if ( empty( $result ) || empty( $result->term_id ) ) {
+			return false;
+		}
+
+		return intval( $result->term_id );
 	}
 }
