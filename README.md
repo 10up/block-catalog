@@ -1,4 +1,4 @@
-# Block Catalog
+# Block Catalog (BETA)
 > Easily keep track of which Gutenberg Blocks are used across your site.
 
 ![WordPress tested up to version](https://img.shields.io/badge/WordPress-v6.1%20tested-success.svg)
