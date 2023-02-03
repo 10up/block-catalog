@@ -1,8 +1,8 @@
-# Block Catalog
+# Block Catalog (BETA)
+
 > Easily keep track of which Gutenberg Blocks are used across your site.
 
-![WordPress tested up to version](https://img.shields.io/badge/WordPress-v6.1%20tested-success.svg)
-[![GPLv2 License](https://img.shields.io/github/license/10up/block-catalog.svg)](https://github.com/10up/block-catalog/blob/develop/LICENSE.md)
+[![Support Level](https://img.shields.io/badge/support-beta-blueviolet.svg)](#support-level) ![WordPress tested up to version](https://img.shields.io/badge/WordPress-v6.1%20tested-success.svg) [![GPLv2 License](https://img.shields.io/github/license/10up/block-catalog.svg)](https://github.com/10up/block-catalog/blob/develop/LICENSE.md)
 
 ## Table of Contents
 * [Features](#features)
@@ -64,7 +64,6 @@ You can also filter the listing to only show Posts that have a specific block.
 The following WP CLI commands are supported by the Block Catalog plugin.
 
 * `wp block-catalog index [--only=<only>] [--dry-run]`
-
 	Iterates through all posts and catalogs them one at a time.
 
   * [--reset]
@@ -78,6 +77,7 @@ The following WP CLI commands are supported by the Block Catalog plugin.
 
 * `wp block-catalog find <blocks>... [--index] [--fields] [--format] [--post_type] [--posts_per_page] [--post_status] [--count=<count>] [--operator=<operator>]`
    Finds the list of posts having the specified block(s)
+
   * \<blocks\>...
     The block names to search for, eg:- core/embed
 
@@ -107,8 +107,10 @@ The following WP CLI commands are supported by the Block Catalog plugin.
 
 * `wp block-catalog delete-index`
    Resets the Block Catalog by removing all catalog terms.
+
 * `wp block-catalog post-blocks <post-id> [--index]`
    Prints the list of blocks in the specified post.
+   
   * \<post-id\>
     The post id to lookup blocks for.
 
@@ -145,7 +147,7 @@ add_filter( 'block_catalog_block_title', function( $title, $block_name, $block )
 
 ## Support Level
 
-**Active:** 10up is actively working on this, and we expect to continue work for the foreseeable future including keeping tested up to the most recent version of WordPress.  Bug reports, feature requests, questions, and pull requests are welcome.
+**Beta:** This project is quite new and we're not sure what our ongoing support level for this will be. Bug reports, feature requests, questions, and pull requests are welcome. If you like this project please let us know, but be cautious using this in a Production environment!
 
 ## Changelog
 
