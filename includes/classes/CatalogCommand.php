@@ -32,8 +32,7 @@ class CatalogCommand extends \WP_CLI_Command {
 	 *
 	 * [--network]
 	 * : Runs the command for all sites on a multisite install. Defaults to all
-	 * public sites. Accepts all, public, archived, mature, spam, deleted, or
-	 * limit to comma delimited list of site ids.
+	 * public sites. Also accepts a comma delimited list of site ids.
 	 *
 	 * [--dry-run]
 	 * : Runs catalog without saving changes to the DB.
@@ -80,14 +79,33 @@ class CatalogCommand extends \WP_CLI_Command {
 	 * Resets the Block Catalog by removing all catalog terms.
 	 *
 	 * ## OPTIONS
+	 * [--network]
+	 * : Deletes the catalog for all sites on a multisite install.
 	 *
 	 * @subcommand delete-index
 	 * @param array $args Command args
 	 * @param array $opts Command opts
 	 */
 	public function delete_index( $args = [], $opts = [] ) {
+		$this->check_network_option( $opts );
+
 		$builder = new CatalogBuilder();
-		$builder->delete_index( $opts );
+		$network = $this->get_network_option( $opts );
+
+		if ( ! empty( $network ) ) {
+			foreach ( $network as $blog_id ) {
+				$site = get_blog_details( $blog_id );
+				switch_to_blog( $blog_id );
+
+				\WP_CLI::log( "Deleting Block Catalog for site[{$site->blog_id}]: " . $site->domain . $site->path );
+				$builder->delete_index();
+
+				restore_current_blog();
+				\WP_CLI::line();
+			}
+		} else {
+			$builder->delete_index( $opts );
+		}
 	}
 
 	/**
@@ -116,110 +134,41 @@ class CatalogCommand extends \WP_CLI_Command {
 	 * [--post_status]
 	 * : Post status of posts to search, default 'publish'.
 	 *
-	 * [--count=<count>]
-	 * : Prints total found posts, default true.
+	 * [--count]
+	 * : Prints total found posts, default false.
 	 *
 	 * [--operator=<operator>]
 	 * : The query operator to be used in the search clause. Default IN.
+	 *
+	 * [--network]
+	 * : Runs the command for all sites on a multisite install. Defaults to all
+	 * public sites. Also accepts a comma delimited list of site ids.
 	 *
 	 * @param array $args Command args
 	 * @param array $opts Command opts
 	 */
 	public function find( $args = [], $opts = [] ) {
+		$this->check_network_option( $opts );
+
 		if ( empty( $args ) ) {
 			\WP_CLI::error( __( 'Please enter atleast one block name.', 'block-catalog' ) );
 		}
 
-		$catalog_terms = wp_count_terms(
-			[
-				'taxonomy'   => BLOCK_CATALOG_TAXONOMY,
-				'hide_empty' => false,
-			]
-		);
+		$network = $this->get_network_option( $opts );
+		$count   = $this->get_count_option( $opts );
 
-		if ( empty( $catalog_terms ) && empty( $opts['index'] ) ) {
-			\WP_CLI::error( __( 'Block Catalog index is empty, please run with --index.', 'block-catalog' ) );
-		}
-
-		if ( empty( $opts['fields'] ) ) {
-			$opts['fields'] = [ 'ID', 'post_type', 'post_title' ];
-		} else {
-			$opts['fields'] = explode( ',', $opts['fields'] );
-		}
-
-		if ( empty( $opts['format'] ) ) {
-			$opts['format'] = 'table';
-		}
-
-		if ( empty( $opts['posts_per_page'] ) ) {
-			$opts['posts_per_page'] = 20;
-		}
-
-		if ( ! empty( $opts['post_type'] ) ) {
-			$opts['post_type'] = explode( ',', $opts['post_type'] );
-		}
-
-		if ( ! isset( $opts['count'] ) ) {
-			$opts['count'] = true;
-		} else {
-			$opts['count'] = filter_var( $opts['count'], FILTER_VALIDATE_BOOLEAN );
-		}
-
-		$post_id = intval( $args[0] );
-
-		$builder = new CatalogBuilder();
-
-		if ( ! empty( $opts['index'] ) ) {
-			$this->index();
-		}
-
-		$slugs = array_map( 'sanitize_title', $args );
-
-		foreach ( $slugs as $index => $slug ) {
-			$slug_term = get_term_by( 'slug', $slug, BLOCK_CATALOG_TAXONOMY );
-
-			if ( false === $slug_term ) {
-				unset( $slugs[ $index ] );
+		if ( ! empty( $count ) ) {
+			if ( ! empty( $network ) ) {
+				$this->count_on_network( $network, $args, $opts );
+			} else {
+				$this->count_on_site( $args, $opts );
 			}
-		}
-
-		$slugs = array_values( $slugs );
-
-		if ( empty( $slugs ) ) {
-			\WP_CLI::error( __( 'No posts found.', 'block-catalog' ) );
-		}
-
-		$taxonomy = new BlockCatalogTaxonomy();
-		$operator = ! empty( $opts['operator'] ) ? $opts['operator'] : 'IN';
-
-		$query_params = [
-			'post_type'      => ! empty( $opts['post_type'] ) ? $opts['post_type'] : \BlockCatalog\Utility\get_supported_post_types(),
-			'post_status'    => ! empty( $opts['post_status'] ) ? $opts['post_status'] : 'any',
-			'posts_per_page' => intval( $opts['posts_per_page'] ), // phpcs:ignore
-			'tax_query'      => [
-				[
-					'taxonomy' => BLOCK_CATALOG_TAXONOMY,
-					'field'    => 'slug',
-					'terms'    => $slugs,
-					'operator' => $operator,
-				],
-			],
-		];
-
-		$query = new \WP_Query( $query_params );
-		$posts = $query->posts;
-
-		if ( ! empty( $opts['count'] ) && ! empty( $posts ) ) {
-			// translators: %d is number of found posts
-			\WP_CLI::success( sprintf( __( 'Found %d post(s)', 'block-catalog' ), $query->found_posts ) );
-		}
-
-		if ( empty( $posts ) ) {
-			\WP_CLI::warning( __( 'No posts found.', 'block-catalog' ) );
-		}
-
-		if ( ! empty( $posts ) ) {
-			\WP_CLI\Utils\format_items( $opts['format'], $posts, $opts['fields'] );
+		} else {
+			if ( ! empty( $network ) ) {
+				$this->find_on_network( $network, $args, $opts );
+			} else {
+				$this->find_on_site( $args, $opts );
+			}
 		}
 	}
 
@@ -311,6 +260,10 @@ class CatalogCommand extends \WP_CLI_Command {
 			return $this->network;
 		}
 
+		if ( ! isset( $opts['network'] ) ) {
+			return '';
+		}
+
 		$network = \WP_CLI\Utils\get_flag_value( $opts, 'network', 'public' );
 
 		// assume networks with commas are ids
@@ -367,6 +320,12 @@ class CatalogCommand extends \WP_CLI_Command {
 		return $sites;
 	}
 
+	/**
+	 * Indexes the block catalog for the current site.
+	 *
+	 * @param array $args Command args
+	 * @param array $opts Command opts
+	 */
 	private function index_site( $args = [], $opts = [] ) {
 		$dry_run = ! empty( $opts['dry-run'] );
 		$reset   = ! empty( $opts['reset'] );
@@ -422,6 +381,147 @@ class CatalogCommand extends \WP_CLI_Command {
 		if ( ! empty( $errors ) ) {
 			// translators: %d is the total posts
 			\WP_CLI::warning( sprintf( __( 'Failed to catalog %d post(s).', 'block-catalog' ), $errors ) );
+		}
+	}
+
+	/**
+	 * Returns a bool depending on if the --count option is set.
+	 *
+	 * @param array $opts Command opts
+	 * @return bool
+	 */
+	private function get_count_option( $opts ) {
+		return isset( $opts['count'] );
+	}
+
+	/**
+	 * Counts the number of posts across the network that match the queried terms using the
+	 * PostFinder object.
+	 *
+	 * @param array $sites Sites to query.
+	 * @param array $args Blocks to query.
+	 * @param array $opts Optional arguments.
+	 */
+	private function count_on_network( $sites = [], $args = [], $opts ) {
+		$finder = new PostFinder();
+
+		$result = $finder->count_on_network( $sites, $args, $opts );
+		$fields = ! empty( $opts['fields'] ) ? explode( ',', $opts['fields'] ) : [ 'blog_id', 'blog_url', 'count' ];
+		$format = ! empty( $opts['format'] ) ? $opts['format'] : 'table';
+
+		\WP_CLI\Utils\format_items( $format, $result, $fields );
+	}
+
+	/**
+	 * Counts the number of posts that match the queried terms using the
+	 * PostFinder object.
+	 *
+	 * @param array $args Blocks to query.
+	 * @param array $opts Optional arguments.
+	 */
+	private function count_on_site( $args = [], $opts ) {
+		$finder = new PostFinder();
+		$result = $finder->count( $args, $opts );
+
+		if ( is_wp_error( $result ) ) {
+			\WP_CLI::error( $result->get_error_message() );
+		}
+
+		if ( ! empty( $result ) ) {
+			\WP_CLI::success( sprintf( __( 'Found %d post(s)', 'block-catalog' ), $result ) );
+		} else {
+			\WP_CLI::warning( __( 'No posts found.', 'block-catalog' ) );
+		}
+	}
+
+	/**
+	 * Find posts across the network that match the queried terms using the PostFinder.
+	 *
+	 * @param array $sites Sites to query.
+	 * @param array $args Blocks to query.
+	 * @param array $opts Optional arguments.
+	 */
+	private function find_on_network( $sites = [], $args = [], $opts ) {
+		if ( ! empty( $opts['index'] ) ) {
+			$this->index( $args, $opts );
+		}
+
+		$finder = new PostFinder();
+
+		$result = $finder->find_on_network( $sites, $args, $opts );
+		$fields = ! empty( $opts['fields'] ) ? explode( ',', $opts['fields'] ) : [ 'blog_id', 'blog_url', 'ID', 'post_type', 'post_title' ];
+		$format = ! empty( $opts['format'] ) ? $opts['format'] : 'table';
+		$output = [];
+
+		foreach ( $result as $result_item ) {
+			$error = $result_item['error'] ?? false;
+			$blog_id = $result_item['blog_id'];
+			$blog_url = $result_item['blog_url'];
+
+			if ( is_wp_error( $error ) ) {
+				$output[] = [
+					'blog_id'  => $blog_id,
+					'blog_url' => $blog_url,
+					'ID'       => 0,
+					'post_type' => '',
+					'post_title' => $error->get_error_message(),
+				];
+			} else {
+				$posts = $result_item['posts'];
+
+				// don't output sites with no posts
+				if ( empty( $posts ) ) {
+					continue;
+				}
+
+				foreach ( $posts as $post ) {
+					$row = [
+						'blog_id'  => $blog_id,
+						'blog_url' => $blog_url,
+					];
+
+					foreach ( $fields as $field ) {
+						if ( empty( $row[ $field ] ) ) {
+							$row[ $field ] = $post->$field;
+						}
+					}
+
+					$output[] = $row;
+				}
+			}
+		}
+
+		if ( ! empty( $output ) ) {
+			\WP_CLI\Utils\format_items( $format, $output, $fields );
+		} else {
+			\WP_CLI::warning( __( 'No posts found.', 'block-catalog' ) );
+		}
+	}
+
+	/**
+	 * Find posts that match the queried terms using the PostFinder on the current site.
+	 *
+	 * @param array $args Blocks to query.
+	 * @param array $opts Optional arguments.
+	 */
+	private function find_on_site( $args = [], $opts ) {
+		if ( ! empty( $opts['index'] ) ) {
+			$this->index( $args, $opts );
+		}
+
+		$finder = new PostFinder();
+		$result = $finder->find( $args, $opts );
+		$fields = ! empty( $opts['fields'] ) ? explode( ',', $opts['fields'] ) : [ 'ID', 'post_type', 'post_title' ];
+		$format = ! empty( $opts['format'] ) ? $opts['format'] : 'table';
+
+		if ( is_wp_error( $result ) ) {
+			\WP_CLI::error( $result->get_error_message() );
+		}
+
+		if ( ! empty( $result ) ) {
+			\WP_CLI\Utils\format_items( $format, $result, $fields );
+		} else {
+			\WP_CLI::warning( __( 'No posts found.', 'block-catalog' ) );
 		}
 	}
 
