@@ -165,22 +165,22 @@ class CatalogBuilder {
 		}
 
 		foreach ( $output['variations'] ?? [] as $variation ) {
-			$blockName = $variation['blockName'];
-			$terms     = $variation['terms'] ?? [];
+			$block_name = $variation['blockName'];
+			$terms      = $variation['terms'] ?? [];
 
-			if ( empty( $blockName ) || empty( $terms ) ) {
+			if ( empty( $block_name ) || empty( $terms ) ) {
 				continue;
 			}
 
 			foreach ( $terms as $label ) {
-				$slug = $blockName . '-' . $label;
+				$slug = $block_name . '-' . $label;
 
 				if ( ! term_exists( $slug, BLOCK_CATALOG_TAXONOMY ) ) {
 					$term_args = [
 						'slug' => $slug,
 					];
 
-					$parent_id = $this->get_variation_parent_term( $blockName );
+					$parent_id = $this->get_variation_parent_term( $block_name );
 
 					if ( ! empty( $parent_id ) ) {
 						$term_args['parent'] = $parent_id;
