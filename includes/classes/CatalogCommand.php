@@ -13,6 +13,13 @@ namespace BlockCatalog;
 class CatalogCommand extends \WP_CLI_Command {
 
 	/**
+	 * The list of sites obtained from the --network option.
+	 *
+	 * @var array
+	 */
+	public $network;
+
+	/**
 	 * Iterates through all posts and catalogs them one at a time.
 	 *
 	 * ## OPTIONS
@@ -23,6 +30,11 @@ class CatalogCommand extends \WP_CLI_Command {
 	 * [--reset]
 	 * : Deletes the previous index before indexing. Default false.
 	 *
+	 * [--network]
+	 * : Runs the command for all sites on a multisite install. Defaults to all
+	 * public sites. Accepts all, public, archived, mature, spam, deleted, or
+	 * limit to comma delimited list of site ids.
+	 *
 	 * [--dry-run]
 	 * : Runs catalog without saving changes to the DB.
 	 *
@@ -30,62 +42,35 @@ class CatalogCommand extends \WP_CLI_Command {
 	 * @param array $opts Command opts
 	 */
 	public function index( $args = [], $opts = [] ) {
+		$this->check_network_option( $opts );
+
 		\BlockCatalog\Utility\start_bulk_operation();
 
 		$dry_run = ! empty( $opts['dry-run'] );
-		$reset   = ! empty( $opts['reset'] );
 
-		if ( $dry_run ) {
-			\WP_CLI::warning( __( 'Running in Dry Run Mode, changes will not be saved ...', 'block-catalog' ) );
-		}
-
-		if ( ! $dry_run && $reset ) {
-			$this->delete_index();
-		}
-
-		$post_ids = $this->get_posts_to_catalog( $opts );
-
-		$total = count( $post_ids );
-
-		// translators: %d is number of posts found
-		$message      = sprintf( __( 'Cataloging %d Posts ...', 'block-catalog' ), $total );
-		$progress_bar = \WP_CLI\Utils\make_progress_bar( $message, $total );
-		$updated      = 0;
-		$errors       = 0;
-
-		$builder = new CatalogBuilder();
-
-		foreach ( $post_ids as $post_id ) {
-			$progress_bar->tick();
-
-			if ( ! $dry_run ) {
-				$result = $builder->catalog( $post_id, $opts );
-
-				\BlockCatalog\Utility\clear_caches();
-			} else {
-				$result = $builder->get_post_block_terms( $post_id );
-			}
-
-			if ( is_wp_error( $result ) ) {
-				$errors++;
-			} else {
-				$updated += count( $result['terms'] ?? [] );
-			}
-		}
-
-		$progress_bar->finish();
-
-		if ( ! empty( $updated ) ) {
-			// translators: %1$d is the number of blocks updated, %2$d is the total posts
-			\WP_CLI::success( sprintf( __( 'Block Catalog updated for %1$d block(s) across %2$d post(s).', 'block-catalog' ), $updated, $total ) );
+		if ( ! is_multisite() ) {
+			$opts['show_dry_run_warning'] = true;
+			$this->index_site( $args, $opts );
 		} else {
-			// translators: %d is the total posts
-			\WP_CLI::warning( sprintf( __( 'No updates were made across %d post(s).', 'block-catalog' ), $total ) );
-		}
+			$blog_ids = $this->get_network_option( $opts );
+			$opts['show_dry_run_warning'] = false;
 
-		if ( ! empty( $errors ) ) {
-			// translators: %d is the total posts
-			\WP_CLI::warning( sprintf( __( 'Failed to catalog %d post(s).', 'block-catalog' ), $errors ) );
+			if ( $dry_run ) {
+				\WP_CLI::warning( __( 'Running in Dry Run Mode, changes will not be saved ...', 'block-catalog' ) );
+			}
+
+			if ( ! empty( $blog_ids ) ) {
+				foreach ( $blog_ids as $blog_id ) {
+					$site = get_blog_details( $blog_id );
+					switch_to_blog( $blog_id );
+
+					\WP_CLI::log( "Indexing Block Catalog for site[{$site->blog_id}]: " . $site->domain . $site->path );
+					$this->index_site( $args, $opts );
+
+					restore_current_blog();
+					\WP_CLI::line();
+				}
+			}
 		}
 
 		\BlockCatalog\Utility\stop_bulk_operation();
@@ -309,6 +294,135 @@ class CatalogCommand extends \WP_CLI_Command {
 		}
 
 		return $posts;
+	}
+
+	/**
+	 * Returns the --network option, and a default value if not set.
+	 *
+	 * @param array $opts Optional opts
+	 * @return string|array
+	 */
+	private function get_network_option( $opts ) {
+		if ( ! is_multisite() ) {
+			return '';
+		}
+
+		if ( ! empty( $this->network ) ) {
+			return $this->network;
+		}
+
+		$network = \WP_CLI\Utils\get_flag_value( $opts, 'network', 'public' );
+
+		// assume networks with commas are ids
+		if ( is_string( $network ) && false !== strpos( $network, ',' ) ) {
+			$network = explode( ',', $network );
+		}
+
+		$this->network = $this->get_site_ids_from_network( $network );
+
+		return $this->network;
+	}
+
+	/**
+	 * Validates if the --network option can be used on the current install, and
+	 * throws an error if not.
+	 *
+	 * @param array $opts Optional opts
+	 * @return void
+	 */
+	private function check_network_option( $opts ) {
+		if ( ! is_multisite() && isset( $opts['network'] ) ) {
+			\WP_CLI::error( __( 'The --network option can only be used on multisite installs.', 'block-catalog' ) );
+			return false;
+		}
+
+		return true;
+	}
+
+	/**
+	 * Returns the site ids from the --network option.
+	 *
+	 * @param string|array $network The network option value.
+	 * @return array
+	 */
+	private function get_site_ids_from_network( $network ) {
+		$query_params = [
+			'fields' => 'ids',
+		];
+
+		$accepted = [ 'public', 'archived', 'spam', 'deleted' ];
+
+		if ( is_string( $network ) && in_array( $network, $accepted, true ) ) {
+			$query_params[ $network ] = 1;
+		} elseif ( is_array( $network ) && ! empty( $network) && is_numeric( $network[0] ) ) {
+			// list of site ids
+			$query_params['site__in'] = $network;
+		} else {
+			$query_params['site__in'] = [];
+		}
+
+		$query = new \WP_Site_Query( $query_params );
+		$sites = $query->get_sites();
+
+		return $sites;
+	}
+
+	private function index_site( $args = [], $opts = [] ) {
+		$dry_run = ! empty( $opts['dry-run'] );
+		$reset   = ! empty( $opts['reset'] );
+
+		if ( $dry_run && $opts['show_dry_run_warning'] ) {
+			\WP_CLI::warning( __( 'Running in Dry Run Mode, changes will not be saved ...', 'block-catalog' ) );
+		}
+
+		if ( ! $dry_run && $reset ) {
+			$this->delete_index();
+		}
+
+		$post_ids = $this->get_posts_to_catalog( $opts );
+
+		$total = count( $post_ids );
+
+		// translators: %d is number of posts found
+		$message      = sprintf( __( 'Cataloging %d Posts ...', 'block-catalog' ), $total );
+		$progress_bar = \WP_CLI\Utils\make_progress_bar( $message, $total );
+		$updated      = 0;
+		$errors       = 0;
+
+		$builder = new CatalogBuilder();
+
+		foreach ( $post_ids as $post_id ) {
+			$progress_bar->tick();
+
+			if ( ! $dry_run ) {
+				$result = $builder->catalog( $post_id, $opts );
+
+				\BlockCatalog\Utility\clear_caches();
+			} else {
+				$result = $builder->get_post_block_terms( $post_id );
+			}
+
+			if ( is_wp_error( $result ) ) {
+				$errors++;
+			} else {
+				$updated += count( $result['terms'] ?? [] );
+			}
+		}
+
+		$progress_bar->finish();
+
+		if ( ! empty( $updated ) ) {
+			// translators: %1$d is the number of blocks updated, %2$d is the total posts
+			\WP_CLI::success( sprintf( __( 'Block Catalog updated for %1$d block(s) across %2$d post(s).', 'block-catalog' ), $updated, $total ) );
+		} else {
+			// translators: %d is the total posts
+			\WP_CLI::warning( sprintf( __( 'No updates were made across %d post(s).', 'block-catalog' ), $total ) );
+		}
+
+		if ( ! empty( $errors ) ) {
+			// translators: %d is the total posts
+			\WP_CLI::warning( sprintf( __( 'Failed to catalog %d post(s).', 'block-catalog' ), $errors ) );
+		}
 	}
 
 }
