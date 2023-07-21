@@ -105,9 +105,9 @@ class PostFinder {
 		}
 
 		$query_params = [
-			'post_type'      => ! empty( $opts['post_type'] ) ? $opts['post_type'] : \BlockCatalog\Utility\get_supported_post_types(),
-			'post_status'    => ! empty( $opts['post_status'] ) ? $opts['post_status'] : 'any',
-			'tax_query'      => [
+			'post_type'   => ! empty( $opts['post_type'] ) ? $opts['post_type'] : \BlockCatalog\Utility\get_supported_post_types(),
+			'post_status' => ! empty( $opts['post_status'] ) ? $opts['post_status'] : 'any',
+			'tax_query'   => [
 				[
 					'taxonomy' => BLOCK_CATALOG_TAXONOMY,
 					'field'    => 'slug',

@@ -51,7 +51,7 @@ class CatalogCommand extends \WP_CLI_Command {
 			$opts['show_dry_run_warning'] = true;
 			$this->index_site( $args, $opts );
 		} else {
-			$blog_ids = $this->get_network_option( $opts );
+			$blog_ids                     = $this->get_network_option( $opts );
 			$opts['show_dry_run_warning'] = false;
 
 			if ( $dry_run ) {
@@ -307,7 +307,7 @@ class CatalogCommand extends \WP_CLI_Command {
 
 		if ( is_string( $network ) && in_array( $network, $accepted, true ) ) {
 			$query_params[ $network ] = 1;
-		} elseif ( is_array( $network ) && ! empty( $network) && is_numeric( $network[0] ) ) {
+		} elseif ( is_array( $network ) && ! empty( $network ) && is_numeric( $network[0] ) ) {
 			// list of site ids
 			$query_params['site__in'] = $network;
 		} else {
@@ -454,16 +454,16 @@ class CatalogCommand extends \WP_CLI_Command {
 		$output = [];
 
 		foreach ( $result as $result_item ) {
-			$error = $result_item['error'] ?? false;
-			$blog_id = $result_item['blog_id'];
+			$error    = $result_item['error'] ?? false;
+			$blog_id  = $result_item['blog_id'];
 			$blog_url = $result_item['blog_url'];
 
 			if ( is_wp_error( $error ) ) {
 				$output[] = [
-					'blog_id'  => $blog_id,
-					'blog_url' => $blog_url,
-					'ID'       => 0,
-					'post_type' => '',
+					'blog_id'    => $blog_id,
+					'blog_url'   => $blog_url,
+					'ID'         => 0,
+					'post_type'  => '',
 					'post_title' => $error->get_error_message(),
 				];
 			} else {

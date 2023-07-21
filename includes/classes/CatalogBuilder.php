@@ -253,11 +253,14 @@ class CatalogBuilder {
 			}
 
 			if ( ! empty( $block_terms['variations'] ) ) {
-				$variations[] = array_merge( $variations, [
-					'blockName' => $block['blockName'],
-					'block'     => $block,
-					'terms'     => $block_terms['variations'],
-				] );
+				$variations[] = array_merge(
+					$variations,
+					[
+						'blockName' => $block['blockName'],
+						'block'     => $block,
+						'terms'     => $block_terms['variations'],
+					]
+				);
 			}
 		}
 
@@ -316,7 +319,10 @@ class CatalogBuilder {
 	 */
 	public function block_to_terms( $block, $opts = [] ) {
 		if ( empty( $block ) || empty( $block['blockName'] ) ) {
-			return [ 'terms' => [], 'variations' => [] ];
+			return [
+				'terms'      => [],
+				'variations' => [],
+			];
 		}
 
 		$terms = [];
