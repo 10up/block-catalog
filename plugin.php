@@ -2,7 +2,7 @@
 /**
  * Plugin Name:       Block Catalog
  * Description:       Easily keep track of which Gutenberg Blocks are used across your site.
- * Version:           1.4.0
+ * Version:           1.5.0
  * Requires at least: 5.7
  * Requires PHP:      7.4
  * Author:            Darshan Sawardekar, 10up
