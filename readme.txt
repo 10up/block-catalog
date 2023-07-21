@@ -2,7 +2,7 @@
 Contributors:      dsawardekar, 10up
 Tags:              gutenberg, developer, blocks, custom blocks
 Requires at least: 5.7
-Tested up to:      6.1
+Tested up to:      6.2.2
 Requires PHP:      7.4
 Stable tag:        1.4.0
 License:           GPLv2 or later
