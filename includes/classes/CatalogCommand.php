@@ -46,12 +46,13 @@ class CatalogCommand extends \WP_CLI_Command {
 		\BlockCatalog\Utility\start_bulk_operation();
 
 		$dry_run = ! empty( $opts['dry-run'] );
+		$network = $this->get_network_option( $opts );
 
-		if ( ! is_multisite() ) {
+		if ( empty( $network ) ) {
 			$opts['show_dry_run_warning'] = true;
 			$this->index_site( $args, $opts );
 		} else {
-			$blog_ids                     = $this->get_network_option( $opts );
+			$blog_ids                     = $network;
 			$opts['show_dry_run_warning'] = false;
 
 			if ( $dry_run ) {
