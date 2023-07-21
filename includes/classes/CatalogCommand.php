@@ -403,6 +403,10 @@ class CatalogCommand extends \WP_CLI_Command {
 	 * @param array $opts Optional arguments.
 	 */
 	private function count_on_network( $sites = [], $args = [], $opts ) {
+		if ( ! empty( $opts['index'] ) ) {
+			$this->index( $args, $opts );
+		}
+
 		$finder = new PostFinder();
 
 		$result = $finder->count_on_network( $sites, $args, $opts );
@@ -420,6 +424,10 @@ class CatalogCommand extends \WP_CLI_Command {
 	 * @param array $opts Optional arguments.
 	 */
 	private function count_on_site( $args = [], $opts ) {
+		if ( ! empty( $opts['index'] ) ) {
+			$this->index( $args, $opts );
+		}
+
 		$finder = new PostFinder();
 		$result = $finder->count( $args, $opts );
 
