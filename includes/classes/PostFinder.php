@@ -21,6 +21,7 @@ class PostFinder {
 	 * - posts_per_page: maximum number of posts to return.
 	 * - operator: query operator to use in the search.
 	 *
+	 * @param array $blocks Blocks to search for.
 	 * @param array $opts Options for the search.
 	 * @return array
 	 */
@@ -62,6 +63,7 @@ class PostFinder {
 	 * Find posts that have a specific block on a multisite network.
 	 *
 	 * @param array $sites Sites to search.
+	 * @param array $blocks Blocks to search for.
 	 * @param array $opts Options for the search.
 	 * @return array
 	 */
@@ -94,6 +96,7 @@ class PostFinder {
 	/**
 	 * Count posts that have a specific block.
 	 *
+	 * @param array $blocks Blocks to search for.
 	 * @param array $opts Options for the search.
 	 * @return int Total number of posts.
 	 */
@@ -126,6 +129,7 @@ class PostFinder {
 	 * Count posts that have a specific block on a multisite network.
 	 *
 	 * @param array $sites Sites to search.
+	 * @param array $blocks Blocks to search for.
 	 * @param array $opts Options for the search.
 	 * @return int Total number of posts.
 	 */
