@@ -281,7 +281,7 @@ class CatalogCommand extends \WP_CLI_Command {
 	 * throws an error if not.
 	 *
 	 * @param array $opts Optional opts
-	 * @return void
+	 * @return bool
 	 */
 	private function check_network_option( $opts ) {
 		if ( ! is_multisite() && isset( $opts['network'] ) ) {
@@ -428,6 +428,7 @@ class CatalogCommand extends \WP_CLI_Command {
 		}
 
 		if ( ! empty( $result ) ) {
+			// translators: %d is the number of posts found
 			\WP_CLI::success( sprintf( __( 'Found %d post(s)', 'block-catalog' ), $result ) );
 		} else {
 			\WP_CLI::warning( __( 'No posts found.', 'block-catalog' ) );
