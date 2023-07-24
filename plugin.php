@@ -21,6 +21,7 @@ define( 'BLOCK_CATALOG_PLUGIN_VERSION', '1.4.0' );
 define( 'BLOCK_CATALOG_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 define( 'BLOCK_CATALOG_PLUGIN_PATH', plugin_dir_path( __FILE__ ) );
 define( 'BLOCK_CATALOG_PLUGIN_INC', BLOCK_CATALOG_PLUGIN_PATH . 'includes/' );
+define( 'BLOCK_CATALOG_PLUGIN_FILE', plugin_basename( __FILE__ ) );
 
 define( 'BLOCK_CATALOG_TAXONOMY', 'block-catalog' );
 

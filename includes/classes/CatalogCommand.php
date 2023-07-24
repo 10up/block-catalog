@@ -265,6 +265,10 @@ class CatalogCommand extends \WP_CLI_Command {
 			return '';
 		}
 
+		if ( ! is_plugin_active_for_network( BLOCK_CATALOG_PLUGIN_FILE ) ) {
+			\WP_CLI::error( __( 'The --network option can only be used when the Block Catalog plugin is network activated.', 'block-catalog' ) );
+		}
+
 		$network = \WP_CLI\Utils\get_flag_value( $opts, 'network', 'public' );
 
 		// assume networks with commas are ids
