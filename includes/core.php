@@ -163,7 +163,7 @@ function script_url( $script, $context ) {
 		return new WP_Error( 'invalid_enqueue_context', 'Invalid $context specified in BlockCatalog script loader.' );
 	}
 
-	return BLOCK_CATALOG_PLUGIN_URL . "dist/js/${script}.js";
+	return BLOCK_CATALOG_PLUGIN_URL . "dist/js/{$script}.js";
 
 }
 
@@ -181,7 +181,7 @@ function style_url( $stylesheet, $context ) {
 		return new WP_Error( 'invalid_enqueue_context', __( 'Invalid $context specified in BlockCatalog stylesheet loader.', 'block-catalog' ) );
 	}
 
-	return BLOCK_CATALOG_PLUGIN_URL . "dist/css/${stylesheet}.css";
+	return BLOCK_CATALOG_PLUGIN_URL . "dist/css/{$stylesheet}.css";
 
 }
 
