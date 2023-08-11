@@ -6,6 +6,10 @@ All notable changes to this project will be documented in this file, per [the Ke
 
 - todo
 
+## [1.5.0] - 2023-08-11
+
+- Adds support for multisite via WP CLI
+
 ## [1.4.0] - 2022-12-03
 
 - Improves Core Block Display Titles logic

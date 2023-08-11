@@ -23,6 +23,7 @@
 * Find Posts that use Reusable Blocks.
 * Use the WP CLI to quickly find blocks from the command line.
 * Use custom WordPress filters to extend the Block Catalog.
+* Find block usage on a Multisite network.
 
 ## Requirements
 
@@ -72,6 +73,9 @@ The following WP CLI commands are supported by the Block Catalog plugin.
   * [--only=\<only\>]
     Limits the command to the specified comma delimited post ids.
 
+  * [--network=\<network\>]
+    Indexes the entire network. Accepts a comma delimited list of child site ids.
+
   * [--dry-run]
     Runs catalog without saving changes to the DB.
 
@@ -100,17 +104,24 @@ The following WP CLI commands are supported by the Block Catalog plugin.
     Post status of posts to search, default 'publish'
 
   * [--count=\<count\>]
-    Prints total found posts, default true
+    Prints total found posts, default true. When combined with `--network` prints an aggregate across the multisite.
 
   * [--operator=\<operator\>]
     The query operator to be used in the search clause. Default IN.
 
+  * [--network=\<network\>]
+    Searches across the entire network if on multisite. Accepts a comma delimited list of child site ids.
+
 * `wp block-catalog delete-index`
    Resets the Block Catalog by removing all catalog terms.
 
+  * [--network=\<network\>]
+    Deletes the indexes across the entire network. Accepts a comma delimited list of child site ids.
+
+
 * `wp block-catalog post-blocks <post-id> [--index]`
    Prints the list of blocks in the specified post.
-   
+
   * \<post-id\>
     The post id to lookup blocks for.
 
