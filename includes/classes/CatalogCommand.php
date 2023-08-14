@@ -215,6 +215,49 @@ class CatalogCommand extends \WP_CLI_Command {
 	}
 
 	/**
+	 * Exports the posts associated with the 'block_catalog' taxonomy to a CSV file.
+	 *
+	 * ## OPTIONS
+	 *
+	 * --output=<path>
+	 * : Path to the CSV file.
+	 *
+	 * [--post_type=<types>]
+	 * : Comma-delimited list of post types. Optional.
+	 *
+	 * [--posts_per_block=<number>]
+	 * : Number of posts per block, default to -1 (all). Optional.
+	 *
+	 * ## EXAMPLES
+	 *
+	 *     wp block-catalog export --output=path/to/csv
+	 *
+	 * @when after_wp_load
+	 *
+	 * @param array $args Positional arguments.
+	 * @param array $assoc_args Associative arguments (options).
+	 */
+	public function export( $args, $assoc_args ) {
+			$output          = isset( $assoc_args['output'] ) ? $assoc_args['output'] : '';
+			$post_types      = isset( $assoc_args['post_type'] ) ? explode( ',', $assoc_args['post_type'] ) : array();
+			$posts_per_block = isset( $assoc_args['posts_per_block'] ) ? intval( $assoc_args['posts_per_block'] ) : -1;
+
+			$opts = array(
+				'post_type'       => $post_types,
+				'posts_per_block' => $posts_per_block,
+			);
+
+			$exporter = new \BlockCatalog\CatalogExporter();
+			$result   = $exporter->export( $output, $opts );
+
+			if ( is_wp_error( $result ) ) {
+					\WP_CLI::error( $result->get_error_message() );
+			} else {
+					\WP_CLI::success( $result['message'] );
+			}
+	}
+
+	/**
 	 * Returns the list of post ids to migrate.
 	 *
 	 * @param array $opts Optional opts
