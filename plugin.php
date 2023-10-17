@@ -15,7 +15,6 @@
  * @package           BlockCatalog
  */
 
-
 // Useful global constants.
 define( 'BLOCK_CATALOG_PLUGIN_VERSION', '1.5.0' );
 define( 'BLOCK_CATALOG_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
