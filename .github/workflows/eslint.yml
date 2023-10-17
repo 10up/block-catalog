@@ -28,7 +28,7 @@ jobs:
         cache: npm
 
     - name: Install Node dependencies
-      run: npm ci --no-optional
+      run: npm ci --no-optional --force
 
     - name: Get updated JS files
       id: changed-files
@@ -36,7 +36,6 @@ jobs:
       with:
         files: |
           **/*.js
-          **/*.json
 
     - name: Run JS linting
       if: ${{ steps.changed-files.outputs.any_changed == 'true' }}
