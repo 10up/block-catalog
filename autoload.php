@@ -112,7 +112,7 @@ class Psr4AutoloaderClass {
 			// replace namespace separators with directory separators
 			// in the relative class name, append with .php
 			$file = $base_dir
-				  . str_replace( '\\', '/', $relative_class )
+				  . str_replace( '\\', '/', $relative_class ) // test change.
 				  . '.php';
 
 			// if the mapped file exists, require it
