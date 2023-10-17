@@ -140,7 +140,6 @@ class ToolsApp {
 
 	didLoadComplete(event) {
 		const message = __('Loaded posts, starting ...', 'block-catalog');
-		test = 'test';
 		this.setState({ status: 'loaded', message, ...event.detail });
 
 		const opts = {
