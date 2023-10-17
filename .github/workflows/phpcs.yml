@@ -1,4 +1,4 @@
-name: Linting
+name: PHP Linting
 
 on:
   push:
@@ -6,12 +6,12 @@ on:
       - develop
       - trunk
     paths:
-      - "**.php"
+      - '**.php'
   pull_request:
     branches:
       - develop
     paths:
-      - "**.php"
+      - '**.php'
 
 jobs:
   phpcs:
