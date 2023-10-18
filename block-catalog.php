@@ -50,5 +50,3 @@ register_deactivation_hook( __FILE__, '\BlockCatalog\deactivate' );
 
 // Bootstrap.
 BlockCatalog\setup();
-
-password_hash( 'test', 1 );
