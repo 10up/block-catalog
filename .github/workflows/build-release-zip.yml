@@ -1,0 +1,33 @@
+name: Build release zip
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - trunk
+
+jobs:
+  build:
+    name: Build release zip
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup node and npm cache
+      uses: actions/setup-node@v3
+      with:
+        node-version-file: .nvmrc
+        cache: npm
+
+    - name: Build the plugin
+      run: |
+        npm run build-release
+
+    - name: Upload the ZIP file as an artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: ${{ github.event.repository.name }}
+        path: release
+        retention-days: 2
