@@ -3,8 +3,8 @@
 	<description>PHP Compatibility checks only</description>
 
 	<!-- Files to check -->
-    <arg name="extensions" value="php"/>
-    <file>.</file>
+	<arg name="extensions" value="php"/>
+	<file>.</file>
 
 	<rule ref="PHPCompatibilityWP" />
 
