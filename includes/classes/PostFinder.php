@@ -162,7 +162,7 @@ class PostFinder {
 		$slugs = [];
 
 		foreach ( $args as $index => $arg ) {
-			$slug      = $arg;
+			$slug      = sanitize_title( $arg );
 			$slug_term = get_term_by( 'slug', $slug, BLOCK_CATALOG_TAXONOMY );
 
 			/**
