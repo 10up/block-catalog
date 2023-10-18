@@ -6,7 +6,7 @@ The following is a set of guidelines for contributors as well as information and
 
 ## Ways to contribute
 
-Contributing isn't just writing code - it's anything that improves the project. All contributions for block-catalog are managed right here on GitHub. Here are some ways you can help:
+Contributing isn't just writing code - it's anything that improves the project. All contributions for Block Catalog are managed right here on GitHub. Here are some ways you can help:
 
 ### Reporting bugs
 
@@ -24,21 +24,22 @@ For more on how 10up writes and manages code, check out our [10up Engineering Be
 
 ## Workflow
 
-The `develop` branch is the development branch which means it contains the next version to be released. `stable` contains the current latest release and `trunk` contains the corresponding stable development version. Always work on the `develop` branch and open up PRs against `develop`.
+The `develop` branch is the development branch which means it contains the next version to be released.  `trunk` contains the latest released version as reflected in the WordPress.org plugin repository.  Always work on the `develop` branch and open up PRs against `develop`.
 
 ## Release instructions
 
 1. Branch: Starting from `develop`, cut a release branch named `release/X.Y.Z` for your changes.
-1. Version bump: Bump the version number in `plugin.php`, `config.php`, `package-lock.json`, `package.json`, and `readme.txt` if it does not already reflect the version being released.
-1. Changelog: Add/update the changelog in `CHANGELOG.md`.
+1. Version bump: Bump the version number in `block-catalog.php`, `package-lock.json`, `package.json`, and `readme.txt` if it does not already reflect the version being released. In `block-catalog.php` update both the plugin "Version:" property and the plugin `BLOCK_CATALOG_PLUGIN_VERSION` constant.
+1. Changelog: Add/update the changelog in `CHANGELOG.md` and `readme.txt`.
 1. Props: update `CREDITS.md` file with any new contributors, confirm maintainers are accurate.
 1. New files: Check to be sure any new files/paths that are unnecessary in the production version are included in `.gitattributes`.
-1. Readme updates: Make any other readme changes as necessary in `README.md` and `readme.txt`.
-1. Merge: Make a non-fast-forward merge from your release branch to `develop` (or merge the pull request), then do the same for `develop` into `trunk` (`git checkout trunk && git merge --no-ff develop`). `trunk` contains the stable development version.
+1. Readme updates: Make any other readme changes as necessary. `README.md` is geared toward GitHub and `readme.txt` contains WordPress.org-specific content.  The two are slightly different.
+1. Merge: Make a non-fast-forward merge from your release branch to `develop` (or merge the pull request), then do the same for `develop` into `trunk`, ensuring you pull the most recent changes into `develop` first (`git checkout develop && git pull origin develop && git checkout trunk && git merge --no-ff develop`). `trunk` contains the stable development version.
 1. Push: Push your trunk branch to GitHub (e.g. `git push origin trunk`).
-1. [Wait for build](https://xkcd.com/303/): Head to the [Actions](https://github.com/10up/block-catalog/actions) tab in the repo and wait for it to finish if it hasn't already. If it doesn't succeed, figure out why and start over.
-1. Check the build: Check out the `stable` branch and test for functionality locally.
-1. Release: Create a [new release](https://github.com/10up/block-catalog/releases/new), naming the tag and the release with the new version number, and targeting the `stable` branch. Paste the changelog from `CHANGELOG.md` into the body of the release and include a link to the closed issues on the [milestone](https://github.com/10up/block-catalog/milestone/#?closed=1).  The release should now appear under [releases](https://github.com/10up/block-catalog/releases) and in the WordPress admin as an update as well.
+1. [Compare](https://github.com/10up/block-catalog/compare/trunk...develop) `trunk` to `develop` to ensure no additional changes were missed.
+1. Test the pre-release ZIP locally by [downloading](https://github.com/10up/block-catalog/actions/workflows/build-release-zip.yml) it from the Build release zip action artifact and installing it locally. Ensure this zip has all the files we expect, that it installs and activates correctly and that all basic functionality is working.
+1. Release: Create a [new release](https://github.com/10up/block-catalog/releases/new), naming the tag and the release with the new version number, and targeting the `trunk` branch. Paste the changelog from `CHANGELOG.md` into the body of the release and include a link to the closed issues on the [milestone](https://github.com/10up/block-catalog/milestone/#?closed=1).
+1. SVN: Wait for the [GitHub Action](https://github.com/10up/block-catalog/actions/workflows/wordpress-plugin-deploy.yml) to finish deploying to the WordPress.org repository. If all goes well, users with SVN commit access for that plugin will receive an emailed diff of changes.
+1. Check WordPress.org: Ensure that the changes are live on [WordPress.org](https://wordpress.org/plugins/block-catalog/). This may take a few minutes.
 1. Close milestone: Edit the [milestone](https://github.com/10up/block-catalog/milestone/#) with release date (in the `Due date (optional)` field) and link to GitHub release (in the `Description field`), then close the milestone.
 1. Punt incomplete items: If any open issues or PRs which were milestoned for `X.Y.Z` do not make it into the release, update their milestone to `X.Y.Z+1`, `X.Y+1.0`, `X+1.0.0` or `Future Release`.
-1. Version bump (again): In the `develop` branch (`cd ../ && git checkout develop`) bump the version number in `block-catalog.php` to `X.Y.(Z+1)-dev`.  It's okay if the next release might be a different version number; that change can be handled right before release in the first step, as might also be the case with `@since` annotations.
