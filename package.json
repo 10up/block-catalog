@@ -17,7 +17,6 @@
     "clean-dist": "rm -rf ./dist",
     "build-release": "npm install && composer install --no-dev -o && npm run build && npm run build-release-zip",
     "build-release-zip": "mkdir -p releases && bin/build-release-zip.sh $npm_package_version",
-    "postbuild-release-zip": "unzip releases/block-catalog-$npm_package_version.zip -d ./release",
     "build-release-svn": "mkdir -p releases/svn && bin/build-release-svn.sh $npm_package_version"
   },
   "engines": {
