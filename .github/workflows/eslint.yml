@@ -28,7 +28,10 @@ jobs:
         cache: npm
 
     - name: Install Node dependencies
-      run: npm ci --omit=optional --force # Using force here to get the proper version of eslint-plugin-prettier installed, as the version @10up/eslint-config requires has a bug.
+      run: npm ci --omit=optional
+
+    - name: Install eslint-plugin-prettier v5.0.0 # Do this to get around a bug in the version that @10up/eslint-config requires.
+      run: npm install eslint-plugin-prettier@^5.0.0
 
     - name: Get updated JS files
       id: changed-files
