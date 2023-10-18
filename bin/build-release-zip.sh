@@ -1,4 +1,4 @@
-#!/user/bin/bash
+#!/usr/bin/bash
 
 version=$1
 file=block-catalog-$version.zip
