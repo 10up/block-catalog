@@ -5,4 +5,12 @@
 	<rule ref="10up-Default" />
 	<exclude-pattern>*/dist/*</exclude-pattern>
 	<exclude-pattern>*/tests/*</exclude-pattern>
+
+	<config name="minimum_supported_wp_version" value="5.7"/>
+	<config name="testVersion" value="7.4-"/>
+
+	<!-- Exclude the PHPCompatibilityWP ruleset -->
+	<rule ref="PHPCompatibilityWP">
+		<exclude name="PHPCompatibilityWP"/>
+	</rule>
 </ruleset>

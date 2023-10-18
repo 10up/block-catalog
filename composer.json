@@ -16,7 +16,7 @@
     }
   ],
   "require": {
-    "php": ">=7.2"
+    "php": ">=7.4"
   },
   "require-dev": {
     "10up/phpcs-composer": "dev-master",
