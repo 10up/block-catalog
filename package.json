@@ -8,7 +8,6 @@
   },
   "scripts": {
     "start": "npm run watch",
-    "watch": "10up-toolkit watch --port=5010 --hot",
     "build": "10up-toolkit build",
     "dev": "10up-toolkit build --watch",
     "watch": "10up-toolkit build --watch",
@@ -24,7 +23,8 @@
     "node": ">=12.0.0"
   },
   "devDependencies": {
-    "10up-toolkit": "^5.2.1"
+    "10up-toolkit": "^5.2.1",
+    "eslint-plugin-prettier": "^5.0.0"
   },
   "dependencies": {
     "prop-types": "^15.7.2"

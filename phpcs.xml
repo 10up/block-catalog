@@ -4,4 +4,5 @@
 
 	<rule ref="10up-Default" />
 	<exclude-pattern>*/dist/*</exclude-pattern>
+	<exclude-pattern>*/tests/*</exclude-pattern>
 </ruleset>
