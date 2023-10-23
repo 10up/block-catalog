@@ -1,5 +1,5 @@
 === Block Catalog ===
-Contributors:      dsawardekar, 10up
+Contributors:      10up, dsawardekar, dkotter, jeffpaul
 Tags:              gutenberg, developer, blocks, custom blocks
 Requires at least: 5.7
 Tested up to:      6.3
