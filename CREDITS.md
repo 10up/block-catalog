@@ -10,7 +10,7 @@ The following individuals are responsible for curating the list of issues, respo
 
 Thank you to all the people who have already contributed to this repository via bug reports, code, design, ideas, project management, translation, testing, etc.
 
-[Darshan Sawardekar (@dsawardekar)](https://github.com/dsawardekar), [Darin Kotter (@dkotter)](https://github.com/dkotter), [Jeffrey Paul (@jeffpaul)](https://github.com/jeffpaul), [Brooke Campbell](https://www.linkedin.com/in/brookecampbelldesign/), [Faisal Alvi (@faisal-alvi)](https://github.com/faisal-alvi), [Peter Wilson (@peterwilsoncc)](https://github.com/peterwilsoncc), [Depandabot (@dependabot)](https://github.com/apps/dependabot).
+[Darshan Sawardekar (@dsawardekar)](https://github.com/dsawardekar), [Taylor Lovett (@tlovett1)](https://github.com/tlovett1), [Darin Kotter (@dkotter)](https://github.com/dkotter), [Jeffrey Paul (@jeffpaul)](https://github.com/jeffpaul), [Brooke Campbell](https://www.linkedin.com/in/brookecampbelldesign/), [Faisal Alvi (@faisal-alvi)](https://github.com/faisal-alvi), [Peter Wilson (@peterwilsoncc)](https://github.com/peterwilsoncc), [Depandabot (@dependabot)](https://github.com/apps/dependabot).
 
 ## Libraries
 
