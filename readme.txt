@@ -1,10 +1,10 @@
 === Block Catalog ===
-Contributors:      dsawardekar, 10up
+Contributors:      10up, dsawardekar, dkotter, jeffpaul
 Tags:              gutenberg, developer, blocks, custom blocks
 Requires at least: 5.7
 Tested up to:      6.3
 Requires PHP:      7.4
-Stable tag:        1.5.0
+Stable tag:        1.5.1
 License:           GPLv2 or later
 License URI:       http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -54,9 +54,20 @@ To address this you need to update your custom block registration. If this is ou
 
 == Changelog ==
 
-= 1.5.0 - 2023-08-11
+= 1.5.1 - 2023-10-24 =
 
-- Adds support for multisite via WP CLI
+**Note that this release changes the name of the base plugin file. As such, you'll probably need to reactivate the plugin after updating.**
+
+* **Added:** Add our standard GitHub Action automations (props [@jeffpaul](https://github.com/jeffpaul), [@dsawardekar](https://github.com/dsawardekar), [@dkotter](https://github.com/dkotter) via [#10](https://github.com/10up/block-catalog/pull/10), [#20](https://github.com/10up/block-catalog/pull/20), [#22](https://github.com/10up/block-catalog/pull/22), [#23](https://github.com/10up/block-catalog/pull/23), [#24](https://github.com/10up/block-catalog/pull/24), [#25](https://github.com/10up/block-catalog/pull/25)).
+* **Changed:** Update our plugin image assets (props [Brooke Campbell](https://www.linkedin.com/in/brookecampbelldesign/), [@jeffpaul](https://github.com/jeffpaul), [@dsawardekar](https://github.com/dsawardekar), [@faisal-alvi](https://github.com/faisal-alvi) via [#11](https://github.com/10up/block-catalog/pull/11), [#17](https://github.com/10up/block-catalog/pull/17)).
+* **Changed:** Updated the main plugin file name (props [@dkotter](https://github.com/dkotter), [@peterwilsoncc](https://github.com/peterwilsoncc), [@dsawardekar](https://github.com/dsawardekar) via [#18](https://github.com/10up/block-catalog/pull/18)).
+* **Security:** Bump `@babel/traverse` from 7.22.8 to 7.23.2 (props [@dependabot](https://github.com/apps/dependabot), [@dkotter](https://github.com/dkotter) via [#21](https://github.com/10up/block-catalog/pull/21)).
+
+= 1.5.0 - 2023-08-11 =
+
+* **Added:** `Beta` Support Level (props [@jeffpaul](https://github.com/jeffpaul), [@dsawardekar](https://github.com/dsawardekar) via [#3](https://github.com/10up/block-catalog/pull/3)).
+* **Added:** Adds support for multisite via WP CLI (props [@dsawardekar](https://github.com/dsawardekar), [@Sidsector9](https://github.com/Sidsector9) via [#9](https://github.com/10up/block-catalog/pull/9)).
+* **Fixed:** Missing name in the `block_catalog_taxonomy_options` hook (props [@dsawardekar](https://github.com/dsawardekar), [@fabiankaegy](https://github.com/fabiankaegy) via [#6](https://github.com/10up/block-catalog/pull/6)).
 
 = 1.4.0 - 2022-12-03
 
@@ -112,4 +123,9 @@ To address this you need to update your custom block registration. If this is ou
 
 - Initial release
 
+== Upgrade Notice ==
+
+= 1.5.1 =
+
+* Note that this release changes the name of the base plugin file. As such, you'll probably need to reactivate the plugin after updating
 

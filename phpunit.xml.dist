@@ -17,4 +17,10 @@
 			<directory suffix=".php">./includes</directory>
 		</whitelist>
 	</filter>
+	<php>
+		<const name="WP_TESTS_MULTISITE" value="1" />
+		<ini name="error_reporting" value="32767" />
+		<ini name="display_errors" value="1" />
+		<ini name="display_startup_errors" value="1" />
+	</php>
 </phpunit>
