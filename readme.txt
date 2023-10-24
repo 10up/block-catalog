@@ -54,7 +54,7 @@ To address this you need to update your custom block registration. If this is ou
 
 == Changelog ==
 
-= 1.5.1 - 2023-10-23 =
+= 1.5.1 - 2023-10-24 =
 
 **Note that this release changes the name of the base plugin file. As such, you'll probably need to reactivate the plugin after updating.**
 

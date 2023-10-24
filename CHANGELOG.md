@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file, per [the Ke
 
 ## [Unreleased] - TBD
 
-## [1.5.1] - 2023-10-23
+## [1.5.1] - 2023-10-24
 
 **Note that this release changes the name of the base plugin file. As such, you'll probably need to reactivate the plugin after updating.**
 
