@@ -1,6 +1,9 @@
 /.github export-ignore
 /.wordpress-org export-ignore
+/bin export-ignore
+/node_modules export-ignore
 /tests export-ignore
+/vendor export-ignore
 
 /.* export-ignore
 /CHANGELOG.md export-ignore
@@ -12,6 +15,7 @@
 /LICENSE.md export-ignore
 /package-lock.json export-ignore
 /package.json export-ignore
+/phpcs-compat.xml export-ignore
 /phpcs.xml export-ignore
 /phpunit.xml.dist export-ignore
 /portkey.json export-ignore
