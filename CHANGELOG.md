@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file, per [the Ke
 
 ## [Unreleased] - TBD
 
+## [1.5.2] - 2023-11-16
+
+### Changed
+
+- Bump WordPress "tested up to" version to 6.4 (props [@qasumitbagthariya](https://github.com/qasumitbagthariya), [@jeffpaul](https://github.com/jeffpaul) via [#28](https://github.com/10up/block-catalog/pull/28), [#29](https://github.com/10up/block-catalog/pull/29)).
+
 ## [1.5.1] - 2023-10-24
 
 **Note that this release changes the name of the base plugin file. As such, you'll probably need to reactivate the plugin after updating.**
@@ -79,6 +85,7 @@ All notable changes to this project will be documented in this file, per [the Ke
 - Initial release
 
 [Unreleased]: https://github.com/10up/block-catalog/compare/trunk...develop
+[1.5.2]: https://github.com/10up/block-catalog/compare/1.5.1...1.5.2
 [1.5.1]: https://github.com/10up/block-catalog/compare/1.5.0...1.5.1
 [1.5.0]: https://github.com/10up/block-catalog/compare/1.4.0...1.5.0
 [1.4.0]: https://github.com/10up/block-catalog/compare/1.3.2...1.4.0
