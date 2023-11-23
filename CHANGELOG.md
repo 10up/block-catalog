@@ -4,6 +4,20 @@ All notable changes to this project will be documented in this file, per [the Ke
 
 ## [Unreleased] - TBD
 
+## [1.5.3] - 2023-11-23
+
+### Fixed
+
+- PHP 8.2 deprecation warnings
+
+### Added
+
+PHPUnit 9.x support
+
+### Security
+
+Bumps sharp from 0.32.3 to 0.32.6
+
 ## [1.5.2] - 2023-11-16
 
 ### Changed

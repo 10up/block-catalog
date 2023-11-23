@@ -54,6 +54,12 @@ To address this you need to update your custom block registration. If this is ou
 
 == Changelog ==
 
+= 1.5.3 - 2023-11-23 =
+
+* **Fixed:** PHP 8.2 deprecation warnings
+* **Added:** PHPUnit 9.x support
+* **Security:** Bumps sharp from 0.32.3 to 0.32.6
+
 = 1.5.2 - 2023-11-16 =
 
 * **Changed:** Bump WordPress "tested up to" version to 6.4 (props [@qasumitbagthariya](https://github.com/qasumitbagthariya), [@jeffpaul](https://github.com/jeffpaul) via [#28](https://github.com/10up/block-catalog/pull/28), [#29](https://github.com/10up/block-catalog/pull/29)).
