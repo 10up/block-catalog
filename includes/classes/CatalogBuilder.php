@@ -43,10 +43,8 @@ class CatalogBuilder {
 
 	/**
 	 * Resets the Block Catalog by removing all catalog terms.
-	 *
-	 * @param array $opts Optional opts
 	 */
-	public function delete_index( $opts = [] ) {
+	public function delete_index() {
 		\BlockCatalog\Utility\start_bulk_operation();
 
 		$term_opts = [
@@ -78,9 +76,9 @@ class CatalogBuilder {
 			\BlockCatalog\Utility\clear_caches();
 
 			if ( ! is_wp_error( $result ) ) {
-				$removed++;
+				++$removed;
 			} else {
-				$errors++;
+				++$errors;
 			}
 		}
 
@@ -112,10 +110,9 @@ class CatalogBuilder {
 	/**
 	 * Deletes the specified term id and its associations.
 	 *
-	 * @param int   $term_id The term id to delete.
-	 * @param array $opts Optional opts
+	 * @param int $term_id The term id to delete.
 	 */
-	public function delete_term_index( $term_id, $opts = [] ) {
+	public function delete_term_index( $term_id ) {
 		return wp_delete_term( $term_id, BLOCK_CATALOG_TAXONOMY );
 	}
 
@@ -215,11 +212,10 @@ class CatalogBuilder {
 	/**
 	 * Builds a list of Block Term names for a given post.
 	 *
-	 * @param int   $post_id The post id.
-	 * @param array $opts Optional args
+	 * @param int $post_id The post id.
 	 * @return array
 	 */
-	public function get_post_block_terms( $post_id, $opts = [] ) {
+	public function get_post_block_terms( $post_id ) {
 		if ( empty( $post_id ) ) {
 			return [];
 		}
@@ -314,10 +310,9 @@ class CatalogBuilder {
 	 * Converts a block to a list of term names.
 	 *
 	 * @param array $block The block.
-	 * @param array $opts Optional opts
 	 * @return array
 	 */
-	public function block_to_terms( $block, $opts = [] ) {
+	public function block_to_terms( $block ) {
 		if ( empty( $block ) || empty( $block['blockName'] ) ) {
 			return [
 				'terms'      => [],

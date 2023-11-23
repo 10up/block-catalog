@@ -201,5 +201,4 @@ class PostFinder {
 
 		return ! empty( $catalog_terms );
 	}
-
 }
