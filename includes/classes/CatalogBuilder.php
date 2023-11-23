@@ -43,8 +43,10 @@ class CatalogBuilder {
 
 	/**
 	 * Resets the Block Catalog by removing all catalog terms.
+	 *
+	 * @param array $opts Optional args
 	 */
-	public function delete_index() {
+	public function delete_index( $opts = [] ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.Found
 		\BlockCatalog\Utility\start_bulk_operation();
 
 		$term_opts = [
@@ -212,10 +214,11 @@ class CatalogBuilder {
 	/**
 	 * Builds a list of Block Term names for a given post.
 	 *
-	 * @param int $post_id The post id.
+	 * @param int   $post_id The post id.
+	 * @param array $opts The options.
 	 * @return array
 	 */
-	public function get_post_block_terms( $post_id ) {
+	public function get_post_block_terms( $post_id, $opts = [] ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed
 		if ( empty( $post_id ) ) {
 			return [];
 		}
