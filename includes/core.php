@@ -7,7 +7,7 @@
 
 namespace BlockCatalog;
 
-use \WP_Error;
+use WP_Error;
 use BlockCatalog\Utility;
 
 /**
@@ -16,8 +16,8 @@ use BlockCatalog\Utility;
  * @return void
  */
 function setup() {
-	$n = function( $function ) {
-		return __NAMESPACE__ . "\\$function";
+	$n = function ( $func ) {
+		return __NAMESPACE__ . "\\$func";
 	};
 
 	add_action( 'init', $n( 'i18n' ) );
@@ -103,7 +103,6 @@ function activate() {
 	// First load the init scripts in case any rewrite functionality is being loaded
 	init();
 	flush_rewrite_rules();
-
 }
 
 /**
@@ -136,7 +135,6 @@ function render_index_notice() {
  * @return void
  */
 function deactivate() {
-
 }
 
 
@@ -164,7 +162,6 @@ function script_url( $script, $context ) {
 	}
 
 	return BLOCK_CATALOG_PLUGIN_URL . "dist/js/{$script}.js";
-
 }
 
 /**
@@ -182,7 +179,6 @@ function style_url( $stylesheet, $context ) {
 	}
 
 	return BLOCK_CATALOG_PLUGIN_URL . "dist/css/{$stylesheet}.css";
-
 }
 
 /**

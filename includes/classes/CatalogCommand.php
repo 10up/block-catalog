@@ -164,12 +164,10 @@ class CatalogCommand extends \WP_CLI_Command {
 			} else {
 				$this->count_on_site( $args, $opts );
 			}
-		} else {
-			if ( ! empty( $network ) ) {
+		} elseif ( ! empty( $network ) ) {
 				$this->find_on_network( $network, $args, $opts );
-			} else {
-				$this->find_on_site( $args, $opts );
-			}
+		} else {
+			$this->find_on_site( $args, $opts );
 		}
 	}
 
@@ -202,7 +200,7 @@ class CatalogCommand extends \WP_CLI_Command {
 		}
 
 		$block_items = array_map(
-			function( $term ) {
+			function ( $term ) {
 				return [
 					'Block' => $term->name,
 					'ID'    => $term->term_id,
@@ -233,7 +231,7 @@ class CatalogCommand extends \WP_CLI_Command {
 			'post_type'      => \BlockCatalog\Utility\get_supported_post_types(),
 			'post_status'    => 'any',
 			'fields'         => 'ids',
-			'posts_per_page' => -1,
+			'posts_per_page' => -1, // phpcs:ignore WordPress.WP.PostsPerPageNoUnlimited.posts_per_page_posts_per_page
 		];
 
 		$query = new \WP_Query( $query_params );
@@ -367,7 +365,7 @@ class CatalogCommand extends \WP_CLI_Command {
 			}
 
 			if ( is_wp_error( $result ) ) {
-				$errors++;
+				++$errors;
 			} else {
 				$updated += count( $result['terms'] ?? [] );
 			}
@@ -407,7 +405,7 @@ class CatalogCommand extends \WP_CLI_Command {
 	 * @param array $args Blocks to query.
 	 * @param array $opts Optional arguments.
 	 */
-	private function count_on_network( $sites = [], $args = [], $opts ) {
+	private function count_on_network( $sites = [], $args = [], $opts = [] ) {
 		if ( ! empty( $opts['index'] ) ) {
 			$this->index( $args, $opts );
 		}
@@ -428,7 +426,7 @@ class CatalogCommand extends \WP_CLI_Command {
 	 * @param array $args Blocks to query.
 	 * @param array $opts Optional arguments.
 	 */
-	private function count_on_site( $args = [], $opts ) {
+	private function count_on_site( $args = [], $opts = [] ) {
 		if ( ! empty( $opts['index'] ) ) {
 			$this->index( $args, $opts );
 		}
@@ -455,7 +453,7 @@ class CatalogCommand extends \WP_CLI_Command {
 	 * @param array $args Blocks to query.
 	 * @param array $opts Optional arguments.
 	 */
-	private function find_on_network( $sites = [], $args = [], $opts ) {
+	private function find_on_network( $sites = [], $args = [], $opts = [] ) {
 		if ( ! empty( $opts['index'] ) ) {
 			$this->index( $args, $opts );
 		}
@@ -518,7 +516,7 @@ class CatalogCommand extends \WP_CLI_Command {
 	 * @param array $args Blocks to query.
 	 * @param array $opts Optional arguments.
 	 */
-	private function find_on_site( $args = [], $opts ) {
+	private function find_on_site( $args = [], $opts = [] ) {
 		if ( ! empty( $opts['index'] ) ) {
 			$this->index( $args, $opts );
 		}
@@ -538,5 +536,4 @@ class CatalogCommand extends \WP_CLI_Command {
 			\WP_CLI::warning( __( 'No posts found.', 'block-catalog' ) );
 		}
 	}
-
 }

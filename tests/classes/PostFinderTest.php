@@ -7,7 +7,7 @@ class PostFinderTest extends \WP_UnitTestCase {
 	public $finder;
 	public $builder;
 
-	function setUp() {
+	function setUp():void {
 		parent::setUp();
 
 		$this->finder  = new PostFinder();

@@ -6,7 +6,7 @@ class ToolsPageTest extends \WP_UnitTestCase {
 
 	public $page;
 
-	function setUp() {
+	function setUp():void {
 		parent::setUp();
 
 		$this->page = new ToolsPage();
@@ -43,10 +43,10 @@ class ToolsPageTest extends \WP_UnitTestCase {
 	function test_it_has_rest_api_endpoints() {
 		$actual = $this->page->get_settings()['settings'];
 
-		$this->assertContains( 'block-catalog/v1/posts', $actual['posts_endpoint'] );
-		$this->assertContains( 'block-catalog/v1/index', $actual['index_endpoint'] );
-		$this->assertContains( 'block-catalog/v1/terms', $actual['terms_endpoint'] );
-		$this->assertContains( 'block-catalog/v1/delete-index', $actual['delete_index_endpoint'] );
+		$this->assertStringContainsString( 'block-catalog/v1/posts', $actual['posts_endpoint'] );
+		$this->assertStringContainsString( 'block-catalog/v1/index', $actual['index_endpoint'] );
+		$this->assertStringContainsString( 'block-catalog/v1/terms', $actual['terms_endpoint'] );
+		$this->assertStringContainsString( 'block-catalog/v1/delete-index', $actual['delete_index_endpoint'] );
 	}
 
 	function test_it_can_be_rendered_with_errors() {
@@ -54,7 +54,7 @@ class ToolsPageTest extends \WP_UnitTestCase {
 		$this->page->render();
 		$output = ob_get_clean();
 
-		$this->assertContains( 'index-settings', $output );
+		$this->assertStringContainsString( 'index-settings', $output );
 	}
 
 	function test_it_enqueues_script_on_render() {
