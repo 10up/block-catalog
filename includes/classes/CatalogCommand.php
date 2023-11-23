@@ -233,7 +233,7 @@ class CatalogCommand extends \WP_CLI_Command {
 			'post_type'      => \BlockCatalog\Utility\get_supported_post_types(),
 			'post_status'    => 'any',
 			'fields'         => 'ids',
-			'posts_per_page' => -1,
+			'posts_per_page' => -1, // phpcs:ignore WordPress.WP.PostsPerPageNoUnlimited.posts_per_page_posts_per_page
 		];
 
 		$query = new \WP_Query( $query_params );
