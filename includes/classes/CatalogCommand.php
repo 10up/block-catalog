@@ -407,7 +407,7 @@ class CatalogCommand extends \WP_CLI_Command {
 	 * @param array $args Blocks to query.
 	 * @param array $opts Optional arguments.
 	 */
-	private function count_on_network( $sites = [], $args = [], $opts ) {
+	private function count_on_network( $sites = [], $args = [], $opts = [] ) {
 		if ( ! empty( $opts['index'] ) ) {
 			$this->index( $args, $opts );
 		}
@@ -428,7 +428,7 @@ class CatalogCommand extends \WP_CLI_Command {
 	 * @param array $args Blocks to query.
 	 * @param array $opts Optional arguments.
 	 */
-	private function count_on_site( $args = [], $opts ) {
+	private function count_on_site( $args = [], $opts = [] ) {
 		if ( ! empty( $opts['index'] ) ) {
 			$this->index( $args, $opts );
 		}
@@ -455,7 +455,7 @@ class CatalogCommand extends \WP_CLI_Command {
 	 * @param array $args Blocks to query.
 	 * @param array $opts Optional arguments.
 	 */
-	private function find_on_network( $sites = [], $args = [], $opts ) {
+	private function find_on_network( $sites = [], $args = [], $opts = [] ) {
 		if ( ! empty( $opts['index'] ) ) {
 			$this->index( $args, $opts );
 		}
@@ -518,7 +518,7 @@ class CatalogCommand extends \WP_CLI_Command {
 	 * @param array $args Blocks to query.
 	 * @param array $opts Optional arguments.
 	 */
-	private function find_on_site( $args = [], $opts ) {
+	private function find_on_site( $args = [], $opts = [] ) {
 		if ( ! empty( $opts['index'] ) ) {
 			$this->index( $args, $opts );
 		}
