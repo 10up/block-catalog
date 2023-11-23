@@ -5,8 +5,9 @@ namespace BlockCatalog;
 class CatalogBuilderTest extends \WP_UnitTestCase {
 
 	public $builder;
+	public $term_factory;
 
-	function setUp() {
+	function setUp():void {
 		parent::setUp();
 
 		$this->builder      = new CatalogBuilder();
