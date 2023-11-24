@@ -8,15 +8,15 @@ All notable changes to this project will be documented in this file, per [the Ke
 
 ### Fixed
 
-- PHP 8.2 deprecation warnings
+- PHP 8.2 deprecation warnings (props [@dsawardekar](https://github.com/dsawardekar))
 
 ### Added
 
-PHPUnit 9.x support
+- PHPUnit 9.x support (props [@dsawardekar](https://github.com/dsawardekar))
 
 ### Security
 
-Bumps sharp from 0.32.3 to 0.32.6
+- Bumps sharp from 0.32.3 to 0.32.6 (props [@dependabot](https://github.com/apps/dependabot))
 
 ## [1.5.2] - 2023-11-16
 

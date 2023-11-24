@@ -56,9 +56,9 @@ To address this you need to update your custom block registration. If this is ou
 
 = 1.5.3 - 2023-11-23 =
 
-* **Fixed:** PHP 8.2 deprecation warnings
-* **Added:** PHPUnit 9.x support
-* **Security:** Bumps sharp from 0.32.3 to 0.32.6
+* **Fixed:** PHP 8.2 deprecation warnings (props [@dsawardekar](https://github.com/dsawardekar))
+* **Added:** PHPUnit 9.x support (props [@dsawardekar](https://github.com/dsawardekar))
+* **Security:** Bumps sharp from 0.32.3 to 0.32.6 (props [@dependabot](https://github.com/apps/dependabot))
 
 = 1.5.2 - 2023-11-16 =
 
