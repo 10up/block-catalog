@@ -2,7 +2,7 @@
 /**
  * Plugin Name:       Block Catalog
  * Description:       Easily keep track of which Gutenberg Blocks are used across your site.
- * Version:           1.5.2
+ * Version:           1.5.3
  * Requires at least: 5.7
  * Requires PHP:      7.4
  * Author:            Darshan Sawardekar, 10up
@@ -16,7 +16,7 @@
  */
 
 // Useful global constants.
-define( 'BLOCK_CATALOG_PLUGIN_VERSION', '1.5.2' );
+define( 'BLOCK_CATALOG_PLUGIN_VERSION', '1.5.3' );
 define( 'BLOCK_CATALOG_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 define( 'BLOCK_CATALOG_PLUGIN_PATH', plugin_dir_path( __FILE__ ) );
 define( 'BLOCK_CATALOG_PLUGIN_INC', BLOCK_CATALOG_PLUGIN_PATH . 'includes/' );
