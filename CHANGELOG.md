@@ -99,6 +99,7 @@ All notable changes to this project will be documented in this file, per [the Ke
 - Initial release
 
 [Unreleased]: https://github.com/10up/block-catalog/compare/trunk...develop
+[1.5.3]: https://github.com/10up/block-catalog/compare/1.5.2...1.5.3
 [1.5.2]: https://github.com/10up/block-catalog/compare/1.5.1...1.5.2
 [1.5.1]: https://github.com/10up/block-catalog/compare/1.5.0...1.5.1
 [1.5.0]: https://github.com/10up/block-catalog/compare/1.4.0...1.5.0
