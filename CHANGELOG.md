@@ -12,11 +12,11 @@ All notable changes to this project will be documented in this file, per [the Ke
 
 ### Added
 
-- PHPUnit 9.x support (props [@dsawardekar](https://github.com/dsawardekar))
+- PHPUnit 9.x support (props [@dsawardekar](https://github.com/dsawardekar)).
 
 ### Security
 
-- Bumps sharp from 0.32.3 to 0.32.6 (props [@dependabot](https://github.com/apps/dependabot))
+- Bumps sharp from 0.32.3 to 0.32.6 (props [@dependabot](https://github.com/apps/dependabot)).
 
 ## [1.5.2] - 2023-11-16
 
