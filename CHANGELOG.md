@@ -8,7 +8,7 @@ All notable changes to this project will be documented in this file, per [the Ke
 
 ### Fixed
 
-- PHP 8.2 deprecation warnings (props [@dsawardekar](https://github.com/dsawardekar))
+- PHP 8.2 deprecation warnings (props [@dsawardekar](https://github.com/dsawardekar)).
 
 ### Added
 
