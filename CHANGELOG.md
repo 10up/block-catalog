@@ -8,15 +8,15 @@ All notable changes to this project will be documented in this file, per [the Ke
 
 ### Fixed
 
-- PHP 8.2 deprecation warnings
+- PHP 8.2 deprecation warnings (props [@dsawardekar](https://github.com/dsawardekar)).
 
 ### Added
 
-PHPUnit 9.x support
+- PHPUnit 9.x support (props [@dsawardekar](https://github.com/dsawardekar)).
 
 ### Security
 
-Bumps sharp from 0.32.3 to 0.32.6
+- Bumps sharp from 0.32.3 to 0.32.6 (props [@dependabot](https://github.com/apps/dependabot)).
 
 ## [1.5.2] - 2023-11-16
 
@@ -99,6 +99,7 @@ Bumps sharp from 0.32.3 to 0.32.6
 - Initial release
 
 [Unreleased]: https://github.com/10up/block-catalog/compare/trunk...develop
+[1.5.3]: https://github.com/10up/block-catalog/compare/1.5.2...1.5.3
 [1.5.2]: https://github.com/10up/block-catalog/compare/1.5.1...1.5.2
 [1.5.1]: https://github.com/10up/block-catalog/compare/1.5.0...1.5.1
 [1.5.0]: https://github.com/10up/block-catalog/compare/1.4.0...1.5.0
