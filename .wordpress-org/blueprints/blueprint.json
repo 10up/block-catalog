@@ -1,0 +1,33 @@
+{
+	"$schema": "https://playground.wordpress.net/blueprint-schema.json",
+	"landingPage": "\/wp-admin\/tools.php?page=block-catalog-tools",
+	"preferredVersions": {
+		"php": "7.4",
+		"wp": "latest"
+	},
+	"phpExtensionBundles": ["kitchen-sink"],
+	"steps": [
+		{
+			"step": "login",
+			"username": "admin",
+			"password": "password"
+		},
+    {
+      "step": "importFile",
+      "file": {
+        "resource": "url",
+        "url": "https:\/\/raw.githubusercontent.com\/Automattic\/theme-tools\/4eb4a1abf194d83c540b9172b7d15ca65622c097\/gutenberg-test-data\/gutenberg-test-data.xml"
+      }
+    },
+		{
+			"step": "installPlugin",
+			"pluginZipFile": {
+				"resource": "wordpress.org\/plugins",
+				"slug": "block-catalog"
+			},
+			"options": {
+				"activate": true
+			}
+		}
+	]
+}
