@@ -12,13 +12,13 @@
 			"username": "admin",
 			"password": "password"
 		},
-    {
-      "step": "importFile",
-      "file": {
-        "resource": "url",
-        "url": "https:\/\/raw.githubusercontent.com\/Automattic\/theme-tools\/4eb4a1abf194d83c540b9172b7d15ca65622c097\/gutenberg-test-data\/gutenberg-test-data.xml"
-      }
-    },
+		{
+			"step": "importFile",
+			"file": {
+				"resource": "url",
+				"url": "https:\/\/raw.githubusercontent.com\/Automattic\/theme-tools\/4eb4a1abf194d83c540b9172b7d15ca65622c097\/gutenberg-test-data\/gutenberg-test-data.xml"
+			}
+		},
 		{
 			"step": "installPlugin",
 			"pluginZipFile": {
