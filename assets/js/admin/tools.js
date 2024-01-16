@@ -1,5 +1,5 @@
-import '../../css/admin/tools-style.css';
-import Indexer from './indexer';
+import "../../css/admin/tools-style.css";
+import Indexer from "./indexer";
 
 const { __, sprintf } = wp.i18n;
 
@@ -10,35 +10,31 @@ class ToolsApp {
 
 	enable() {
 		this.indexer = new Indexer();
-		this.state = { status: 'settings', message: '' };
+		this.state = { status: "settings", message: "" };
 
-		this.onIndex('loadStart', 'didLoadStart');
-		this.onIndex('loadComplete', 'didLoadComplete');
-		this.onIndex('loadError', 'didLoadError');
+		this.onIndex("loadStart", "didLoadStart");
+		this.onIndex("loadComplete", "didLoadComplete");
+		this.onIndex("loadError", "didLoadError");
 
-		this.onIndex('indexStart', 'didIndexStart');
-		this.onIndex('indexProgress', 'didIndexProgress');
-		this.onIndex('indexComplete', 'didIndexComplete');
-		this.onIndex('indexCancel', 'didIndexCancel');
-		this.onIndex('indexError', 'didIndexError');
+		this.onIndex("indexStart", "didIndexStart");
+		this.onIndex("indexProgress", "didIndexProgress");
+		this.onIndex("indexComplete", "didIndexComplete");
+		this.onIndex("indexCancel", "didIndexCancel");
+		this.onIndex("indexError", "didIndexError");
 
-		this.onIndex('loadTermsStart', 'didLoadTermsStart');
-		this.onIndex('loadTermsComplete', 'didLoadTermsComplete');
-		this.onIndex('loadTermsError', 'didLoadTermsError');
+		this.onIndex("deleteIndexStart", "didDeleteIndexStart");
+		this.onIndex("deleteIndexProgress", "didDeleteIndexProgress");
+		this.onIndex("deleteIndexComplete", "didDeleteIndexComplete");
+		this.onIndex("deleteIndexError", "didDeleteIndexError");
+		this.onIndex("deleteIndexCancel", "didDeleteIndexCancel");
 
-		this.onIndex('deleteIndexStart', 'didDeleteIndexStart');
-		this.onIndex('deleteIndexProgress', 'didDeleteIndexProgress');
-		this.onIndex('deleteIndexComplete', 'didDeleteIndexComplete');
-		this.onIndex('deleteIndexError', 'didDeleteIndexError');
-		this.onIndex('deleteIndexCancel', 'didDeleteIndexCancel');
+		this.on(".block-catalog-post-type", "change", "didPostTypesChange");
 
-		this.on('.block-catalog-post-type', 'change', 'didPostTypesChange');
+		this.on("#submit", "click", "didSubmitClick");
+		this.on("#cancel", "click", "didCancelClick");
 
-		this.on('#submit', 'click', 'didSubmitClick');
-		this.on('#cancel', 'click', 'didCancelClick');
-
-		this.on('#delete-index', 'click', 'didDeleteIndexClick');
-		this.on('#cancel-delete', 'click', 'didDeleteCancelClick');
+		this.on("#delete-index", "click", "didDeleteIndexClick");
+		this.on("#cancel-delete", "click", "didDeleteCancelClick");
 	}
 
 	setState(state) {
@@ -46,101 +42,101 @@ class ToolsApp {
 		this.state = state;
 
 		switch (state.status) {
-			case 'loading':
-				this.hide('#index-settings');
-				this.show('#index-status');
+			case "loading":
+				this.hide("#index-settings");
+				this.show("#index-status");
 				this.updateProgress();
 				break;
 
-			case 'loaded':
-				this.hide('#index-settings');
-				this.show('#index-status');
+			case "loaded":
+				this.hide("#index-settings");
+				this.show("#index-status");
 				break;
 
-			case 'load-error':
-				this.show('#index-settings');
-				this.hide('#index-status');
+			case "load-error":
+				this.show("#index-settings");
+				this.hide("#index-status");
 				break;
 
-			case 'settings':
-				this.show('#index-settings');
-				this.hide('#index-status');
+			case "settings":
+				this.show("#index-settings");
+				this.hide("#index-status");
 				break;
 
-			case 'indexing':
-				this.hide('#index-settings');
-				this.show('#index-status');
+			case "indexing":
+				this.hide("#index-settings");
+				this.show("#index-status");
 				this.updateProgress();
 				break;
 
-			case 'indexed':
-				this.hide('#index-settings');
-				this.show('#index-status');
+			case "indexed":
+				this.hide("#index-settings");
+				this.show("#index-status");
 				this.updateProgress();
 				break;
 
-			case 'cancelled':
-				this.show('#index-settings');
-				this.hide('#index-status');
+			case "cancelled":
+				this.show("#index-settings");
+				this.hide("#index-status");
 				break;
 
-			case 'loading-terms':
-				this.hide('#index-settings');
-				this.show('#delete-status');
+			case "loading-terms":
+				this.hide("#index-settings");
+				this.show("#delete-status");
 				this.updateDeleteProgress();
 				break;
 
-			case 'loaded-terms':
-				this.hide('#index-settings');
-				this.show('#delete-status');
+			case "loaded-terms":
+				this.hide("#index-settings");
+				this.show("#delete-status");
 				break;
 
-			case 'load-terms-error':
-				this.show('#index-settings');
-				this.hide('#delete-status');
+			case "load-terms-error":
+				this.show("#index-settings");
+				this.hide("#delete-status");
 				break;
 
-			case 'deleting':
-				this.hide('#index-settings');
-				this.show('#delete-status');
+			case "deleting":
+				this.hide("#index-settings");
+				this.show("#delete-status");
 				this.updateDeleteProgress();
 				break;
 
-			case 'deleted':
-				this.show('#index-settings');
-				this.hide('#delete-status');
+			case "deleted":
+				this.show("#index-settings");
+				this.hide("#delete-status");
 				break;
 
-			case 'delete-error':
-				this.show('#index-settings');
-				this.hide('#delete-status');
+			case "delete-error":
+				this.show("#index-settings");
+				this.hide("#delete-status");
 				break;
 
-			case 'delete-cancel':
-				this.show('#index-settings');
-				this.hide('#delete-status');
+			case "delete-cancel":
+				this.show("#index-settings");
+				this.hide("#delete-status");
 				break;
 
 			default:
 				break;
 		}
 
-		this.setMessage(this.state.message || '');
+		this.setMessage(this.state.message || "");
 	}
 
 	didLoadStart() {
-		const message = __('Loading posts to index ...', 'block-catalog');
+		const message = __("Loading posts to index ...", "block-catalog");
 
-		this.setState({ status: 'loading', message });
+		this.setState({ status: "loading", message });
 		this.hideErrors();
-		this.setNotice('');
+		this.setNotice("");
 
 		window.scrollTo(0, 0);
 	}
 
 	didLoadComplete(event) {
-		const message = __('Loaded posts, starting ...', 'block-catalog');
-		this.setState({ status: 'loaded', message, ...event.detail });
+		const message = __("Loaded posts, starting ...", "block-catalog");
+		this.setState({ status: "loaded", message, ...event.detail });
 
 		const opts = {
 			batchSize: this.settings?.index_batch_size,
@@ -153,7 +149,7 @@ class ToolsApp {
 	didLoadError(event) {
 		const err = event.detail || {};
 
-		let message = __('Failed to load posts to index.', 'block-catalog');
+		let message = __("Failed to load posts to index.", "block-catalog");
 
 		if (err?.message) {
 			message += `  (${err?.code} - ${err.message})`;
@@ -161,31 +157,31 @@ class ToolsApp {
 
 		if (err?.data?.message) {
 			message += `  (${err.data.message})`;
-		} else if (typeof err?.data === 'string') {
+		} else if (typeof err?.data === "string") {
 			message += `  (${err.data})`;
 		}
 
-		this.setState({ status: 'load-error', message: '', error: err });
-		this.setNotice(message, 'error');
+		this.setState({ status: "load-error", message: "", error: err });
+		this.setNotice(message, "error");
 	}
 
 	didIndexStart(event) {
 		const message = sprintf(
-			__('Indexing %d / %d Posts ...', 'block-catalog'),
+			__("Indexing %d / %d Posts ...", "block-catalog"),
 			event.detail.progress,
-			event.detail.total,
+			event.detail.total
 		);
 
-		this.setState({ status: 'indexing', message, ...event.detail });
+		this.setState({ status: "indexing", message, ...event.detail });
 	}
 
 	didIndexProgress(event) {
 		const message = sprintf(
-			'Indexing %d / %d Posts ...',
+			"Indexing %d / %d Posts ...",
 			event.detail.progress,
-			event.detail.total,
+			event.detail.total
 		);
-		this.setState({ status: 'indexing', message, ...event.detail });
+		this.setState({ status: "indexing", message, ...event.detail });
 	}
 
 	didIndexComplete(event) {
@@ -196,42 +192,45 @@ class ToolsApp {
 			message = sprintf(
 				__(
 					'Indexed %d / %d Posts Successfully. <a href="%s">View Block Catalog</a>',
-					'block-catalog',
+					"block-catalog"
 				),
 				event.detail.completed,
 				event.detail.total,
-				this.settings.catalog_page,
+				this.settings.catalog_page
 			);
-			type = 'success';
+			type = "success";
 		} else if (event.detail.failures > 0 && event.detail.completed > 0) {
 			message = sprintf(
 				__(
 					'Indexed %d Posts successfully with %d Errors. <a href="%s">View Block Catalog</a>',
-					'block-catalog',
+					"block-catalog"
 				),
 				event.detail.completed,
-				event.detail.failures,
+				event.detail.failures
 			);
-			type = 'error';
+			type = "error";
 		} else {
-			message = sprintf(__('Failed to index %d Posts.', 'block-catalog'), event.detail.total);
-			type = 'error';
+			message = sprintf(
+				__("Failed to index %d Posts.", "block-catalog"),
+				event.detail.total
+			);
+			type = "error";
 		}
 
-		this.setState({ status: 'settings', message: '', ...event.detail });
+		this.setState({ status: "settings", message: "", ...event.detail });
 		this.setNotice(message, type);
 	}
 
 	didIndexCancel(event) {
-		const message = __('Index cancelled.', 'block-catalog');
-		this.setState({ status: 'cancelled', message: '', ...event.detail });
-		this.setNotice(message, 'error');
+		const message = __("Index cancelled.", "block-catalog");
+		this.setState({ status: "cancelled", message: "", ...event.detail });
+		this.setNotice(message, "error");
 	}
 
 	didIndexError(event) {
 		const err = event.detail || {};
 
-		let message = __('Failed to index posts', 'block-catalog');
+		let message = __("Failed to index posts", "block-catalog");
 
 		if (err?.message) {
 			message += `  (${err?.code} - ${err.message})`;
@@ -239,7 +238,7 @@ class ToolsApp {
 
 		if (err?.data?.message) {
 			message += `  (${err.data.message})`;
-		} else if (typeof err?.data === 'string') {
+		} else if (typeof err?.data === "string") {
 			message += `  (${err.data})`;
 		}
 
@@ -247,71 +246,20 @@ class ToolsApp {
 		this.updateProgress();
 	}
 
-	didLoadTermsStart() {
-		const message = __('Loading block catalog terms to delete ...', 'block-catalog');
-
-		this.setState({ status: 'loading-terms', message });
-		this.hideErrors();
-		this.setNotice('');
-
-		window.scrollTo(0, 0);
-	}
-
-	didLoadTermsComplete(event) {
-		const message = __('Loaded terms to delete, starting ...', 'block-catalog');
-		this.setState({ status: 'loaded-terms', message, ...event.detail });
-
-		const opts = {
-			batchSize: this.settings?.delete_index_batch_size,
-			endpoint: this.settings?.delete_index_endpoint,
-		};
-
-		let { terms } = this.state;
-		terms = terms.map((term) => term.id);
-
-		this.indexer.deleteIndex(terms, opts);
-	}
-
-	didLoadTermsError(event) {
-		const err = event.detail || {};
-
-		let message = __('Failed to load terms to delete.', 'block-catalog');
-
-		if (err?.terms?.length === 0) {
-			message = __('Block catalog is empty, nothing to delete.', 'block-catalog');
-			this.setState({ status: 'load-terms-error', message: '', error: '' });
-			this.setNotice(message, 'error');
-			return;
-		}
-
-		if (err?.message) {
-			message += `  (${err?.code} - ${err.message})`;
-		}
-
-		if (err?.data?.message) {
-			message += `  (${err.data.message})`;
-		} else if (typeof err?.data === 'string') {
-			message += `  (${err.data})`;
-		}
-
-		this.setState({ status: 'load-terms-error', message: '', error: err });
-		this.setNotice(message, 'error');
-	}
-
 	didDeleteIndexStart(event) {
-		const message = __('Deleting Index ...', 'block-catalog');
-		this.setState({ status: 'deleting', message, ...event.detail });
+		const message = __("Deleting Index ...", "block-catalog");
+		this.setState({ status: "deleting", message, ...event.detail });
 
 		window.scrollTo(0, 0);
 	}
 
 	didDeleteIndexProgress(event) {
 		const message = sprintf(
-			'Deleting %d / %d Block Catalog Terms ...',
+			"Deleting %d / %d Block Catalog Terms ...",
 			event.detail.progress,
-			event.detail.total,
+			event.detail.total
 		);
-		this.setState({ status: 'deleting', message, ...event.detail });
+		this.setState({ status: "deleting", message, ...event.detail });
 	}
 
 	didDeleteIndexComplete(event) {
@@ -319,30 +267,33 @@ class ToolsApp {
 
 		if (event.detail?.failures) {
 			message = sprintf(
-				__('Failed to delete %d catalog term(s).', 'block-catalog'),
-				event.detail?.failures,
+				__("Failed to delete %d catalog term(s).", "block-catalog"),
+				event.detail?.failures
 			);
 
-			this.setNotice(message, 'error');
-		} else if (event.detail?.completed) {
+			this.setNotice(message, "error");
+		} else if (event.detail?.removed) {
 			message = sprintf(
-				__('Deleted %d block catalog term(s) successfully.', 'block-catalog'),
-				event.detail?.completed,
+				__("Deleted %d block catalog term(s) successfully.", "block-catalog"),
+				event.detail?.removed
 			);
 
-			this.setNotice(message, 'success');
+			this.setNotice(message, "success");
 		} else {
-			message = __('Nothing to delete, block catalog index is empty.', 'block-catalog');
-			this.setNotice(message, 'error');
+			message = __(
+				"Nothing to delete, block catalog index is empty.",
+				"block-catalog"
+			);
+			this.setNotice(message, "error");
 		}
 
-		this.setState({ status: 'deleted', message: '', ...event.detail });
+		this.setState({ status: "deleted", message: "", ...event.detail });
 	}
 
 	didDeleteIndexError(event) {
 		const err = event.detail || {};
 
-		let message = __('Failed to delete block catalog terms. ', 'block-catalog');
+		let message = __("Failed to delete block catalog terms. ", "block-catalog");
 
 		if (err?.message) {
 			message += `  (${err?.code} - ${err.message})`;
@@ -350,7 +301,7 @@ class ToolsApp {
 
 		if (err?.data?.message) {
 			message += `  (${err.data.message})`;
-		} else if (typeof err?.data === 'string') {
+		} else if (typeof err?.data === "string") {
 			message += `  (${err.data})`;
 		}
 
@@ -358,9 +309,9 @@ class ToolsApp {
 	}
 
 	didDeleteIndexCancel(event) {
-		const message = __('Deleting Index Cancelled.', 'block-catalog');
-		this.setState({ status: 'delete-cancel', message: '', ...event.detail });
-		this.setNotice(message, 'error');
+		const message = __("Deleting Index Cancelled.", "block-catalog");
+		this.setState({ status: "delete-cancel", message: "", ...event.detail });
+		this.setNotice(message, "error");
 	}
 
 	didSubmitClick() {
@@ -380,8 +331,8 @@ class ToolsApp {
 
 	didDeleteIndexClick() {
 		const message = __(
-			'This will delete all terms in the Block Catalog index. Are you sure?',
-			'block-catalog',
+			"This will delete all terms in the Block Catalog index. Are you sure?",
+			"block-catalog"
 		);
 		const res = confirm(message); // eslint-disable-line
 
@@ -390,10 +341,10 @@ class ToolsApp {
 		}
 
 		const opts = {
-			endpoint: this.settings.terms_endpoint,
+			endpoint: this.settings.delete_index_endpoint,
 		};
 
-		this.indexer.loadTerms(opts);
+		this.indexer.deleteIndex(opts);
 		return false;
 	}
 
@@ -408,7 +359,7 @@ class ToolsApp {
 
 	updateSubmitButton() {
 		const postTypes = this.getSelectedPostTypes();
-		const submitButton = document.querySelector('#submit');
+		const submitButton = document.querySelector("#submit");
 
 		if (submitButton) {
 			submitButton.disabled = postTypes.length === 0;
@@ -416,7 +367,9 @@ class ToolsApp {
 	}
 
 	getSelectedPostTypes() {
-		const postTypes = document.querySelectorAll('.block-catalog-post-type:checked');
+		const postTypes = document.querySelectorAll(
+			".block-catalog-post-type:checked"
+		);
 
 		if (!postTypes) {
 			return [];
@@ -443,7 +396,7 @@ class ToolsApp {
 		const element = document.querySelector(selector);
 
 		if (element) {
-			element.style.display = 'block';
+			element.style.display = "block";
 		}
 	}
 
@@ -451,25 +404,25 @@ class ToolsApp {
 		const element = document.querySelector(selector);
 
 		if (element) {
-			element.style.display = 'none';
+			element.style.display = "none";
 		}
 	}
 
 	setMessage(message) {
-		const element = document.querySelector('#index-message');
+		const element = document.querySelector("#index-message");
 
 		if (element) {
-			element.style.display = message !== '' ? 'block' : 'none';
+			element.style.display = message !== "" ? "block" : "none";
 			element.innerHTML = message;
 		}
 	}
 
-	setNotice(message, type = 'success') {
-		const container = document.querySelector('#index-notice');
-		const element = document.querySelector('#index-notice-body');
+	setNotice(message, type = "success") {
+		const container = document.querySelector("#index-notice");
+		const element = document.querySelector("#index-notice-body");
 
 		if (container) {
-			container.style.display = message !== '' ? 'block' : 'none';
+			container.style.display = message !== "" ? "block" : "none";
 			container.className = `notice notice-${type}`;
 		}
 
@@ -479,9 +432,11 @@ class ToolsApp {
 	}
 
 	updateProgress() {
-		const percent = this.indexer.total ? (this.indexer.progress / this.indexer.total) * 100 : 0;
+		const percent = this.indexer.total
+			? (this.indexer.progress / this.indexer.total) * 100
+			: 0;
 
-		const element = document.querySelector('#index-progress');
+		const element = document.querySelector("#index-progress");
 
 		if (element) {
 			element.value = percent;
@@ -489,9 +444,11 @@ class ToolsApp {
 	}
 
 	updateDeleteProgress() {
-		const percent = this.indexer.total ? (this.indexer.progress / this.indexer.total) * 100 : 0;
+		const percent = this.indexer.total
+			? (this.indexer.progress / this.indexer.total) * 100
+			: 0;
 
-		const element = document.querySelector('#delete-progress');
+		const element = document.querySelector("#delete-progress");
 
 		if (element) {
 			element.value = percent;
@@ -499,39 +456,39 @@ class ToolsApp {
 	}
 
 	hideErrors() {
-		const list = document.querySelector('#index-errors-list');
+		const list = document.querySelector("#index-errors-list");
 
 		if (list) {
-			list.innerHTML = '';
+			list.innerHTML = "";
 		}
 
-		const container = document.querySelector('#index-errors');
+		const container = document.querySelector("#index-errors");
 
 		if (container) {
-			container.style.display = 'none';
+			container.style.display = "none";
 		}
 	}
 
 	addErrorLine(line) {
-		const container = document.querySelector('#index-errors');
-		const list = document.querySelector('#index-errors-list');
+		const container = document.querySelector("#index-errors");
+		const list = document.querySelector("#index-errors-list");
 
 		if (container) {
-			container.style.display = 'block';
+			container.style.display = "block";
 		}
 
 		if (!list) {
 			return;
 		}
 
-		const item = document.createElement('li');
+		const item = document.createElement("li");
 
 		item.innerHTML = line;
 		list.appendChild(item);
 	}
 }
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener("DOMContentLoaded", () => {
 	const settings = window.block_catalog?.settings || {};
 	const app = new ToolsApp(settings);
 

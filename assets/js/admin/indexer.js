@@ -2,11 +2,11 @@ class Indexer extends EventTarget {
 	load(opts) {
 		this.progress = 0;
 		this.total = 0;
-		this.triggerEvent('loadStart');
+		this.triggerEvent("loadStart");
 
 		const fetchOpts = {
 			url: opts.endpoint,
-			method: 'POST',
+			method: "POST",
 			data: {
 				post_types: opts.postTypes || [],
 			},
@@ -16,22 +16,22 @@ class Indexer extends EventTarget {
 		return this.apiFetch(fetchOpts)
 			.then((res) => {
 				if (res.errors) {
-					this.triggerEvent('loadError', res);
+					this.triggerEvent("loadError", res);
 				} else if (!res.success && res.data) {
-					this.triggerEvent('loadError', res);
+					this.triggerEvent("loadError", res);
 				} else if (res?.posts === undefined || res?.posts.length === 0) {
-					this.triggerEvent('loadError', {
-						code: 'invalid_response',
-						message: 'Server returned empty posts.',
+					this.triggerEvent("loadError", {
+						code: "invalid_response",
+						message: "Server returned empty posts.",
 					});
 				} else {
-					this.triggerEvent('loadComplete', res);
+					this.triggerEvent("loadComplete", res);
 				}
 
 				return res;
 			})
 			.catch((err) => {
-				this.triggerEvent('loadError', err);
+				this.triggerEvent("loadError", err);
 			});
 	}
 
@@ -40,7 +40,7 @@ class Indexer extends EventTarget {
 		this.completed = 0;
 		this.failures = 0;
 		this.total = ids.length;
-		this.triggerEvent('indexStart', { progress: 0, total: this.total });
+		this.triggerEvent("indexStart", { progress: 0, total: this.total });
 
 		const chunks = this.toChunks(ids, opts.batchSize || 50);
 		const n = chunks.length;
@@ -53,16 +53,16 @@ class Indexer extends EventTarget {
 				this.failures += batch.length;
 				this.progress += batch.length;
 
-				this.triggerEvent('indexProgress', {
+				this.triggerEvent("indexProgress", {
 					progress: this.progress,
 					total: this.total,
 				});
 
-				this.triggerEvent('indexError', err);
+				this.triggerEvent("indexError", err);
 			}
 		}
 
-		this.triggerEvent('indexComplete', {
+		this.triggerEvent("indexComplete", {
 			progress: this.progress,
 			total: this.total,
 			completed: this.completed,
@@ -73,7 +73,7 @@ class Indexer extends EventTarget {
 	async indexBatch(batch, opts = {}) {
 		const fetchOpts = {
 			url: opts.endpoint,
-			method: 'POST',
+			method: "POST",
 			data: {
 				post_ids: batch,
 			},
@@ -85,22 +85,22 @@ class Indexer extends EventTarget {
 		promise.then((res) => {
 			if (res.errors) {
 				this.failures += batch.length;
-				this.triggerEvent('indexError', res);
+				this.triggerEvent("indexError", res);
 			} else if (!res.success && res.data) {
 				this.failures += batch.length;
-				this.triggerEvent('indexError', res);
+				this.triggerEvent("indexError", res);
 			} else if (res?.updated === undefined) {
 				this.failures += batch.length;
-				this.triggerEvent('indexError', {
-					code: 'invalid_response',
-					message: 'Failed to index some posts',
+				this.triggerEvent("indexError", {
+					code: "invalid_response",
+					message: "Failed to index some posts",
 				});
 			} else {
 				this.completed += batch.length;
 			}
 
 			this.progress += batch.length;
-			this.triggerEvent('indexProgress', {
+			this.triggerEvent("indexProgress", {
 				progress: this.progress,
 				total: this.total,
 				...res,
@@ -112,17 +112,20 @@ class Indexer extends EventTarget {
 
 	cancel() {
 		this.cancelPending();
-		this.triggerEvent('indexCancel', { progress: this.progress, total: this.total });
+		this.triggerEvent("indexCancel", {
+			progress: this.progress,
+			total: this.total,
+		});
 	}
 
 	loadTerms(opts) {
 		this.progress = 0;
 		this.total = 0;
-		this.triggerEvent('loadTermsStart');
+		this.triggerEvent("loadTermsStart");
 
 		const fetchOpts = {
 			url: opts.endpoint,
-			method: 'POST',
+			method: "POST",
 			data: {},
 			...opts,
 		};
@@ -130,110 +133,52 @@ class Indexer extends EventTarget {
 		return this.apiFetch(fetchOpts)
 			.then((res) => {
 				if (res.errors) {
-					this.triggerEvent('loadTermsError', res);
+					this.triggerEvent("loadTermsError", res);
 				} else if (!res.success && res.data) {
-					this.triggerEvent('loadTermsError', res);
+					this.triggerEvent("loadTermsError", res);
 				} else if (res?.terms === undefined || res?.terms.length === 0) {
-					this.triggerEvent('loadTermsError', {
-						code: 'invalid_response',
-						message: 'Server returned empty terms.',
+					this.triggerEvent("loadTermsError", {
+						code: "invalid_response",
+						message: "Server returned empty terms.",
 						...res,
 					});
 				} else {
-					this.triggerEvent('loadTermsComplete', res);
+					this.triggerEvent("loadTermsComplete", res);
 				}
 
 				return res;
 			})
 			.catch((err) => {
-				this.triggerEvent('loadTermsError', err);
+				this.triggerEvent("loadTermsError", err);
 			});
 	}
 
-	async deleteIndex(ids, opts) {
+	async deleteIndex(opts) {
 		this.progress = 0;
 		this.completed = 0;
 		this.failures = 0;
-		this.total = ids.length;
-		this.triggerEvent('deleteIndexStart', { progress: 0, total: this.total });
-
-		const chunks = this.toChunks(ids, opts.batchSize || 50);
-		const n = chunks.length;
-
-		for (let i = 0; i < n; i++) {
-			const batch = chunks[i];
-			try {
-				await this.deleteIndexBatch(batch, opts); // eslint-disable-line no-await-in-loop
-			} catch (e) {
-				this.failures += batch.length;
-				this.triggerEvent('deleteIndexError', e);
-			}
-		}
-
-		this.triggerEvent('deleteIndexComplete', {
-			progress: this.progress,
-			total: this.total,
-			completed: this.completed,
-			failures: this.failures,
-		});
-	}
-
-	async deleteIndexBatch(batch, opts = {}) {
-		const fetchOpts = {
-			url: opts.endpoint,
-			method: 'POST',
-			data: {
-				term_ids: batch,
-			},
-			...opts,
-		};
-
-		const promise = this.apiFetch(fetchOpts);
-
-		promise.then((res) => {
-			if (res.errors) {
-				this.failures += batch.length;
-				this.triggerEvent('deleteIndexError', res);
-			} else if (!res.success && res.data) {
-				this.failures += batch.length;
-				this.triggerEvent('deleteIndexError', res);
-			} else {
-				this.completed += batch.length;
-			}
-
-			this.progress += batch.length;
-			this.triggerEvent('deleteIndexProgress', {
-				progress: this.progress,
-				total: this.total,
-				...res,
-			});
-		});
-
-		return promise;
-	}
-
-	deleteIndexBulk(opts) {
-		this.triggerEvent('deleteIndexStart');
+		this.total = 0;
+		this.triggerEvent("deleteIndexStart");
 
 		const fetchOpts = {
 			url: opts.endpoint,
-			method: 'POST',
+			method: "POST",
 		};
 
 		const promise = this.apiFetch(fetchOpts)
 			.then((res) => {
 				if (res.errors) {
-					this.triggerEvent('deleteIndexError', res);
+					this.triggerEvent("deleteIndexError", res);
 				} else if (!res.success && res.data) {
-					this.triggerEvent('deleteIndexError', res);
+					this.triggerEvent("deleteIndexError", res);
 				} else {
-					this.triggerEvent('deleteIndexComplete', res);
+					this.triggerEvent("deleteIndexComplete", res);
 				}
 
 				return res;
 			})
 			.catch((err) => {
-				this.triggerEvent('deleteIndexError', err);
+				this.triggerEvent("deleteIndexError", err);
 			});
 
 		return promise;
@@ -241,7 +186,7 @@ class Indexer extends EventTarget {
 
 	cancelDelete() {
 		this.cancelPending();
-		this.triggerEvent('deleteIndexCancel');
+		this.triggerEvent("deleteIndexCancel");
 	}
 
 	triggerEvent(eventName, data = {}) {
