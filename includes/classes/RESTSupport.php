@@ -38,7 +38,7 @@ class RESTSupport {
 			[
 				'methods'             => 'POST',
 				'callback'            => [ $this, 'get_posts' ],
-				'permission_callback' => function() {
+				'permission_callback' => function () {
 					return current_user_can( \BlockCatalog\Utility\get_required_capability() );
 				},
 				'args'                => [
@@ -57,7 +57,7 @@ class RESTSupport {
 			[
 				'methods'             => 'POST',
 				'callback'            => [ $this, 'index' ],
-				'permission_callback' => function() {
+				'permission_callback' => function () {
 					return current_user_can( \BlockCatalog\Utility\get_required_capability() );
 				},
 				'args'                => [
@@ -76,7 +76,7 @@ class RESTSupport {
 			[
 				'methods'             => 'POST',
 				'callback'            => [ $this, 'get_terms' ],
-				'permission_callback' => function() {
+				'permission_callback' => function () {
 					return current_user_can( \BlockCatalog\Utility\get_required_capability() );
 				},
 			]
@@ -88,7 +88,7 @@ class RESTSupport {
 			[
 				'methods'             => 'POST',
 				'callback'            => [ $this, 'delete_index' ],
-				'permission_callback' => function() {
+				'permission_callback' => function () {
 					return current_user_can( \BlockCatalog\Utility\get_required_capability() );
 				},
 				'args'                => [
@@ -153,9 +153,9 @@ class RESTSupport {
 			\BlockCatalog\Utility\clear_caches();
 
 			if ( is_wp_error( $result ) ) {
-				$errors++;
+				++$errors;
 			} else {
-				$updated++;
+				++$updated;
 			}
 		}
 
@@ -266,7 +266,7 @@ class RESTSupport {
 			\BlockCatalog\Utility\clear_caches();
 
 			if ( is_wp_error( $result ) ) {
-				$errors++;
+				++$errors;
 			} else {
 				$updated += count( $result );
 			}
@@ -335,5 +335,4 @@ class RESTSupport {
 
 		return ! empty( $term_ids );
 	}
-
 }

@@ -5,8 +5,10 @@ namespace BlockCatalog;
 class RESTSupportTest extends \WP_UnitTestCase {
 
 	public $rest;
+	public $builder;
+	public $server;
 
-	function setUp() {
+	function setUp():void {
 		parent::setUp();
 
 
@@ -19,7 +21,7 @@ class RESTSupportTest extends \WP_UnitTestCase {
 		$this->rest = new RESTSupport();
 	}
 
-	function tearDown() {
+	function tearDown():void {
 		parent::tearDown();
 
 		global $wp_rest_server;

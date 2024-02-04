@@ -161,5 +161,4 @@ class BlockCatalogTaxonomy {
 			wp_dropdown_categories( $dropdown_args );
 		}
 	}
-
 }

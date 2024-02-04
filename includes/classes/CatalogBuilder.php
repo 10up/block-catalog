@@ -44,9 +44,9 @@ class CatalogBuilder {
 	/**
 	 * Resets the Block Catalog by removing all catalog terms.
 	 *
-	 * @param array $opts Optional opts
+	 * @param array $opts Optional args
 	 */
-	public function delete_index( $opts = [] ) {
+	public function delete_index( $opts = [] ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.Found
 		\BlockCatalog\Utility\start_bulk_operation();
 
 		$term_opts = [
@@ -78,9 +78,9 @@ class CatalogBuilder {
 			\BlockCatalog\Utility\clear_caches();
 
 			if ( ! is_wp_error( $result ) ) {
-				$removed++;
+				++$removed;
 			} else {
-				$errors++;
+				++$errors;
 			}
 		}
 
@@ -112,10 +112,9 @@ class CatalogBuilder {
 	/**
 	 * Deletes the specified term id and its associations.
 	 *
-	 * @param int   $term_id The term id to delete.
-	 * @param array $opts Optional opts
+	 * @param int $term_id The term id to delete.
 	 */
-	public function delete_term_index( $term_id, $opts = [] ) {
+	public function delete_term_index( $term_id ) {
 		return wp_delete_term( $term_id, BLOCK_CATALOG_TAXONOMY );
 	}
 
@@ -165,22 +164,22 @@ class CatalogBuilder {
 		}
 
 		foreach ( $output['variations'] ?? [] as $variation ) {
-			$blockName = $variation['blockName'];
-			$terms     = $variation['terms'] ?? [];
+			$block_name = $variation['blockName'];
+			$terms      = $variation['terms'] ?? [];
 
-			if ( empty( $blockName ) || empty( $terms ) ) {
+			if ( empty( $block_name ) || empty( $terms ) ) {
 				continue;
 			}
 
 			foreach ( $terms as $label ) {
-				$slug = $blockName . '-' . $label;
+				$slug = $block_name . '-' . $label;
 
 				if ( ! term_exists( $slug, BLOCK_CATALOG_TAXONOMY ) ) {
 					$term_args = [
 						'slug' => $slug,
 					];
 
-					$parent_id = $this->get_variation_parent_term( $blockName );
+					$parent_id = $this->get_variation_parent_term( $block_name );
 
 					if ( ! empty( $parent_id ) ) {
 						$term_args['parent'] = $parent_id;
@@ -216,10 +215,10 @@ class CatalogBuilder {
 	 * Builds a list of Block Term names for a given post.
 	 *
 	 * @param int   $post_id The post id.
-	 * @param array $opts Optional args
+	 * @param array $opts The options.
 	 * @return array
 	 */
-	public function get_post_block_terms( $post_id, $opts = [] ) {
+	public function get_post_block_terms( $post_id, $opts = [] ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed
 		if ( empty( $post_id ) ) {
 			return [];
 		}
@@ -253,11 +252,14 @@ class CatalogBuilder {
 			}
 
 			if ( ! empty( $block_terms['variations'] ) ) {
-				$variations[] = array_merge( $variations, [
-					'blockName' => $block['blockName'],
-					'block'     => $block,
-					'terms'     => $block_terms['variations'],
-				] );
+				$variations[] = array_merge(
+					$variations,
+					[
+						'blockName' => $block['blockName'],
+						'block'     => $block,
+						'terms'     => $block_terms['variations'],
+					]
+				);
 			}
 		}
 
@@ -311,12 +313,14 @@ class CatalogBuilder {
 	 * Converts a block to a list of term names.
 	 *
 	 * @param array $block The block.
-	 * @param array $opts Optional opts
 	 * @return array
 	 */
-	public function block_to_terms( $block, $opts = [] ) {
+	public function block_to_terms( $block ) {
 		if ( empty( $block ) || empty( $block['blockName'] ) ) {
-			return [ 'terms' => [], 'variations' => [] ];
+			return [
+				'terms'      => [],
+				'variations' => [],
+			];
 		}
 
 		$terms = [];
