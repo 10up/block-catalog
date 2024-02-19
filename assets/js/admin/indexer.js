@@ -112,7 +112,10 @@ class Indexer extends EventTarget {
 
 	cancel() {
 		this.cancelPending();
-		this.triggerEvent('indexCancel', { progress: this.progress, total: this.total });
+		this.triggerEvent('indexCancel', {
+			progress: this.progress,
+			total: this.total,
+		});
 	}
 
 	loadTerms(opts) {
@@ -150,69 +153,11 @@ class Indexer extends EventTarget {
 			});
 	}
 
-	async deleteIndex(ids, opts) {
+	async deleteIndex(opts) {
 		this.progress = 0;
 		this.completed = 0;
 		this.failures = 0;
-		this.total = ids.length;
-		this.triggerEvent('deleteIndexStart', { progress: 0, total: this.total });
-
-		const chunks = this.toChunks(ids, opts.batchSize || 50);
-		const n = chunks.length;
-
-		for (let i = 0; i < n; i++) {
-			const batch = chunks[i];
-			try {
-				await this.deleteIndexBatch(batch, opts); // eslint-disable-line no-await-in-loop
-			} catch (e) {
-				this.failures += batch.length;
-				this.triggerEvent('deleteIndexError', e);
-			}
-		}
-
-		this.triggerEvent('deleteIndexComplete', {
-			progress: this.progress,
-			total: this.total,
-			completed: this.completed,
-			failures: this.failures,
-		});
-	}
-
-	async deleteIndexBatch(batch, opts = {}) {
-		const fetchOpts = {
-			url: opts.endpoint,
-			method: 'POST',
-			data: {
-				term_ids: batch,
-			},
-			...opts,
-		};
-
-		const promise = this.apiFetch(fetchOpts);
-
-		promise.then((res) => {
-			if (res.errors) {
-				this.failures += batch.length;
-				this.triggerEvent('deleteIndexError', res);
-			} else if (!res.success && res.data) {
-				this.failures += batch.length;
-				this.triggerEvent('deleteIndexError', res);
-			} else {
-				this.completed += batch.length;
-			}
-
-			this.progress += batch.length;
-			this.triggerEvent('deleteIndexProgress', {
-				progress: this.progress,
-				total: this.total,
-				...res,
-			});
-		});
-
-		return promise;
-	}
-
-	deleteIndexBulk(opts) {
+		this.total = 0;
 		this.triggerEvent('deleteIndexStart');
 
 		const fetchOpts = {
