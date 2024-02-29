@@ -4,19 +4,35 @@ All notable changes to this project will be documented in this file, per [the Ke
 
 ## [Unreleased] - TBD
 
+## [1.5.4] - 2024-02-29
+
+### Added
+
+- Support for the WordPress.org plugin preview (props [@dkotter](https://github.com/dkotter), [@jeffpaul](https://github.com/jeffpaul) via [#38](https://github.com/10up/block-catalog/pull/38)).
+
+### Changed
+
+- Significantly improved performance of block catalog reset on larger WordPress installations (props [@dsawardekar](https://github.com/dsawardekar), [@Sidsector9](https://github.com/Sidsector9) via [#41](https://github.com/10up/block-catalog/pull/41)).
+- Clean up NPM dependencies and update the minimum node version to 20 (props [@Sidsector9](https://github.com/Sidsector9), [@dsawardekar](https://github.com/dsawardekar) via [#43](https://github.com/10up/block-catalog/pull/43)).
+
+### Security
+
+- Bump `tj-actions/changed-files` from 39 to 41 (props [@dependabot](https://github.com/apps/dependabot), [@peterwilsoncc](https://github.com/peterwilsoncc) via [#39](https://github.com/10up/block-catalog/pull/39)).
+- Bump `follow-redirects` from 1.15.2 to 1.15.4 (props [@dependabot](https://github.com/apps/dependabot), [@Sidsector9](https://github.com/Sidsector9) via [#40](https://github.com/10up/block-catalog/pull/40)).
+
 ## [1.5.3] - 2023-11-23
 
 ### Fixed
 
-- PHP 8.2 deprecation warnings
+- PHP 8.2 deprecation warnings (props [@dsawardekar](https://github.com/dsawardekar), [@ravinderk](https://github.com/ravinderk) via [#34](https://github.com/10up/block-catalog/pull/34)).
 
 ### Added
 
-PHPUnit 9.x support
+- PHPUnit 9.x support (props [@dsawardekar](https://github.com/dsawardekar), [@ravinderk](https://github.com/ravinderk) via [#34](https://github.com/10up/block-catalog/pull/34)).
 
 ### Security
 
-Bumps sharp from 0.32.3 to 0.32.6
+- Bump `sharp` from 0.32.3 to 0.32.6 (props [@dependabot](https://github.com/apps/dependabot), [@faisal-alvi](https://github.com/faisal-alvi) via [#32](https://github.com/10up/block-catalog/pull/32)).
 
 ## [1.5.2] - 2023-11-16
 
@@ -99,6 +115,8 @@ Bumps sharp from 0.32.3 to 0.32.6
 - Initial release
 
 [Unreleased]: https://github.com/10up/block-catalog/compare/trunk...develop
+[1.5.4]: https://github.com/10up/block-catalog/compare/1.5.3...1.5.4
+[1.5.3]: https://github.com/10up/block-catalog/compare/1.5.2...1.5.3
 [1.5.2]: https://github.com/10up/block-catalog/compare/1.5.1...1.5.2
 [1.5.1]: https://github.com/10up/block-catalog/compare/1.5.0...1.5.1
 [1.5.0]: https://github.com/10up/block-catalog/compare/1.4.0...1.5.0

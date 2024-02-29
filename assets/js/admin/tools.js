@@ -22,10 +22,6 @@ class ToolsApp {
 		this.onIndex('indexCancel', 'didIndexCancel');
 		this.onIndex('indexError', 'didIndexError');
 
-		this.onIndex('loadTermsStart', 'didLoadTermsStart');
-		this.onIndex('loadTermsComplete', 'didLoadTermsComplete');
-		this.onIndex('loadTermsError', 'didLoadTermsError');
-
 		this.onIndex('deleteIndexStart', 'didDeleteIndexStart');
 		this.onIndex('deleteIndexProgress', 'didDeleteIndexProgress');
 		this.onIndex('deleteIndexComplete', 'didDeleteIndexComplete');
@@ -247,57 +243,6 @@ class ToolsApp {
 		this.updateProgress();
 	}
 
-	didLoadTermsStart() {
-		const message = __('Loading block catalog terms to delete ...', 'block-catalog');
-
-		this.setState({ status: 'loading-terms', message });
-		this.hideErrors();
-		this.setNotice('');
-
-		window.scrollTo(0, 0);
-	}
-
-	didLoadTermsComplete(event) {
-		const message = __('Loaded terms to delete, starting ...', 'block-catalog');
-		this.setState({ status: 'loaded-terms', message, ...event.detail });
-
-		const opts = {
-			batchSize: this.settings?.delete_index_batch_size,
-			endpoint: this.settings?.delete_index_endpoint,
-		};
-
-		let { terms } = this.state;
-		terms = terms.map((term) => term.id);
-
-		this.indexer.deleteIndex(terms, opts);
-	}
-
-	didLoadTermsError(event) {
-		const err = event.detail || {};
-
-		let message = __('Failed to load terms to delete.', 'block-catalog');
-
-		if (err?.terms?.length === 0) {
-			message = __('Block catalog is empty, nothing to delete.', 'block-catalog');
-			this.setState({ status: 'load-terms-error', message: '', error: '' });
-			this.setNotice(message, 'error');
-			return;
-		}
-
-		if (err?.message) {
-			message += `  (${err?.code} - ${err.message})`;
-		}
-
-		if (err?.data?.message) {
-			message += `  (${err.data.message})`;
-		} else if (typeof err?.data === 'string') {
-			message += `  (${err.data})`;
-		}
-
-		this.setState({ status: 'load-terms-error', message: '', error: err });
-		this.setNotice(message, 'error');
-	}
-
 	didDeleteIndexStart(event) {
 		const message = __('Deleting Index ...', 'block-catalog');
 		this.setState({ status: 'deleting', message, ...event.detail });
@@ -324,10 +269,10 @@ class ToolsApp {
 			);
 
 			this.setNotice(message, 'error');
-		} else if (event.detail?.completed) {
+		} else if (event.detail?.removed) {
 			message = sprintf(
 				__('Deleted %d block catalog term(s) successfully.', 'block-catalog'),
-				event.detail?.completed,
+				event.detail?.removed,
 			);
 
 			this.setNotice(message, 'success');
@@ -390,10 +335,10 @@ class ToolsApp {
 		}
 
 		const opts = {
-			endpoint: this.settings.terms_endpoint,
+			endpoint: this.settings.delete_index_endpoint,
 		};
 
-		this.indexer.loadTerms(opts);
+		this.indexer.deleteIndex(opts);
 		return false;
 	}
 
