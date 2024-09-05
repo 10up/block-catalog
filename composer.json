@@ -1,6 +1,6 @@
 {
   "name": "10up/block-catalog-plugin",
-  "description": "Easily keep track of which Gutenberg Blocks are used across your site.",
+  "description": "Keep track of which Gutenberg Blocks are used across your site.",
   "type": "wordpress-plugin",
   "license": "GPL-2.0-or-later",
   "authors": [
