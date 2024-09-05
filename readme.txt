@@ -6,7 +6,7 @@ Stable tag:        1.6.1
 License:           GPL-2.0-or-later
 License URI:       https://spdx.org/licenses/GPL-2.0-or-later.html
 
-Easily keep track of which Gutenberg Blocks are used across your site.
+Keep track of which Gutenberg Blocks are used across your site.
 
 == Description ==
 
