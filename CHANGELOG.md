@@ -4,6 +4,19 @@ All notable changes to this project will be documented in this file, per [the Ke
 
 ## [Unreleased] - TBD
 
+## [1.6.2] - 2025-02-03
+### Changed
+- Bump WordPress "tested up to" version 6.7 (props [@thrijith](https://github.com/thrijith), [@jeffpaul](https://github.com/jeffpaul), [@Sidsector9](https://github.com/Sidsector9) via [#74](https://github.com/10up/block-catalog/pull/74), [#75](https://github.com/10up/block-catalog/pull/75)).
+
+### Security
+- Bump `webpack` from 5.91.0 to 5.94.0 (props [@dependabot](https://github.com/apps/dependabot), [@peterwilsoncc](https://github.com/peterwilsoncc) via [#68](https://github.com/10up/block-catalog/pull/68)).
+- Bump `serve-static` from 1.15.0 to 1.16.2 and `express` from 4.19.2 to 4.21.1 (props [@dependabot](https://github.com/apps/dependabot), [@Sidsector9](https://github.com/Sidsector9) via [#70](https://github.com/10up/block-catalog/pull/70)).
+- Bump `cookie` from 0.6.0 to 0.7.1 (props [@dependabot](https://github.com/apps/dependabot), [@Sidsector9](https://github.com/Sidsector9) via [#76](https://github.com/10up/block-catalog/pull/76)).
+
+### Developer
+- Update deprecated step in the WordPress Playground blueprint file (props [@barryceelen](https://github.com/barryceelen), [@dkotter](https://github.com/dkotter) via [#67](https://github.com/10up/block-catalog/pull/67)).
+- Add WordPress Playground badge, update other badges and add banner image to the README (props [@jeffpaul](https://github.com/jeffpaul), [@dkotter](https://github.com/dkotter) via [#66](https://github.com/10up/block-catalog/pull/66), [#69](https://github.com/10up/block-catalog/pull/69)).
+
 ## [1.6.1] - 2024-07-09
 ### Changed
 - Update [Support Level](https://github.com/10up/block-catalog/blob/develop/README.md#support-level) from `Beta` to `Stable` (props [@jeffpaul](https://github.com/jeffpaul), [@dkotter](https://github.com/dkotter) via [#56](https://github.com/10up/block-catalog/pull/56)).
@@ -116,6 +129,7 @@ All notable changes to this project will be documented in this file, per [the Ke
 - Initial release
 
 [Unreleased]: https://github.com/10up/block-catalog/compare/trunk...develop
+[1.6.2]: https://github.com/10up/block-catalog/compare/1.6.1...1.6.2
 [1.6.1]: https://github.com/10up/block-catalog/compare/1.6.0...1.6.1
 [1.6.0]: https://github.com/10up/block-catalog/compare/1.5.4...1.6.0
 [1.5.4]: https://github.com/10up/block-catalog/compare/1.5.3...1.5.4

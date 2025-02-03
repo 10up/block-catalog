@@ -1,8 +1,12 @@
 # Block Catalog
 
-> Easily keep track of which Gutenberg Blocks are used across your site.
+![Block Catalog](https://github.com/10up/block-catalog/blob/develop/.wordpress-org/banner-1544x500.png)
 
-[![Support Level](https://img.shields.io/badge/support-stable-blue.svg)](#support-level) ![WordPress Plugin: Tested WP Version](https://img.shields.io/wordpress/plugin/tested/block-catalog?label=WordPress) ![WordPress Plugin Required PHP Version](https://img.shields.io/wordpress/plugin/required-php/block-catalog?label=Requires%20PHP) ![WordPress Plugin: Required WP Version](https://img.shields.io/wordpress/plugin/wp-version/block-catalog?label=Requires%20WordPress) ![WordPress Plugin: Tested WP Version](https://img.shields.io/wordpress/plugin/tested/block-catalog?label=WordPress%20compatibility) [![GPL-2.0-or-later License](https://img.shields.io/github/license/10up/block-catalog.svg)](https://github.com/10up/block-catalog/blob/develop/LICENSE.md)
+[![Support Level](https://img.shields.io/badge/support-stable-blue.svg)](#support-level) ![WordPress Plugin Required PHP Version](https://img.shields.io/wordpress/plugin/required-php/block-catalog?label=Requires%20PHP) ![WordPress Plugin: Required WP Version](https://img.shields.io/wordpress/plugin/wp-version/block-catalog?label=Requires%20WordPress) ![WordPress Plugin: Tested WP Version](https://img.shields.io/wordpress/plugin/tested/block-catalog?label=WordPress) [![GPL-2.0-or-later License](https://img.shields.io/github/license/10up/block-catalog.svg)](https://github.com/10up/block-catalog/blob/develop/LICENSE.md) [![Dependency Review](https://github.com/10up/block-catalog/actions/workflows/dependency-review.yml/badge.svg)](https://github.com/10up/block-catalog/actions/workflows/dependency-review.yml) [![WordPress Plugin Version](https://img.shields.io/wordpress/plugin/v/block-catalog?logo=wordpress&logoColor=FFFFFF&label=Playground%20Demo&labelColor=3858E9&color=3858E9)](https://playground.wordpress.net/?blueprint-url=https://raw.githubusercontent.com/10up/block-catalog/develop/.wordpress-org/blueprints/blueprint.json)
+
+[![PHPUnit](https://github.com/10up/block-catalog/actions/workflows/phpunit.yml/badge.svg)](https://github.com/10up/block-catalog/actions/workflows/phpunit.yml) [![PHP Linting](https://github.com/10up/block-catalog/actions/workflows/phpcs.yml/badge.svg)](https://github.com/10up/block-catalog/actions/workflows/phpcs.yml) [![JS Linting](https://github.com/10up/block-catalog/actions/workflows/eslint.yml/badge.svg)](https://github.com/10up/block-catalog/actions/workflows/eslint.yml) [![PHP Compatibility](https://github.com/10up/block-catalog/actions/workflows/php-compat.yml/badge.svg)](https://github.com/10up/block-catalog/actions/workflows/php-compat.yml) [![CodeQL](https://github.com/10up/block-catalog/actions/workflows/github-code-scanning/codeql/badge.svg)](https://github.com/10up/block-catalog/actions/workflows/github-code-scanning/codeql)
+
+> Keep track of which Gutenberg Blocks are used across your site.
 
 ## Features
 
@@ -152,7 +156,6 @@ add_filter( 'block_catalog_block_title', function( $title, $block_name, $block )
 
 	return $title;
 }, 10, 3 );
-
 ```
 
 ## Support Level

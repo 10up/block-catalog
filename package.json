@@ -1,7 +1,7 @@
 {
   "name": "block-catalog-plugin",
-  "description": "Easily keep track of which Gutenberg Blocks are used across your site.",
-  "version": "1.6.1",
+  "description": "Keep track of which Gutenberg Blocks are used across your site.",
+  "version": "1.6.2",
   "license": "GPL-2.0-or-later",
   "author": {
     "name": "Darshan Sawardekar",
