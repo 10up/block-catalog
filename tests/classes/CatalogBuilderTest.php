@@ -212,7 +212,7 @@ class CatalogBuilderTest extends \WP_UnitTestCase {
 			'core/column'    => 'Column',
 			'core/columns'   => 'Columns',
 			'core/list'      => 'List',
-			'core/list-item' => 'List item',
+			'core/list-item' => 'List Item',
 			'core/paragraph' => 'Paragraph',
 			'core/quote'     => 'Quote',
 		];
@@ -272,7 +272,7 @@ class CatalogBuilderTest extends \WP_UnitTestCase {
 		$this->assertContains( 'Column', $actual );
 		$this->assertContains( 'Columns', $actual );
 		$this->assertContains( 'List', $actual );
-		$this->assertContains( 'List item', $actual );
+		$this->assertContains( 'List Item', $actual );
 		$this->assertContains( 'Paragraph', $actual );
 		$this->assertContains( 'Quote', $actual );
 		$this->assertContains( 'Core', $actual );

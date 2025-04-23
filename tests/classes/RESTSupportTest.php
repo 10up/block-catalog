@@ -51,7 +51,7 @@ class RESTSupportTest extends \WP_UnitTestCase {
 		$this->assertContains( 'Column', $actual );
 		$this->assertContains( 'Columns', $actual );
 		$this->assertContains( 'List', $actual );
-		$this->assertContains( 'List item', $actual );
+		$this->assertContains( 'List Item', $actual );
 		$this->assertContains( 'Paragraph', $actual );
 		$this->assertContains( 'Quote', $actual );
 		$this->assertContains( 'Core', $actual );
