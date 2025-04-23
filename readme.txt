@@ -1,7 +1,8 @@
 === Block Catalog ===
 Contributors:      10up, dsawardekar, dkotter, jeffpaul
 Tags:              gutenberg, developer, blocks, custom blocks
-Tested up to:      6.7
+Requires at least: 6.6
+Tested up to:      6.8
 Stable tag:        1.6.2
 License:           GPL-2.0-or-later
 License URI:       https://spdx.org/licenses/GPL-2.0-or-later.html
