@@ -13,6 +13,9 @@ on:
     paths:
       - "**.php"
 
+permissions:
+  contents: read
+
 jobs:
   phpunit:
     runs-on: ubuntu-latest
