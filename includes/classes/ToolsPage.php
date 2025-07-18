@@ -24,6 +24,7 @@ class ToolsPage {
 	 */
 	public function register() {
 		add_action( 'admin_menu', [ $this, 'register_page' ] );
+		add_filter( 'plugin_action_links_' . BLOCK_CATALOG_PLUGIN_BASENAME, array( $this, 'filter_plugin_action_links' ) );
 	}
 
 	/**
@@ -162,5 +163,30 @@ class ToolsPage {
 				'catalog_page'            => admin_url( 'edit-tags.php?taxonomy=' . BLOCK_CATALOG_TAXONOMY ),
 			],
 		];
+	}
+
+	/**
+	 * Add the action links to the plugin page.
+	 *
+	 * @param array $links The Action links for the plugin.
+	 *
+	 * @return array
+	 */
+	public function filter_plugin_action_links( $links ) {
+
+		if ( ! is_array( $links ) ) {
+			return $links;
+		}
+
+		return array_merge(
+			array(
+				'settings' => sprintf(
+					'<a href="%s"> %s </a>',
+					esc_url( admin_url( 'tools.php?page=block-catalog-tools' ) ),
+					esc_html__( 'Settings', 'block-catalog' )
+				),
+			),
+			$links
+		);
 	}
 }
