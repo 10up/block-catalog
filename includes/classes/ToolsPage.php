@@ -179,10 +179,10 @@ class ToolsPage {
 
 		return array_merge(
 			array(
-				'settings' => sprintf(
+				'index-posts' => sprintf(
 					'<a href="%s"> %s </a>',
 					esc_url( admin_url( 'tools.php?page=block-catalog-tools' ) ),
-					esc_html__( 'Settings', 'block-catalog' )
+					esc_html__( 'Index Posts', 'block-catalog' )
 				),
 			),
 			$links
