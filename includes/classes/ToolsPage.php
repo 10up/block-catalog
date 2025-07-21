@@ -169,8 +169,7 @@ class ToolsPage {
 	 * Add the action links to the plugin page.
 	 *
 	 * @param array $links The Action links for the plugin.
-	 *
-	 * @return array
+	 * @return array Modified action links to include custom link.
 	 */
 	public function filter_plugin_action_links( $links ) {
 
