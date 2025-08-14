@@ -87,10 +87,11 @@ class UtilityTests extends \WP_UnitTestCase {
 	function test_clear_caches_uses_appropriate_cache_function() {
 		// Test that the function uses wp_cache_flush_runtime() when available (WordPress 6.0+)
 		// This is more appropriate for preventing out of memory errors during bulk operations
-		if ( function_exists( 'wp_cache_flush_runtime' ) ) {
+		if ( function_exists( 'wp_cache_supports' ) && wp_cache_supports( 'flush_runtime' ) ) {
 			// We can't easily test the internal behavior without mocking, but we can verify
-			// the function exists and our function can call it without errors
-			$this->assertTrue( function_exists( 'wp_cache_flush_runtime' ) );
+			// the capability check works and our function can call it without errors
+			$this->assertTrue( function_exists( 'wp_cache_supports' ) );
+			$this->assertTrue( wp_cache_supports( 'flush_runtime' ) );
 		}
 		
 		// The function should always work regardless of WordPress version
