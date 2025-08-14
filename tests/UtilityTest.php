@@ -70,4 +70,17 @@ class UtilityTests extends \WP_UnitTestCase {
 
 		$this->assertEquals( 'manage_options', get_required_capability() );
 	}
+
+	function test_clear_caches_does_not_cause_errors() {
+		// Test that clear_caches function can be called without errors
+		// This is especially important for compatibility with Object Cache Pro and other cache implementations
+		$result = clear_caches();
+		
+		// The function should not return anything (void function)
+		$this->assertNull( $result );
+		
+		// The function should not cause any fatal errors or exceptions
+		// If we reach this point, the test passes
+		$this->assertTrue( true );
+	}
 }

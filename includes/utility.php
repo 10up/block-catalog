@@ -76,19 +76,19 @@ function stop_bulk_operation() {
  * @props VIP
  */
 function clear_caches() {
-	global $wpdb, $wp_object_cache;
+	global $wpdb;
 
 	$wpdb->queries = array();
 
-	if ( is_object( $wp_object_cache ) ) {
-		$wp_object_cache->group_ops      = array();
-		$wp_object_cache->stats          = array();
-		$wp_object_cache->memcache_debug = array();
-		$wp_object_cache->cache          = array();
+	// Use WordPress's built-in cache functions instead of accessing object cache properties directly
+	// This ensures compatibility with all object cache implementations including Object Cache Pro
 
-		if ( method_exists( $wp_object_cache, '__remoteset' ) ) {
-			$wp_object_cache->__remoteset(); // important
-		}
+	// Clear all cache groups
+	wp_cache_flush();
+
+	// Reset any custom cache stats if the object cache supports it
+	if ( function_exists( 'wp_cache_stats' ) ) {
+		wp_cache_stats();
 	}
 }
 
