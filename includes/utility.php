@@ -80,19 +80,12 @@ function clear_caches() {
 
 	$wpdb->queries = array();
 
-	// Clear runtime cache to prevent out of memory errors during bulk operations
-	// wp_cache_flush_runtime() was introduced in WordPress 6.0.0 and is more appropriate for OOM prevention
 	if ( function_exists( 'wp_cache_flush_runtime' ) ) {
 		wp_cache_flush_runtime();
 	} else {
-		// Fallback to wp_cache_flush() for older WordPress versions
-		// wp_cache_flush() has been available since early WordPress versions
-		if ( function_exists( 'wp_cache_flush' ) ) {
-			wp_cache_flush();
-		}
+		wp_cache_flush();
 	}
 	
-	// Reset any custom cache stats if the object cache supports it
 	if ( function_exists( 'wp_cache_stats' ) ) {
 		wp_cache_stats();
 	}
