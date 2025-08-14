@@ -82,10 +82,16 @@ function clear_caches() {
 
 	// Use WordPress's built-in cache functions instead of accessing object cache properties directly
 	// This ensures compatibility with all object cache implementations including Object Cache Pro
-
-	// Clear all cache groups
-	wp_cache_flush();
-
+	
+	// Clear runtime cache to prevent out of memory errors during bulk operations
+	// wp_cache_flush_runtime() was introduced in WordPress 6.0.0 and is more appropriate for OOM prevention
+	if ( function_exists( 'wp_cache_flush_runtime' ) ) {
+		wp_cache_flush_runtime();
+	} else {
+		// Fallback to wp_cache_flush() for older WordPress versions
+		wp_cache_flush();
+	}
+	
 	// Reset any custom cache stats if the object cache supports it
 	if ( function_exists( 'wp_cache_stats' ) ) {
 		wp_cache_stats();
