@@ -88,7 +88,7 @@ function clear_caches() {
 		// Fallback to wp_cache_flush() for older WordPress versions or implementations without runtime support
 		wp_cache_flush();
 	}
-	
+
 	// Reset any custom cache stats if the object cache supports it
 	if ( function_exists( 'wp_cache_stats' ) ) {
 		wp_cache_stats();
