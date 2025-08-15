@@ -76,19 +76,17 @@ function stop_bulk_operation() {
  * @props VIP
  */
 function clear_caches() {
-	global $wpdb, $wp_object_cache;
+	global $wpdb;
 
 	$wpdb->queries = array();
 
-	if ( is_object( $wp_object_cache ) ) {
-		$wp_object_cache->group_ops      = array();
-		$wp_object_cache->stats          = array();
-		$wp_object_cache->memcache_debug = array();
-		$wp_object_cache->cache          = array();
-
-		if ( method_exists( $wp_object_cache, '__remoteset' ) ) {
-			$wp_object_cache->__remoteset(); // important
-		}
+	// Clear runtime cache to prevent out of memory errors during bulk operations
+	// Use wp_cache_supports() to check for runtime flush capability (WordPress 6.0+)
+	if ( function_exists( 'wp_cache_supports' ) && wp_cache_supports( 'flush_runtime' ) ) {
+		wp_cache_flush_runtime();
+	} else {
+		// Fallback to wp_cache_flush() for older WordPress versions or implementations without runtime support
+		wp_cache_flush();
 	}
 }
 

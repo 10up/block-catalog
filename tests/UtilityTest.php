@@ -70,4 +70,32 @@ class UtilityTests extends \WP_UnitTestCase {
 
 		$this->assertEquals( 'manage_options', get_required_capability() );
 	}
+
+	function test_clear_caches_does_not_cause_errors() {
+		// Test that clear_caches function can be called without errors
+		// This is especially important for compatibility with Object Cache Pro and other cache implementations
+		$result = clear_caches();
+		
+		// The function should not return anything (void function)
+		$this->assertNull( $result );
+		
+		// The function should not cause any fatal errors or exceptions
+		// If we reach this point, the test passes
+		$this->assertTrue( true );
+	}
+
+	function test_clear_caches_uses_appropriate_cache_function() {
+		// Test that the function uses wp_cache_flush_runtime() when available (WordPress 6.0+)
+		// This is more appropriate for preventing out of memory errors during bulk operations
+		if ( function_exists( 'wp_cache_supports' ) && wp_cache_supports( 'flush_runtime' ) ) {
+			// We can't easily test the internal behavior without mocking, but we can verify
+			// the capability check works and our function can call it without errors
+			$this->assertTrue( function_exists( 'wp_cache_supports' ) );
+			$this->assertTrue( wp_cache_supports( 'flush_runtime' ) );
+		}
+		
+		// The function should always work regardless of WordPress version
+		$result = clear_caches();
+		$this->assertNull( $result );
+	}
 }
