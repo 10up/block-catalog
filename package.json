@@ -18,13 +18,23 @@
     "clean-dist": "rm -rf ./dist",
     "build-release": "npm install && composer install --no-dev -o && npm run build && npm run build-release-zip",
     "build-release-zip": "mkdir -p releases && bin/build-release-zip.sh $npm_package_version",
-    "build-release-svn": "mkdir -p releases/svn && bin/build-release-svn.sh $npm_package_version"
+    "build-release-svn": "mkdir -p releases/svn && bin/build-release-svn.sh $npm_package_version",
+    "cypress:open": "cypress open --config-file tests/cypress/config.js --e2e --browser chrome",
+    "cypress:run": "cypress run --config-file tests/cypress/config.js",
+    "env": "wp-env",
+    "env:start": "wp-env start",
+    "env:stop": "wp-env stop",
+    "env:destroy": "wp-env destroy",
+    "postenv:start": "./tests/bin/initialize.sh"
   },
   "engines": {
     "node": ">=20.0.0"
   },
   "devDependencies": {
+    "@10up/cypress-wp-utils": "^0.6.0",
+    "@wordpress/env": "^10.29.0",
     "10up-toolkit": "^6.5.0",
+    "cypress": "^13.17.0",
     "prettier": "^3.2.5"
   },
   "dependencies": {
