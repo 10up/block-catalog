@@ -53,7 +53,7 @@ class ToolsPage {
 	public function render() {
 		$post_types = \BlockCatalog\Utility\get_supported_post_types();
 		?>
-		<h1><?php echo esc_html( __( 'Block Catalog - Index', 'block-catalog' ) ); ?></h1>
+		<h1><?php esc_html_e( 'Block Catalog - Index', 'block-catalog' ); ?></h1>
 
 		<div id="index-notice" class="notice" style="display:none; margin-left: 0">
 			<p id="index-notice-body">
@@ -66,7 +66,7 @@ class ToolsPage {
 		<div id="index-settings">
 
 		<h4>
-			<?php echo esc_html( __( 'Select Post Type(s)', 'block-catalog' ) ); ?>
+			<?php esc_html_e( 'Select Post Type(s)', 'block-catalog' ); ?>
 		</h4>
 
 		<form method="post" novalidate="novalidate">
@@ -90,31 +90,31 @@ class ToolsPage {
 		<?php } ?>
 
 		<p class="submit">
-			<input type="button" name="submit" id="submit" class="button button-primary" value="Index Posts">
-			<input type="button" name="reset" id="delete-index" class="button button-secondary" value="Delete Index">
+			<input type="button" name="submit" id="submit" class="button button-primary" value="<?php esc_attr_e( 'Index Posts', 'block-catalog' ); ?>">
+			<input type="button" name="reset" id="delete-index" class="button button-secondary" value="<?php esc_attr_e( 'Delete Index', 'block-catalog' ); ?>">
 		</p>
 		</div>
 
 		<div id="index-status" style="display:none">
 			<progress class="index-progress-bar" id="index-progress" value="50" max="100">
-	    </progress>
+		</progress>
 
 			<p class="cancel">
-				<input type="button" name="cancel" id="cancel" class="button button-primary" value="Cancel">
+				<input type="button" name="cancel" id="cancel" class="button button-primary" value="<?php esc_attr_e( 'Cancel', 'block-catalog' ); ?>">
 			</p>
 		</div>
 
 		<div id="delete-status" style="display:none">
 			<progress class="index-progress-bar" id="delete-progress" value="50" max="100">
-	    </progress>
+	    </progress>
 
 			<p class="cancel">
-				<input type="button" name="cancel-delete" id="cancel-delete" class="button button-primary" value="Cancel">
+				<input type="button" name="cancel-delete" id="cancel-delete" class="button button-primary" value="<?php esc_attr_e( 'Cancel', 'block-catalog' ); ?>">
 			</p>
 		</div>
 
 		<div id="index-errors" style="display:none">
-			<h4><?php echo esc_html( __( 'Errors', 'block-catalog' ) ); ?></h4>
+			<h4><?php esc_html_e( 'Errors', 'block-catalog' ); ?></h4>
 			<ul id="index-errors-list">
 			</ul>
 		</div>
