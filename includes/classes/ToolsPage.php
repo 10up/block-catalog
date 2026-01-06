@@ -96,8 +96,7 @@ class ToolsPage {
 		</div>
 
 		<div id="index-status" style="display:none">
-			<progress class="index-progress-bar" id="index-progress" value="50" max="100">
-		</progress>
+			<progress class="index-progress-bar" id="index-progress" value="50" max="100"></progress>
 
 			<p class="cancel">
 				<input type="button" name="cancel" id="cancel" class="button button-primary" value="<?php esc_attr_e( 'Cancel', 'block-catalog' ); ?>">
@@ -105,8 +104,7 @@ class ToolsPage {
 		</div>
 
 		<div id="delete-status" style="display:none">
-			<progress class="index-progress-bar" id="delete-progress" value="50" max="100">
-	    </progress>
+			<progress class="index-progress-bar" id="delete-progress" value="50" max="100"></progress>
 
 			<p class="cancel">
 				<input type="button" name="cancel-delete" id="cancel-delete" class="button button-primary" value="<?php esc_attr_e( 'Cancel', 'block-catalog' ); ?>">
