@@ -50,6 +50,10 @@ When the plugin detects such a missing `title`, it uses the `blockName` suffix i
 
 To address this you need to update your custom block registration. If this is outside your control, you can also use the `block_catalog_block_title` filter hook to [override the title as seen here](https://gist.github.com/dsawardekar/676d0d4c5d7f688351e199fdc54484d6).
 
+= Where do I report security bugs found in this plugin? =
+
+Please report security bugs found in the source code of the Block Catalog plugin through the [Patchstack Vulnerability Disclosure  Program](https://patchstack.com/database/vdp/2b074f7a-1627-4c59-9072-4dca6bc02b63).  The Patchstack team will assist you with verification, CVE assignment, and notify the developers of this plugin.
+
 == Changelog ==
 
 = 1.6.2 - 2025-02-03 =
