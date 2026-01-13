@@ -158,7 +158,7 @@ add_filter( 'block_catalog_block_title', function( $title, $block_name, $block )
 }, 10, 3 );
 ```
 
-### Where do I report security bugs found in this plugin? =
+### Where do I report security bugs found in this plugin?
 
 Please report security bugs found in the source code of the Block Catalog plugin through the [Patchstack Vulnerability Disclosure  Program](https://patchstack.com/database/vdp/2b074f7a-1627-4c59-9072-4dca6bc02b63).  The Patchstack team will assist you with verification, CVE assignment, and notify the developers of this plugin.
 
