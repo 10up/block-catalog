@@ -158,6 +158,10 @@ add_filter( 'block_catalog_block_title', function( $title, $block_name, $block )
 }, 10, 3 );
 ```
 
+### Where do I report security bugs found in this plugin? =
+
+Please report security bugs found in the source code of the Block Catalog plugin through the [Patchstack Vulnerability Disclosure  Program](https://patchstack.com/database/vdp/2b074f7a-1627-4c59-9072-4dca6bc02b63).  The Patchstack team will assist you with verification, CVE assignment, and notify the developers of this plugin.
+
 ## Support Level
 
 **Stable:** 10up is not planning to develop any new features for this, but will still respond to bug reports and security concerns. We welcome PRs, but any that include new features should be small and easy to integrate and should not include breaking changes. We otherwise intend to keep this tested up to the most recent version of WordPress.
