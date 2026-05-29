@@ -490,6 +490,16 @@ class CatalogBuilder {
 	}
 
 	/**
+	 * Checks if a catalog term slug belongs to a pattern, including synced/reusable patterns.
+	 *
+	 * @param string $slug The term slug
+	 * @return bool
+	 */
+	public function is_pattern_term( $slug ) {
+		return 0 === stripos( $slug, 'pattern-' ) || 0 === stripos( $slug, 're-' );
+	}
+
+	/**
 	 * Finds the label of the block term from its blockName.
 	 *
 	 * @param string $block The block data

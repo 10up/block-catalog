@@ -249,6 +249,19 @@ class CatalogBuilderTest extends \WP_UnitTestCase {
 		$this->assertEquals( $expected, $actual['terms'] );
 	}
 
+	function test_it_knows_pattern_slug_is_a_pattern_term() {
+		$this->assertTrue( $this->builder->is_pattern_term( 'pattern-1412' ) );
+		$this->assertTrue( $this->builder->is_pattern_term( 'pattern-twentytwentyfive-hero' ) );
+	}
+
+	function test_it_treats_reusable_slug_as_a_pattern_term() {
+		$this->assertTrue( $this->builder->is_pattern_term( 're-555' ) );
+	}
+
+	function test_it_knows_block_slug_is_not_a_pattern_term() {
+		$this->assertFalse( $this->builder->is_pattern_term( 'core-paragraph' ) );
+	}
+
 	function test_it_uses_block_label_as_term_for_non_reusable_blocks() {
 		register_block_type( 'ns/foo11', [ 'title' => 'Registered Title' ] );
 

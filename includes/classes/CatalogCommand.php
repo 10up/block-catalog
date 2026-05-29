@@ -179,6 +179,9 @@ class CatalogCommand extends \WP_CLI_Command {
 	 * <post-id>
 	 * : The post id to lookup blocks for.
 	 *
+	 * [--type=<type>]
+	 * : Filter terms by type. One of 'any', 'blocks', 'patterns'. Default 'any'.
+	 *
 	 * @subcommand post-blocks
 	 * @param array $args Command args
 	 * @param array $opts Command opts
@@ -188,28 +191,42 @@ class CatalogCommand extends \WP_CLI_Command {
 			\WP_CLI::error( __( 'Please enter a valid post_id', 'block-catalog' ) );
 		}
 
+		$type = isset( $opts['type'] ) ? $opts['type'] : 'any';
+
+		if ( ! in_array( $type, [ 'any', 'blocks', 'patterns' ], true ) ) {
+			\WP_CLI::error( __( "Invalid --type, expected one of 'any', 'blocks' or 'patterns'.", 'block-catalog' ) );
+		}
+
 		$post_id = intval( $args[0] );
 
 		$builder = new CatalogBuilder();
 		$builder->catalog( $post_id );
 
 		$blocks = wp_get_object_terms( $post_id, BLOCK_CATALOG_TAXONOMY );
+		$blocks = $this->filter_post_blocks( $blocks, $type );
 
 		if ( empty( $blocks ) ) {
-			\WP_CLI::error( __( 'No blocks found.', 'block-catalog' ) );
+			\WP_CLI::error(
+				'patterns' === $type
+					? __( 'No patterns found.', 'block-catalog' )
+					: __( 'No blocks found.', 'block-catalog' )
+			);
 		}
 
+		$name_label = 'patterns' === $type ? 'Pattern Name' : 'Block Name';
+
 		$block_items = array_map(
-			function ( $term ) {
+			function ( $term ) use ( $name_label ) {
 				return [
-					'Block' => $term->name,
-					'ID'    => $term->term_id,
+					'ID'        => $term->term_id,
+					$name_label => $term->name,
+					'Slug'      => $term->slug,
 				];
 			},
 			$blocks
 		);
 
-		\WP_CLI\Utils\format_items( 'table', $block_items, [ 'ID', 'Block' ] );
+		\WP_CLI\Utils\format_items( 'table', $block_items, [ 'ID', $name_label, 'Slug' ] );
 	}
 
 	/**
@@ -257,6 +274,36 @@ class CatalogCommand extends \WP_CLI_Command {
 		} else {
 			\WP_CLI::success( $result['message'] );
 		}
+	}
+
+	/**
+	 * Filters a post's catalog terms by type, dropping grouping parent terms.
+	 *
+	 * @param array  $terms The post's catalog terms
+	 * @param string $type The type filter, one of 'any', 'blocks' or 'patterns'
+	 * @return array
+	 */
+	private function filter_post_blocks( $terms, $type ) {
+		$builder = new CatalogBuilder();
+
+		return array_filter(
+			$terms,
+			function ( $term ) use ( $type, $builder ) {
+				if ( 0 === $term->parent ) {
+					return false;
+				}
+
+				if ( 'patterns' === $type ) {
+					return $builder->is_pattern_term( $term->slug );
+				}
+
+				if ( 'blocks' === $type ) {
+					return ! $builder->is_pattern_term( $term->slug );
+				}
+
+				return true;
+			}
+		);
 	}
 
 	/**
