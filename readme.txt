@@ -14,6 +14,7 @@ Keep track of which Gutenberg Blocks are used across your site.
 * Fully Integrated with the WordPress Admin.
 * Use filters to see Posts that use a specific block.
 * Find Posts that use Reusable Blocks.
+* Find Posts that use Block Patterns.
 * Use the WP CLI to quickly find blocks from the command line.
 * Use custom WordPress filters to extend the Block Catalog.
 

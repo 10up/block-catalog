@@ -13,7 +13,7 @@
 - Find which blocks are used across your site.
 - Fully Integrated with the WordPress Admin.
 - Use filters to see Posts that use a specific block.
-- Find Posts that use Reusable Blocks.
+- Find Posts that use Block Patterns.
 - Use the WP CLI to quickly find blocks from the command line.
 - Use custom WordPress filters to extend the Block Catalog.
 - Find block usage on a Multisite network.
@@ -107,11 +107,14 @@ The following WP CLI commands are supported by the Block Catalog plugin.
   - [--network=\<network\>]
     Deletes the indexes across the entire network. Accepts a comma delimited list of child site ids.
 
-- `wp block-catalog post-blocks <post-id> [--index]`
-  Prints the list of blocks in the specified post.
+- `wp block-catalog post-blocks <post-id> [--type=<type>]`
+  Prints the blocks and patterns used in the specified post.
 
   - \<post-id\>
-    The post id to lookup blocks for.
+    The post id to look up.
+
+  - [--type=\<type\>]
+    Filter the output by type — `any` (default), `blocks`, or `patterns`.
 
 - `wp block-catalog export [--output=<output>] [--post_type=<types>] [--posts_per_block=<number>] [--ignore_parent=<ignore_parent>]`
   Exports the posts associated with the 'block_catalog' taxonomy to a CSV file.
