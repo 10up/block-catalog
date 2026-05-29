@@ -438,4 +438,61 @@ class PostFinderTest extends \WP_UnitTestCase {
 		$this->assertEquals( 'not-indexed', $actual[2]['error']->get_error_code() );
 	}
 
+	function test_it_parses_block_filter_into_tokens() {
+		$actual = $this->finder->parse_block_filter( 'core/quote, core/*  ,, core-heading' );
+
+		$this->assertEquals( [ 'core/quote', 'core/*', 'core-heading' ], $actual );
+	}
+
+	function test_it_detects_namespace_patterns() {
+		$this->assertTrue( $this->finder->is_namespace_pattern( 'core/*' ) );
+		$this->assertTrue( $this->finder->is_namespace_pattern( 'my-plugin/*' ) );
+
+		$this->assertFalse( $this->finder->is_namespace_pattern( 'core/quote' ) );
+		$this->assertFalse( $this->finder->is_namespace_pattern( 'core/embed*' ) );
+		$this->assertFalse( $this->finder->is_namespace_pattern( '*/quote' ) );
+		$this->assertFalse( $this->finder->is_namespace_pattern( 'core/*/x' ) );
+		$this->assertFalse( $this->finder->is_namespace_pattern( '/*' ) );
+	}
+
+	function test_it_returns_namespace_blocks() {
+		$post_ids = $this->factory->post->create_many( 1, [
+			'post_type'    => 'post',
+			'post_status'  => 'publish',
+			'post_content' => '<!-- wp:core/paragraph --><!-- /wp:core/paragraph --><!-- wp:core/heading --><!-- /wp:core/heading -->',
+		] );
+
+		foreach ( $post_ids as $post_id ) {
+			$this->builder->catalog( $post_id );
+		}
+
+		$actual = $this->finder->get_namespace_blocks( 'core' );
+		sort( $actual );
+
+		$this->assertEquals( [ 'core-heading', 'core-paragraph' ], $actual );
+		$this->assertNotContains( 'core', $actual );
+	}
+
+	function test_it_returns_empty_for_unknown_namespace() {
+		$this->assertEquals( [], $this->finder->get_namespace_blocks( 'xyz' ) );
+	}
+
+	function test_it_resolves_block_filter_with_names_and_patterns() {
+		$post_ids = $this->factory->post->create_many( 1, [
+			'post_type'    => 'post',
+			'post_status'  => 'publish',
+			'post_content' => '<!-- wp:core/paragraph --><!-- /wp:core/paragraph --><!-- wp:core/heading --><!-- /wp:core/heading -->',
+		] );
+
+		foreach ( $post_ids as $post_id ) {
+			$this->builder->catalog( $post_id );
+		}
+
+		$actual = $this->finder->resolve_block_filter( 'core/paragraph, core/*, xyz/missing' );
+		sort( $actual['slugs'] );
+
+		$this->assertEquals( [ 'core-heading', 'core-paragraph' ], $actual['slugs'] );
+		$this->assertEquals( [ 'xyz/missing' ], $actual['unmatched'] );
+	}
+
 }

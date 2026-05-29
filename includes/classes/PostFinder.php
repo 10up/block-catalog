@@ -187,6 +187,111 @@ class PostFinder {
 	}
 
 	/**
+	 * Splits a raw --blocks filter value into a list of trimmed, non-empty tokens.
+	 *
+	 * @param string $value The raw --blocks option value, eg:- 'core/quote, core/*'
+	 * @return array List of block tokens.
+	 */
+	public function parse_block_filter( $value ) {
+		$tokens = explode( ',', (string) $value );
+		$tokens = array_map( 'trim', $tokens );
+		$tokens = array_filter( $tokens );
+
+		return array_values( $tokens );
+	}
+
+	/**
+	 * Checks if a --blocks token is an explicit namespace fan-out, eg:- 'core/*'.
+	 *
+	 * Only the exact 'namespace/*' form is supported, so the namespace itself must not
+	 * contain a slash. Partial globs and sub-patterns are not treated as fan-outs.
+	 *
+	 * @param string $token The --blocks token.
+	 * @return bool
+	 */
+	public function is_namespace_pattern( $token ) {
+		if ( '/*' !== substr( $token, -2 ) ) {
+			return false;
+		}
+
+		$namespace = substr( $token, 0, -2 );
+
+		return '' !== $namespace && false === strpos( $namespace, '/' );
+	}
+
+	/**
+	 * Returns the catalog slugs of all blocks within a namespace.
+	 *
+	 * Block terms are stored as children of their namespace's parent term (see
+	 * CatalogBuilder::get_block_parent_term), so a namespace's blocks are the direct
+	 * children of that parent term.
+	 *
+	 * @param string $ns The block namespace, eg:- 'core'.
+	 * @return array List of child term slugs.
+	 */
+	public function get_namespace_blocks( $ns ) {
+		$parent = get_term_by( 'slug', sanitize_title( $ns ), BLOCK_CATALOG_TAXONOMY );
+
+		if ( empty( $parent ) ) {
+			return [];
+		}
+
+		$slugs = get_terms(
+			[
+				'taxonomy'   => BLOCK_CATALOG_TAXONOMY,
+				'parent'     => $parent->term_id,
+				'hide_empty' => false,
+				'fields'     => 'slugs',
+			]
+		);
+
+		if ( is_wp_error( $slugs ) ) {
+			return [];
+		}
+
+		return $slugs;
+	}
+
+	/**
+	 * Resolves a raw --blocks filter value into catalog term slugs.
+	 *
+	 * Each token is either an explicit namespace fan-out (eg:- 'core/*') or a single
+	 * block by name (eg:- 'core/quote') or slug (eg:- 'core-quote'). Tokens that don't
+	 * match any indexed block are returned in 'unmatched' so the caller can report them.
+	 *
+	 * @param string $value The raw --blocks option value.
+	 * @return array {
+	 *     @type array $slugs     The resolved, unique term slugs.
+	 *     @type array $unmatched The tokens that didn't match any indexed block.
+	 * }
+	 */
+	public function resolve_block_filter( $value ) {
+		$tokens    = $this->parse_block_filter( $value );
+		$slugs     = [];
+		$unmatched = [];
+
+		foreach ( $tokens as $token ) {
+			if ( $this->is_namespace_pattern( $token ) ) {
+				$namespace = substr( $token, 0, -2 );
+				$resolved  = $this->get_namespace_blocks( $namespace );
+			} else {
+				$resolved = $this->get_tax_query_terms( [ $token ] );
+			}
+
+			if ( empty( $resolved ) ) {
+				$unmatched[] = $token;
+			} else {
+				$slugs = array_merge( $slugs, $resolved );
+			}
+		}
+
+		return [
+			'slugs'     => array_values( array_unique( $slugs ) ),
+			'unmatched' => $unmatched,
+		];
+	}
+
+	/**
 	 * Checks if the Block Catalog taxonomy is indexed.
 	 *
 	 * @return bool
