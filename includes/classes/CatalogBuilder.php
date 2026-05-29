@@ -372,6 +372,8 @@ class CatalogBuilder {
 			$terms[ $block['blockName'] ] = $label;
 		}
 
+		$terms = array_replace( $terms, $this->get_pattern_terms( $block ) );
+
 		/**
 		 * Filters the term labels corresponding to the block in the catalog. This
 		 * is useful to build multiple terms from a single block.
@@ -395,6 +397,96 @@ class CatalogBuilder {
 			'terms'      => $terms,
 			'variations' => $variations,
 		];
+	}
+
+	/**
+	 * Checks if the block originated from a block pattern.
+	 *
+	 * @param array $block The block data
+	 * @return bool
+	 */
+	public function is_pattern_block( $block ) {
+		return ! empty( $block['attrs']['metadata']['patternName'] );
+	}
+
+	/**
+	 * Checks if the pattern name refers to a user pattern, ie:- a wp_block post.
+	 *
+	 * @param string $name The pattern name
+	 * @return bool
+	 */
+	public function is_user_pattern( $name ) {
+		return 0 === stripos( $name, 'core/block/' );
+	}
+
+	/**
+	 * Returns the wp_block post id from a user pattern name.
+	 *
+	 * @param string $name The pattern name, eg:- core/block/1412
+	 * @return int
+	 */
+	public function get_user_pattern_id( $name ) {
+		return intval( substr( $name, strlen( 'core/block/' ) ) );
+	}
+
+	/**
+	 * Converts a block's pattern to a list of term names.
+	 *
+	 * @param array $block The block data
+	 * @return array
+	 */
+	public function get_pattern_terms( $block ) {
+		if ( ! $this->is_pattern_block( $block ) ) {
+			return [];
+		}
+
+		$slug = $this->get_pattern_slug( $block );
+
+		if ( empty( $slug ) ) {
+			return [];
+		}
+
+		return [ $slug => $this->get_pattern_label( $block ) ];
+	}
+
+	/**
+	 * Finds the catalog slug for the block's pattern.
+	 *
+	 * @param array $block The block data
+	 * @return string
+	 */
+	public function get_pattern_slug( $block ) {
+		$name = $block['attrs']['metadata']['patternName'];
+
+		if ( $this->is_user_pattern( $name ) ) {
+			$id = $this->get_user_pattern_id( $name );
+			return ! empty( $id ) ? 'pattern-' . $id : '';
+		}
+
+		return 'pattern-' . sanitize_title( $name );
+	}
+
+	/**
+	 * Finds the display label for the block's pattern.
+	 *
+	 * @param array $block The block data
+	 * @return string
+	 */
+	public function get_pattern_label( $block ) {
+		$name = $block['attrs']['metadata']['patternName'];
+
+		if ( $this->is_user_pattern( $name ) ) {
+			$label = get_the_title( $this->get_user_pattern_id( $name ) );
+		} else {
+			$registered = \WP_Block_Patterns_Registry::get_instance()->get_registered( $name );
+			$label      = ! empty( $registered['title'] ) ? $registered['title'] : '';
+		}
+
+		if ( empty( $label ) ) {
+			$label = $block['attrs']['metadata']['name'] ?? $name;
+		}
+
+		return $label;
 	}
 
 	/**
@@ -453,6 +545,10 @@ class CatalogBuilder {
 	public function get_block_parent_name( $name ) {
 		if ( 0 === stripos( $name, 're-' ) ) {
 			return __( 'Reusable block', 'block-catalog' );
+		}
+
+		if ( 0 === stripos( $name, 'pattern-' ) ) {
+			return __( 'Patterns', 'block-catalog' );
 		}
 
 		$parts     = explode( '/', $name );
