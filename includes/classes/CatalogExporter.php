@@ -83,11 +83,12 @@ class CatalogExporter {
 	/**
 	 * Converts a comma-delimited list of pattern names into the equivalent --blocks value.
 	 *
-	 * Each token maps to its catalog slug: foo/hero -> patterns-foo-hero, and the namespace
-	 * fan-out foo/* -> patterns-foo/* (the patterns-foo parent), matching the pattern paths
-	 * built by CatalogBuilder.
+	 * Each token maps to its catalog slug: foo/hero -> patterns-foo-hero, the namespace
+	 * fan-out foo/* -> patterns-foo/*, and * -> patterns (the top term; the export query's
+	 * include_children then covers every pattern), matching the pattern paths built by
+	 * CatalogBuilder.
 	 *
-	 * @param string $patterns Comma-delimited list of pattern names / namespace fan-outs.
+	 * @param string $patterns Comma-delimited list of pattern names / fan-outs / *.
 	 * @return string Comma-delimited --blocks value.
 	 */
 	public function patterns_to_block_slugs( $patterns ) {
@@ -95,6 +96,10 @@ class CatalogExporter {
 
 		$slugs = array_map(
 			function ( $token ) {
+				if ( '*' === $token ) {
+					return 'patterns';
+				}
+
 				if ( '/*' === substr( $token, -2 ) ) {
 					return 'patterns-' . sanitize_title( substr( $token, 0, -2 ) ) . '/*';
 				}

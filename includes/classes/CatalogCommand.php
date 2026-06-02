@@ -239,13 +239,13 @@ class CatalogCommand extends \WP_CLI_Command {
 	 *
 	 * [--blocks=<blocks>]
 	 * : Comma-delimited list of blocks to export, by name (eg:- core/quote) or slug
-	 * (eg:- core-quote). Use the explicit 'namespace/*' form (eg:- core/*) to export
-	 * every block in a namespace. Defaults to all blocks. Optional.
+	 * (eg:- core-quote). Use the 'namespace/*' form (eg:- core/*) to export a whole
+	 * namespace, or '*' for all blocks. Defaults to all blocks. Optional.
 	 *
 	 * [--patterns=<patterns>]
-	 * : Comma-delimited list of registered block patterns to export, by name (eg:-
-	 * foo/something). Converted to pattern catalog slugs. Cannot be combined with
-	 * --blocks. Optional.
+	 * : Comma-delimited list of block patterns to export, by name (eg:- foo/something),
+	 * a 'namespace/*' fan-out (eg:- foo/*), or '*' for all patterns. Cannot be combined
+	 * with --blocks. Optional.
 	 *
 	 * [--post_type=<types>]
 	 * : Comma-delimited list of post types. Optional.
@@ -313,13 +313,19 @@ class CatalogCommand extends \WP_CLI_Command {
 	/**
 	 * Resolves the --blocks option into a validated list of catalog term slugs.
 	 *
-	 * Warns for any block name that doesn't match an indexed block, and aborts if the
-	 * catalog isn't indexed or none of the requested blocks match.
+	 * A '*' token short-circuits to an empty list, meaning no filtering (export everything).
+	 * Otherwise warns for any block name that doesn't match an indexed block, and aborts if
+	 * the catalog isn't indexed or none of the requested blocks match.
 	 *
 	 * @param string $blocks The raw --blocks option value.
-	 * @return array List of resolved term slugs.
+	 * @return array List of resolved term slugs ([] = no filter / export all).
 	 */
 	private function resolve_export_blocks( $blocks ) {
+		// A '*' means everything, so skip filtering and export all catalog terms.
+		if ( '*' === $blocks ) {
+			return [];
+		}
+
 		$finder = new PostFinder();
 
 		if ( ! $finder->is_indexed() ) {

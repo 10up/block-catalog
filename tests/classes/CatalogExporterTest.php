@@ -290,8 +290,36 @@ class CatalogExporterTest extends \WP_UnitTestCase {
 	function test_it_converts_pattern_names_to_block_slugs() {
 		$this->assertEquals( 'patterns-foo-something', $this->exporter->patterns_to_block_slugs( 'foo/something' ) );
 		$this->assertEquals( 'patterns-foo/*', $this->exporter->patterns_to_block_slugs( 'foo/*' ) );
+		$this->assertEquals( 'patterns', $this->exporter->patterns_to_block_slugs( '*' ) );
 		$this->assertEquals( 'patterns-foo-a,patterns-bar-b', $this->exporter->patterns_to_block_slugs( 'foo/a, bar/b' ) );
 		$this->assertEquals( '', $this->exporter->patterns_to_block_slugs( '' ) );
+	}
+
+	function test_it_exports_all_patterns_via_the_patterns_term() {
+		$taxonomy = new BlockCatalogTaxonomy();
+		$taxonomy->register();
+
+		$post_id = $this->factory->post->create( array(
+			'post_type'    => 'post',
+			'post_status'  => 'publish',
+			'post_title'   => 'Pattern Post',
+			'post_content' => '<!-- wp:core/group {"metadata":{"patternName":"foo/hero"}} --><!-- /wp:core/group -->',
+		) );
+
+		( new CatalogBuilder() )->catalog( $post_id );
+
+		// '*' converts to the top 'patterns' term; include_children fans out to every pattern.
+		$result = $this->exporter->export(
+			$this->tmp_file,
+			array(
+				'post_type' => 'post',
+				'blocks'    => array( 'patterns' ),
+			)
+		);
+		$this->assertTrue( $result['success'] );
+
+		$csv = file_get_contents( $this->tmp_file );
+		$this->assertStringContainsString( 'Pattern Post', $csv );
 	}
 
 }
