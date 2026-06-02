@@ -237,8 +237,16 @@ class CatalogCommand extends \WP_CLI_Command {
 	 * [--output=<output>]
 	 * : Path to the CSV file. Defaults to /tmp/block-catalog.csv
 	 *
+	 * [--blocks=<blocks>]
+	 * : Comma-delimited list of blocks to export, by name (eg:- core/quote) or slug
+	 * (eg:- core-quote). Use the explicit 'namespace/*' form (eg:- core/*) to export
+	 * every block in a namespace. Defaults to all blocks. Optional.
+	 *
 	 * [--post_type=<types>]
 	 * : Comma-delimited list of post types. Optional.
+	 *
+	 * [--post_status=<status>]
+	 * : Comma-delimited list of post statuses to include. Default 'publish'. Optional.
 	 *
 	 * [--posts_per_block=<number>]
 	 * : Number of posts per block, default to -1 (all). Optional.
@@ -250,6 +258,10 @@ class CatalogCommand extends \WP_CLI_Command {
 	 *
 	 *     wp block-catalog export --output=path/to/csv
 	 *
+	 *     wp block-catalog export --blocks=core/quote,core/pullquote --output=path/to/csv
+	 *
+	 *     wp block-catalog export --blocks='core/*' --output=path/to/csv
+	 *
 	 * @when after_wp_load
 	 *
 	 * @param array $args Positional arguments.
@@ -259,10 +271,16 @@ class CatalogCommand extends \WP_CLI_Command {
 		$output          = isset( $opts['output'] ) ? $opts['output'] : '/tmp/block-catalog.csv';
 		$post_types      = isset( $opts['post_type'] ) ? explode( ',', $opts['post_type'] ) : array();
 		$posts_per_block = isset( $opts['posts_per_block'] ) ? intval( $opts['posts_per_block'] ) : -1;
+		$post_status     = isset( $opts['post_status'] ) ? explode( ',', $opts['post_status'] ) : array( 'publish' );
 
 		$opts['output']          = $output;
 		$opts['post_type']       = $post_types;
 		$opts['posts_per_block'] = $posts_per_block;
+		$opts['post_status']     = $post_status;
+
+		if ( isset( $opts['blocks'] ) ) {
+			$opts['blocks'] = $this->resolve_export_blocks( $opts['blocks'] );
+		}
 
 		$exporter = new \BlockCatalog\CatalogExporter();
 		$result   = $exporter->export( $output, $opts );
@@ -274,6 +292,36 @@ class CatalogCommand extends \WP_CLI_Command {
 		} else {
 			\WP_CLI::success( $result['message'] );
 		}
+	}
+
+	/**
+	 * Resolves the --blocks option into a validated list of catalog term slugs.
+	 *
+	 * Warns for any block name that doesn't match an indexed block, and aborts if the
+	 * catalog isn't indexed or none of the requested blocks match.
+	 *
+	 * @param string $blocks The raw --blocks option value.
+	 * @return array List of resolved term slugs.
+	 */
+	public function resolve_export_blocks( $blocks ) {
+		$finder = new PostFinder();
+
+		if ( ! $finder->is_indexed() ) {
+			\WP_CLI::error( __( 'Block Catalog index is empty, please index the site first.', 'block-catalog' ) );
+		}
+
+		$resolved = $finder->resolve_block_filter( $blocks );
+
+		foreach ( $resolved['unmatched'] as $name ) {
+			// translators: %s is the block name that was not found.
+			\WP_CLI::warning( sprintf( __( 'No indexed block found for "%s", skipping.', 'block-catalog' ), $name ) );
+		}
+
+		if ( empty( $resolved['slugs'] ) ) {
+			\WP_CLI::error( __( 'None of the specified blocks matched an indexed block.', 'block-catalog' ) );
+		}
+
+		return $resolved['slugs'];
 	}
 
 	/**
