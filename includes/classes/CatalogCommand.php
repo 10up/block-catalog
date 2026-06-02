@@ -303,7 +303,7 @@ class CatalogCommand extends \WP_CLI_Command {
 	 * @param string $blocks The raw --blocks option value.
 	 * @return array List of resolved term slugs.
 	 */
-	public function resolve_export_blocks( $blocks ) {
+	private function resolve_export_blocks( $blocks ) {
 		$finder = new PostFinder();
 
 		if ( ! $finder->is_indexed() ) {
