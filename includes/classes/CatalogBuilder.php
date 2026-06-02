@@ -440,13 +440,38 @@ class CatalogBuilder {
 			return [];
 		}
 
-		$slug = $this->get_pattern_slug( $block );
+		$path = $this->get_pattern_path( $block );
 
-		if ( empty( $slug ) ) {
+		if ( empty( $path ) ) {
 			return [];
 		}
 
-		return [ $slug => $this->get_pattern_label( $block ) ];
+		return [ $path => $this->get_pattern_label( $block ) ];
+	}
+
+	/**
+	 * Finds the catalog path for the block's pattern.
+	 *
+	 * Mirrors block paths (eg:- core/heading) so the term hierarchy and slug line up: a
+	 * registered pattern foo/hero becomes patterns/foo/hero (slug patterns-foo-hero), and a
+	 * user/synced pattern becomes patterns/user/<id>.
+	 *
+	 * @param array $block The block data
+	 * @return string
+	 */
+	public function get_pattern_path( $block ) {
+		$name = $block['attrs']['metadata']['patternName'] ?? '';
+
+		if ( empty( $name ) ) {
+			return '';
+		}
+
+		if ( $this->is_user_pattern( $name ) ) {
+			$id = $this->get_user_pattern_id( $name );
+			return ! empty( $id ) ? 'patterns/user/' . $id : '';
+		}
+
+		return 'patterns/' . $name;
 	}
 
 	/**
@@ -456,14 +481,7 @@ class CatalogBuilder {
 	 * @return string
 	 */
 	public function get_pattern_slug( $block ) {
-		$name = $block['attrs']['metadata']['patternName'];
-
-		if ( $this->is_user_pattern( $name ) ) {
-			$id = $this->get_user_pattern_id( $name );
-			return ! empty( $id ) ? 'pattern-' . $id : '';
-		}
-
-		return 'pattern-' . sanitize_title( $name );
+		return sanitize_title( $this->get_pattern_path( $block ) );
 	}
 
 	/**
@@ -496,7 +514,7 @@ class CatalogBuilder {
 	 * @return bool
 	 */
 	public function is_pattern_term( $slug ) {
-		return 0 === stripos( $slug, 'pattern-' ) || 0 === stripos( $slug, 're-' );
+		return 0 === stripos( $slug, 'patterns-' ) || 0 === stripos( $slug, 're-' );
 	}
 
 	/**
@@ -557,10 +575,6 @@ class CatalogBuilder {
 			return __( 'Reusable block', 'block-catalog' );
 		}
 
-		if ( 0 === stripos( $name, 'pattern-' ) ) {
-			return __( 'Patterns', 'block-catalog' );
-		}
-
 		$parts     = explode( '/', $name );
 		$namespace = count( $parts ) > 1 ? $parts[0] : '';
 
@@ -587,6 +601,11 @@ class CatalogBuilder {
 	 * @return int|false
 	 */
 	public function get_block_parent_term( $name ) {
+		// Patterns are hierarchical paths (eg:- patterns/foo/hero); build the chain by slug.
+		if ( $this->is_pattern_path( $name ) ) {
+			return $this->get_pattern_parent_term( $name );
+		}
+
 		$name = $this->get_block_parent_name( $name );
 
 		if ( empty( $name ) ) {
@@ -601,6 +620,57 @@ class CatalogBuilder {
 		}
 
 		$result = wp_insert_term( $name, BLOCK_CATALOG_TAXONOMY, [] );
+
+		if ( ! is_wp_error( $result ) ) {
+			return intval( $result['term_id'] );
+		}
+
+		return false;
+	}
+
+	/**
+	 * Checks if a term key is a hierarchical pattern path, eg:- patterns/foo/hero.
+	 *
+	 * @param string $name The term key (block name or pattern path).
+	 * @return bool
+	 */
+	public function is_pattern_path( $name ) {
+		return 'patterns' === $name || 0 === stripos( $name, 'patterns/' );
+	}
+
+	/**
+	 * Resolves, creating if absent, the parent term for a pattern path — building the
+	 * Patterns > Namespace > Pattern chain by slug. Each level's slug is the sanitized
+	 * path (eg:- patterns, patterns-foo), mirroring how blocks nest under their namespace.
+	 *
+	 * @param string $path The pattern path, eg:- patterns/foo/hero.
+	 * @return int|false The parent term id, or false when the path is top-level.
+	 */
+	public function get_pattern_parent_term( $path ) {
+		$segments = explode( '/', $path );
+		array_pop( $segments );
+
+		if ( empty( $segments ) ) {
+			return false;
+		}
+
+		$parent_path = implode( '/', $segments );
+		$slug        = sanitize_title( $parent_path );
+		$existing    = get_term_by( 'slug', $slug, BLOCK_CATALOG_TAXONOMY );
+
+		if ( ! empty( $existing ) ) {
+			return intval( $existing->term_id );
+		}
+
+		$args        = [ 'slug' => $slug ];
+		$grandparent = $this->get_pattern_parent_term( $parent_path );
+
+		if ( ! empty( $grandparent ) ) {
+			$args['parent'] = $grandparent;
+		}
+
+		$label  = $this->get_display_title( end( $segments ) );
+		$result = wp_insert_term( $label, BLOCK_CATALOG_TAXONOMY, $args );
 
 		if ( ! is_wp_error( $result ) ) {
 			return intval( $result['term_id'] );

@@ -288,8 +288,9 @@ class CatalogExporterTest extends \WP_UnitTestCase {
 	}
 
 	function test_it_converts_pattern_names_to_block_slugs() {
-		$this->assertEquals( 'pattern-foo-something', $this->exporter->patterns_to_block_slugs( 'foo/something' ) );
-		$this->assertEquals( 'pattern-foo-a,pattern-bar-b', $this->exporter->patterns_to_block_slugs( 'foo/a, bar/b' ) );
+		$this->assertEquals( 'patterns-foo-something', $this->exporter->patterns_to_block_slugs( 'foo/something' ) );
+		$this->assertEquals( 'patterns-foo/*', $this->exporter->patterns_to_block_slugs( 'foo/*' ) );
+		$this->assertEquals( 'patterns-foo-a,patterns-bar-b', $this->exporter->patterns_to_block_slugs( 'foo/a, bar/b' ) );
 		$this->assertEquals( '', $this->exporter->patterns_to_block_slugs( '' ) );
 	}
 

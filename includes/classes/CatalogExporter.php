@@ -83,20 +83,25 @@ class CatalogExporter {
 	/**
 	 * Converts a comma-delimited list of pattern names into the equivalent --blocks value.
 	 *
-	 * Each pattern name (eg:- foo/something) maps to its catalog term slug
-	 * (eg:- pattern-foo-something), matching CatalogBuilder::get_pattern_slug().
+	 * Each token maps to its catalog slug: foo/hero -> patterns-foo-hero, and the namespace
+	 * fan-out foo/* -> patterns-foo/* (the patterns-foo parent), matching the pattern paths
+	 * built by CatalogBuilder.
 	 *
-	 * @param string $patterns Comma-delimited list of pattern names.
-	 * @return string Comma-delimited list of pattern term slugs.
+	 * @param string $patterns Comma-delimited list of pattern names / namespace fan-outs.
+	 * @return string Comma-delimited --blocks value.
 	 */
 	public function patterns_to_block_slugs( $patterns ) {
-		$names = array_filter( array_map( 'trim', explode( ',', (string) $patterns ) ) );
+		$tokens = array_filter( array_map( 'trim', explode( ',', (string) $patterns ) ) );
 
 		$slugs = array_map(
-			function ( $name ) {
-				return 'pattern-' . sanitize_title( $name );
+			function ( $token ) {
+				if ( '/*' === substr( $token, -2 ) ) {
+					return 'patterns-' . sanitize_title( substr( $token, 0, -2 ) ) . '/*';
+				}
+
+				return 'patterns-' . sanitize_title( $token );
 			},
-			$names
+			$tokens
 		);
 
 		return implode( ',', $slugs );
