@@ -31,7 +31,7 @@ class CatalogExporter {
 			return new \WP_Error( 'output_not_writable', __( 'The output path is not writable', 'block-catalog' ) );
 		}
 
-		$terms = $this->get_block_catalog_terms();
+		$terms = $this->get_block_catalog_terms( $opts );
 
 		// check for WP_Error
 		if ( is_wp_error( $terms ) ) {
@@ -50,7 +50,7 @@ class CatalogExporter {
 
 		$total_posts = $this->get_total_posts( $terms, $opts );
 
-		$this->put_csv( array( 'block_name', 'block_slug', 'post_id', 'post_type', 'post_title', 'permalink', 'status' ) );
+		$this->put_csv( array( 'block_name', 'block_slug', 'post_id', 'post_type', 'post_title', 'permalink', 'post_status', 'edit_link', 'post_author', 'post_date', 'post_modified', 'notes' ) );
 
 		// when running in WP CLI mode, there is a progress bar
 		if ( defined( 'WP_CLI' ) && WP_CLI ) {
@@ -81,17 +81,26 @@ class CatalogExporter {
 	}
 
 	/**
-	 * Retrieves all terms associated with the 'block_catalog' taxonomy.
+	 * Retrieves the terms associated with the 'block_catalog' taxonomy.
 	 *
+	 * When the 'blocks' option holds a list of slugs, only those terms are returned;
+	 * otherwise all catalog terms are returned.
+	 *
+	 * @param array $opts Options for the export. Supports 'blocks' => array of slugs.
 	 * @return array List of WP_Term objects.
 	 */
-	private function get_block_catalog_terms() {
-		return get_terms(
-			array(
-				'taxonomy'   => BLOCK_CATALOG_TAXONOMY,
-				'hide_empty' => false,
-			)
+	public function get_block_catalog_terms( $opts = [] ) {
+		$args = array(
+			'taxonomy'   => BLOCK_CATALOG_TAXONOMY,
+			'hide_empty' => false,
 		);
+
+		// Restrict to the requested blocks when the --blocks filter is used.
+		if ( ! empty( $opts['blocks'] ) ) {
+			$args['slug'] = $opts['blocks'];
+		}
+
+		return get_terms( $args );
 	}
 
 	/**
@@ -119,7 +128,7 @@ class CatalogExporter {
 	 * @param WP_Term $term The term to export.
 	 * @param array   $opts Options for the export.
 	 */
-	private function export_term( $term, $opts ) {
+	public function export_term( $term, $opts ) {
 		$query_args = $this->get_query_args( $term->slug, $opts );
 		$query      = new \WP_Query( $query_args );
 		$posts      = $query->posts;
@@ -137,6 +146,11 @@ class CatalogExporter {
 					$post->post_title,
 					get_permalink( $post ),
 					$post->post_status,
+					admin_url( "post.php?post={$post->ID}&action=edit" ),
+					get_the_author_meta( 'display_name', $post->post_author ),
+					$post->post_date,
+					$post->post_modified,
+					'',
 				]
 			);
 
@@ -158,9 +172,10 @@ class CatalogExporter {
 	 * @param array  $opts Options for the query.
 	 * @return array Query arguments.
 	 */
-	private function get_query_args( $term_slug, $opts ) {
+	public function get_query_args( $term_slug, $opts ) {
 		return array(
 			'post_type'      => isset( $opts['post_type'] ) ? $opts['post_type'] : get_post_types( array( 'public' => true ) ),
+			'post_status'    => ! empty( $opts['post_status'] ) ? $opts['post_status'] : 'publish',
 			'tax_query'      => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query
 				array(
 					'taxonomy' => BLOCK_CATALOG_TAXONOMY,
@@ -231,19 +246,29 @@ class CatalogExporter {
 	}
 
 	/**
-	 * Escapes a string for inclusion in a CSV file.
+	 * Escapes a value for inclusion in a CSV file.
 	 *
-	 * This function adds quotes only if necessary (if the string contains commas, quotes, or newlines).
-	 * It escapes double quotes by doubling them.
+	 * Quotes the value when it contains a comma, double quote, or newline (escaping
+	 * embedded double quotes by doubling them), and neutralizes CSV/spreadsheet formula
+	 * injection by prefixing a leading =, +, -, @, tab, or carriage return with a quote.
 	 *
-	 * @param string $data The input string to be escaped.
-	 * @return string The escaped string.
+	 * @param string $data The input value to be escaped.
+	 * @return string The escaped value.
 	 */
-	private function esc_csv( $data ) {
-		$has_quotes = false !== strpos( $data, '"' );
-		$has_commas = false !== strpos( $data, ',' );
+	public function esc_csv( $data ) {
+		$data = (string) $data;
 
-		if ( $has_quotes || $has_commas ) {
+		// Prevent CSV/spreadsheet formula injection by prefixing risky leading characters.
+		if ( '' !== $data && in_array( $data[0], array( '=', '+', '-', '@', "\t", "\r" ), true ) ) {
+			$data = "'" . $data;
+		}
+
+		$needs_quotes = false !== strpos( $data, '"' )
+			|| false !== strpos( $data, ',' )
+			|| false !== strpos( $data, "\n" )
+			|| false !== strpos( $data, "\r" );
+
+		if ( $needs_quotes ) {
 			$data = str_replace( '"', '""', $data );
 			$data = '"' . $data . '"';
 		}
@@ -258,7 +283,12 @@ class CatalogExporter {
 	 * @param array   $opts Options for the export.
 	 * @return bool True if the term can be exported, false otherwise.
 	 */
-	private function can_export_term( $term, $opts ) {
+	public function can_export_term( $term, $opts ) {
+		// When specific blocks are requested, export exactly those terms.
+		if ( ! empty( $opts['blocks'] ) ) {
+			return true;
+		}
+
 		$ignore_parent = isset( $opts['ignore_parent'] ) ? $opts['ignore_parent'] : true;
 		$ignore_parent = filter_var( $ignore_parent, FILTER_VALIDATE_BOOLEAN );
 
