@@ -116,14 +116,17 @@ The following WP CLI commands are supported by the Block Catalog plugin.
   - [--type=\<type\>]
     Filter the output by type — `any` (default), `blocks`, or `patterns`.
 
-- `wp block-catalog export [--output=<output>] [--blocks=<blocks>] [--post_type=<types>] [--post_status=<status>] [--posts_per_block=<number>] [--ignore_parent=<ignore_parent>]`
+- `wp block-catalog export [--output=<output>] [--blocks=<blocks>] [--patterns=<patterns>] [--post_type=<types>] [--post_status=<status>] [--posts_per_block=<number>] [--ignore_parent=<ignore_parent>]`
   Exports the posts associated with the 'block_catalog' taxonomy to a CSV file.
 
   - `[--output=<output>]`
     Path to the CSV file. Defaults to `/tmp/block-catalog.csv`.
 
   - `[--blocks=<blocks>]`
-    Comma-delimited list of blocks to export, by name (eg:- `core/quote`). Use the explicit `namespace/*` form (eg:- `core/*`, quoted so your shell doesn't expand it) to export every block in a namespace. Defaults to all blocks. Optional.
+    Comma-delimited list of blocks to export, by name (eg:- `core/quote`). Use the `namespace/*` form (eg:- `core/*`, quoted so your shell doesn't expand it) to export a whole namespace, or `*` for all blocks. Defaults to all blocks. Optional.
+
+  - `[--patterns=<patterns>]`
+    Comma-delimited list of block patterns to export, by name (eg:- `foo/something`), a `namespace/*` fan-out (eg:- `foo/*`, quoted), or `*` for all patterns. Cannot be combined with `--blocks`. Optional.
 
   - `[--post_type=<types>]`
     Comma-delimited list of post types. Optional.
@@ -136,6 +139,8 @@ The following WP CLI commands are supported by the Block Catalog plugin.
 
   - `[--ignore_parent=<ignore_parent>]`
     Ignore top level blocks. Optional. Default true.
+
+  The exported CSV columns are `block_name`, `block_slug`, `post_id`, `post_type`, `post_title`, `permalink`, `post_status`, `edit_link`, `post_author`, `post_date`, `post_modified`, and a blank `notes` column for QA sign-off. For `--patterns` exports, the first two columns are `pattern_name` and `pattern_slug` instead.
 
 ## Frequently Asked Questions
 
