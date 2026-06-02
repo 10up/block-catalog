@@ -50,7 +50,11 @@ class CatalogExporter {
 
 		$total_posts = $this->get_total_posts( $terms, $opts );
 
-		$this->put_csv( array( 'block_name', 'block_slug', 'post_id', 'post_type', 'post_title', 'permalink', 'post_status', 'edit_link', 'post_author', 'post_date', 'post_modified', 'notes' ) );
+		$is_patterns = ! empty( $opts['patterns'] );
+		$name_column = $is_patterns ? 'pattern_name' : 'block_name';
+		$slug_column = $is_patterns ? 'pattern_slug' : 'block_slug';
+
+		$this->put_csv( array( $name_column, $slug_column, 'post_id', 'post_type', 'post_title', 'permalink', 'post_status', 'edit_link', 'post_author', 'post_date', 'post_modified', 'notes' ) );
 
 		// when running in WP CLI mode, there is a progress bar
 		if ( defined( 'WP_CLI' ) && WP_CLI ) {

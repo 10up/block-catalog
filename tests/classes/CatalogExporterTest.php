@@ -313,12 +313,15 @@ class CatalogExporterTest extends \WP_UnitTestCase {
 			$this->tmp_file,
 			array(
 				'post_type' => 'post',
+				'patterns'  => '*',
 				'blocks'    => array( 'patterns' ),
 			)
 		);
 		$this->assertTrue( $result['success'] );
 
 		$csv = file_get_contents( $this->tmp_file );
+		$this->assertStringContainsString( 'pattern_name,pattern_slug,post_id', $csv );
+		$this->assertStringNotContainsString( 'block_name,block_slug', $csv );
 		$this->assertStringContainsString( 'Pattern Post', $csv );
 	}
 
