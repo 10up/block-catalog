@@ -17,7 +17,7 @@
 - Use the WP CLI to quickly find blocks from the command line.
 - Use custom WordPress filters to extend the Block Catalog.
 - Find block usage on a Multisite network.
-- Export block catalog data to a CSV file via the WP CLI.
+- Export block catalog data to a CSV file via the WP CLI, optionally scoped to specific blocks.
 
 ## Installation
 
@@ -116,14 +116,20 @@ The following WP CLI commands are supported by the Block Catalog plugin.
   - [--type=\<type\>]
     Filter the output by type — `any` (default), `blocks`, or `patterns`.
 
-- `wp block-catalog export [--output=<output>] [--post_type=<types>] [--posts_per_block=<number>] [--ignore_parent=<ignore_parent>]`
+- `wp block-catalog export [--output=<output>] [--blocks=<blocks>] [--post_type=<types>] [--post_status=<status>] [--posts_per_block=<number>] [--ignore_parent=<ignore_parent>]`
   Exports the posts associated with the 'block_catalog' taxonomy to a CSV file.
 
   - `[--output=<output>]`
     Path to the CSV file. Defaults to `/tmp/block-catalog.csv`.
 
+  - `[--blocks=<blocks>]`
+    Comma-delimited list of blocks to export, by name (eg:- `core/quote`). Use the explicit `namespace/*` form (eg:- `core/*`, quoted so your shell doesn't expand it) to export every block in a namespace. Defaults to all blocks. Optional.
+
   - `[--post_type=<types>]`
     Comma-delimited list of post types. Optional.
+
+  - `[--post_status=<status>]`
+    Comma-delimited list of post statuses to include. Default `publish`. Optional.
 
   - `[--posts_per_block=<number>]`
     Number of posts per block, default to -1 (all). Optional.
