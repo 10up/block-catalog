@@ -81,6 +81,28 @@ class CatalogExporter {
 	}
 
 	/**
+	 * Converts a comma-delimited list of pattern names into the equivalent --blocks value.
+	 *
+	 * Each pattern name (eg:- foo/something) maps to its catalog term slug
+	 * (eg:- pattern-foo-something), matching CatalogBuilder::get_pattern_slug().
+	 *
+	 * @param string $patterns Comma-delimited list of pattern names.
+	 * @return string Comma-delimited list of pattern term slugs.
+	 */
+	public function patterns_to_block_slugs( $patterns ) {
+		$names = array_filter( array_map( 'trim', explode( ',', (string) $patterns ) ) );
+
+		$slugs = array_map(
+			function ( $name ) {
+				return 'pattern-' . sanitize_title( $name );
+			},
+			$names
+		);
+
+		return implode( ',', $slugs );
+	}
+
+	/**
 	 * Retrieves the terms associated with the 'block_catalog' taxonomy.
 	 *
 	 * When the 'blocks' option holds a list of slugs, only those terms are returned;

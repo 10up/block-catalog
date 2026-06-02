@@ -242,6 +242,11 @@ class CatalogCommand extends \WP_CLI_Command {
 	 * (eg:- core-quote). Use the explicit 'namespace/*' form (eg:- core/*) to export
 	 * every block in a namespace. Defaults to all blocks. Optional.
 	 *
+	 * [--patterns=<patterns>]
+	 * : Comma-delimited list of registered block patterns to export, by name (eg:-
+	 * foo/something). Converted to pattern catalog slugs. Cannot be combined with
+	 * --blocks. Optional.
+	 *
 	 * [--post_type=<types>]
 	 * : Comma-delimited list of post types. Optional.
 	 *
@@ -262,6 +267,8 @@ class CatalogCommand extends \WP_CLI_Command {
 	 *
 	 *     wp block-catalog export --blocks='core/*' --output=path/to/csv
 	 *
+	 *     wp block-catalog export --patterns=foo/something --output=path/to/csv
+	 *
 	 * @when after_wp_load
 	 *
 	 * @param array $args Positional arguments.
@@ -278,12 +285,21 @@ class CatalogCommand extends \WP_CLI_Command {
 		$opts['posts_per_block'] = $posts_per_block;
 		$opts['post_status']     = $post_status;
 
+		$exporter = new \BlockCatalog\CatalogExporter();
+
+		if ( isset( $opts['patterns'] ) && isset( $opts['blocks'] ) ) {
+			\WP_CLI::error( __( 'Please use either --patterns or --blocks, not both.', 'block-catalog' ) );
+		}
+
+		if ( isset( $opts['patterns'] ) ) {
+			$opts['blocks'] = $exporter->patterns_to_block_slugs( $opts['patterns'] );
+		}
+
 		if ( isset( $opts['blocks'] ) ) {
 			$opts['blocks'] = $this->resolve_export_blocks( $opts['blocks'] );
 		}
 
-		$exporter = new \BlockCatalog\CatalogExporter();
-		$result   = $exporter->export( $output, $opts );
+		$result = $exporter->export( $output, $opts );
 
 		if ( is_wp_error( $result ) ) {
 			\WP_CLI::error( $result->get_error_message() );
