@@ -211,4 +211,80 @@ class CatalogExporterTest extends \WP_UnitTestCase {
 		$this->assertEquals( 'plain', $this->exporter->esc_csv( 'plain' ) );
 	}
 
+	function test_it_returns_all_catalog_terms_by_default() {
+		$taxonomy = new BlockCatalogTaxonomy();
+		$taxonomy->register();
+
+		$post_id = $this->factory->post->create( array(
+			'post_type'    => 'post',
+			'post_status'  => 'publish',
+			'post_content' => '<!-- wp:core/quote --><!-- /wp:core/quote --><!-- wp:core/heading --><!-- /wp:core/heading -->',
+		) );
+		( new CatalogBuilder() )->catalog( $post_id );
+
+		$slugs = wp_list_pluck( $this->exporter->get_block_catalog_terms(), 'slug' );
+
+		$this->assertContains( 'core-quote', $slugs );
+		$this->assertContains( 'core-heading', $slugs );
+	}
+
+	function test_it_restricts_catalog_terms_to_requested_blocks() {
+		$taxonomy = new BlockCatalogTaxonomy();
+		$taxonomy->register();
+
+		$post_id = $this->factory->post->create( array(
+			'post_type'    => 'post',
+			'post_status'  => 'publish',
+			'post_content' => '<!-- wp:core/quote --><!-- /wp:core/quote --><!-- wp:core/heading --><!-- /wp:core/heading -->',
+		) );
+		( new CatalogBuilder() )->catalog( $post_id );
+
+		$slugs = wp_list_pluck( $this->exporter->get_block_catalog_terms( array( 'blocks' => array( 'core-quote' ) ) ), 'slug' );
+
+		$this->assertEquals( array( 'core-quote' ), $slugs );
+	}
+
+	function test_it_defaults_query_post_status_to_publish() {
+		$args = $this->exporter->get_query_args( 'core-quote', array() );
+
+		$this->assertEquals( 'publish', $args['post_status'] );
+		$this->assertEquals( 'core-quote', $args['tax_query'][0]['terms'] );
+		$this->assertEquals( BLOCK_CATALOG_TAXONOMY, $args['tax_query'][0]['taxonomy'] );
+	}
+
+	function test_it_honors_query_args_options() {
+		$args = $this->exporter->get_query_args(
+			'core-quote',
+			array(
+				'post_status'     => array( 'draft', 'publish' ),
+				'posts_per_block' => 5,
+				'post_type'       => array( 'post' ),
+			)
+		);
+
+		$this->assertEquals( array( 'draft', 'publish' ), $args['post_status'] );
+		$this->assertEquals( 5, $args['posts_per_page'] );
+		$this->assertEquals( array( 'post' ), $args['post_type'] );
+	}
+
+	function test_it_skips_parent_terms_by_default() {
+		$parent = (object) array( 'parent' => 0 );
+		$child  = (object) array( 'parent' => 7 );
+
+		$this->assertFalse( $this->exporter->can_export_term( $parent, array() ) );
+		$this->assertTrue( $this->exporter->can_export_term( $child, array() ) );
+	}
+
+	function test_it_exports_parent_terms_when_ignore_parent_is_false() {
+		$parent = (object) array( 'parent' => 0 );
+
+		$this->assertTrue( $this->exporter->can_export_term( $parent, array( 'ignore_parent' => false ) ) );
+	}
+
+	function test_it_always_exports_explicitly_requested_blocks() {
+		$parent = (object) array( 'parent' => 0 );
+
+		$this->assertTrue( $this->exporter->can_export_term( $parent, array( 'blocks' => array( 'core-quote' ) ) ) );
+	}
+
 }

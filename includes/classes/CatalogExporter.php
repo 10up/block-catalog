@@ -89,7 +89,7 @@ class CatalogExporter {
 	 * @param array $opts Options for the export. Supports 'blocks' => array of slugs.
 	 * @return array List of WP_Term objects.
 	 */
-	private function get_block_catalog_terms( $opts = [] ) {
+	public function get_block_catalog_terms( $opts = [] ) {
 		$args = array(
 			'taxonomy'   => BLOCK_CATALOG_TAXONOMY,
 			'hide_empty' => false,
@@ -172,7 +172,7 @@ class CatalogExporter {
 	 * @param array  $opts Options for the query.
 	 * @return array Query arguments.
 	 */
-	private function get_query_args( $term_slug, $opts ) {
+	public function get_query_args( $term_slug, $opts ) {
 		return array(
 			'post_type'      => isset( $opts['post_type'] ) ? $opts['post_type'] : get_post_types( array( 'public' => true ) ),
 			'post_status'    => ! empty( $opts['post_status'] ) ? $opts['post_status'] : 'publish',
@@ -283,7 +283,7 @@ class CatalogExporter {
 	 * @param array   $opts Options for the export.
 	 * @return bool True if the term can be exported, false otherwise.
 	 */
-	private function can_export_term( $term, $opts ) {
+	public function can_export_term( $term, $opts ) {
 		// When specific blocks are requested, export exactly those terms.
 		if ( ! empty( $opts['blocks'] ) ) {
 			return true;
