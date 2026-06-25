@@ -20,6 +20,7 @@ describe("Admin can login and open dashboard", () => {
 		cy.get("#menu-tools .wp-submenu a").contains("Block Catalog").scrollIntoView({ block: "center" }).click({ force: true });
 		cy.url().should("include", "tools.php?page=block-catalog");
 		cy.get("#submit").click({ force: true });
+		cy.contains(/Indexed (?!0 \/ 0)(\d+) \/ \1 Posts Successfully\./).should("exist");
 	});
 
 	it("Verify that you can see the block catalog in post type list view and filter it", () => {
