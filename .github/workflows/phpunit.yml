@@ -12,6 +12,9 @@ on:
       - develop
     paths:
       - "**.php"
+      - "composer.json"
+      - "composer.lock"
+      - ".github/workflows/*.yml"
 
 permissions:
   contents: read

@@ -1,7 +1,7 @@
 === Block Catalog ===
 Contributors:      10up, dsawardekar, dkotter, jeffpaul
 Tags:              gutenberg, developer, blocks, custom blocks
-Tested up to:      6.8
+Tested up to:      7.0
 Stable tag:        1.6.2
 License:           GPL-2.0-or-later
 License URI:       https://spdx.org/licenses/GPL-2.0-or-later.html
@@ -49,6 +49,10 @@ If your blocks are registered on the Backend with the old [register_block_type](
 When the plugin detects such a missing `title`, it uses the `blockName` suffix instead. eg:- xyz/custom-block will display as Custom Block.
 
 To address this you need to update your custom block registration. If this is outside your control, you can also use the `block_catalog_block_title` filter hook to [override the title as seen here](https://gist.github.com/dsawardekar/676d0d4c5d7f688351e199fdc54484d6).
+
+= Where do I report security bugs found in this plugin? =
+
+Please report security bugs found in the source code of the Block Catalog plugin through the [Patchstack Vulnerability Disclosure  Program](https://patchstack.com/database/vdp/2b074f7a-1627-4c59-9072-4dca6bc02b63).  The Patchstack team will assist you with verification, CVE assignment, and notify the developers of this plugin.
 
 == Changelog ==
 
@@ -114,4 +118,3 @@ Updates the [Support Level](https://github.com/10up/block-catalog/blob/develop/R
 
 = 1.5.1 =
 * Note that this release changes the name of the base plugin file. As such, you'll probably need to reactivate the plugin after updating
-
