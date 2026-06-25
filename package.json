@@ -24,8 +24,7 @@
     "env": "wp-env",
     "env:start": "wp-env start",
     "env:stop": "wp-env stop",
-    "env:destroy": "wp-env destroy",
-    "postenv:start": "./tests/bin/initialize.sh"
+    "env:destroy": "wp-env destroy"
   },
   "engines": {
     "node": ">=20.0.0"
