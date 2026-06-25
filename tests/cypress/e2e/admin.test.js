@@ -44,13 +44,17 @@ describe("Admin can login and open dashboard", () => {
 	});
 
 	it("Ensure that you can add new block catalog.", () => {
+		const termName = Array.from({ length: 10 }, () => String.fromCharCode(97 + Math.floor(Math.random() * 26))).join('');
+
 		cy.visit("/wp-admin");
 		cy.get("#menu-posts").contains('Posts').trigger("mouseover").trigger("mouseenter");
 		cy.get("#menu-posts .wp-submenu").scrollIntoView({ block: "center" }).should("exist");
 		cy.get("#menu-posts .wp-submenu a").contains("Block Catalog").scrollIntoView({ block: "center" }).click({ force: true });
-		cy.get('#tag-name').type('Quote');
+		cy.get('#tag-name').type(termName);
 		cy.get('select[name="parent"]').select('Core');
 		cy.get('#submit').click();
+		cy.get('.notice-success').contains('Item added.').should('exist');
+		cy.contains('.row-title', termName).should('exist');
 	});
 
 	it("Make sure indexed post type should be delete when you click on 'Delete Index' Button.", () => {
