@@ -60,5 +60,9 @@ describe("Admin can login and open dashboard", () => {
 		cy.get("#menu-tools .wp-submenu a").contains("Block Catalog").scrollIntoView({ block: "center" }).click({ force: true });
 		cy.url().should("include", "tools.php?page=block-catalog");
 		cy.get("#delete-index").click({ force: true });
+		cy.contains(/Deleted \d+ block catalog term\(s\) successfully\./).should("exist");
+		cy.visit("/wp-admin/edit-tags.php?taxonomy=block-catalog");
+		cy.get(".wp-list-table tbody tr").should("have.class", "no-items");
+		cy.get(".wp-list-table tbody tr.no-items").contains("No block catalog found.").should("exist");
 	});
 });
