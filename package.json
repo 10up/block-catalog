@@ -33,7 +33,7 @@
     "@10up/cypress-wp-utils": "^0.6.0",
     "@wordpress/env": "^10.29.0",
     "10up-toolkit": "^6.5.0",
-    "cypress": "^13.17.0",
+    "cypress": "^15.18.0",
     "prettier": "^3.2.5"
   },
   "dependencies": {
