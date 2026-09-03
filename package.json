@@ -30,7 +30,7 @@
     "node": ">=20.0.0"
   },
   "devDependencies": {
-    "@10up/cypress-wp-utils": "^0.6.0",
+    "@10up/cypress-wp-utils": "^0.7.2",
     "@wordpress/env": "^10.29.0",
     "10up-toolkit": "^6.5.0",
     "cypress": "^15.18.0",
