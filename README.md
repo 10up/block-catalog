@@ -13,11 +13,11 @@
 - Find which blocks are used across your site.
 - Fully Integrated with the WordPress Admin.
 - Use filters to see Posts that use a specific block.
-- Find Posts that use Reusable Blocks.
+- Find Posts that use Block Patterns.
 - Use the WP CLI to quickly find blocks from the command line.
 - Use custom WordPress filters to extend the Block Catalog.
 - Find block usage on a Multisite network.
-- Export block catalog data to a CSV file via the WP CLI.
+- Export block catalog data to a CSV file via the WP CLI, optionally scoped to specific blocks.
 
 ## Installation
 
@@ -107,26 +107,40 @@ The following WP CLI commands are supported by the Block Catalog plugin.
   - [--network=\<network\>]
     Deletes the indexes across the entire network. Accepts a comma delimited list of child site ids.
 
-- `wp block-catalog post-blocks <post-id> [--index]`
-  Prints the list of blocks in the specified post.
+- `wp block-catalog post-blocks <post-id> [--type=<type>]`
+  Prints the blocks and patterns used in the specified post.
 
   - \<post-id\>
-    The post id to lookup blocks for.
+    The post id to look up.
 
-- `wp block-catalog export [--output=<output>] [--post_type=<types>] [--posts_per_block=<number>] [--ignore_parent=<ignore_parent>]`
+  - [--type=\<type\>]
+    Filter the output by type — `any` (default), `blocks`, or `patterns`.
+
+- `wp block-catalog export [--output=<output>] [--blocks=<blocks>] [--patterns=<patterns>] [--post_type=<types>] [--post_status=<status>] [--posts_per_block=<number>] [--ignore_parent=<ignore_parent>]`
   Exports the posts associated with the 'block_catalog' taxonomy to a CSV file.
 
   - `[--output=<output>]`
     Path to the CSV file. Defaults to `/tmp/block-catalog.csv`.
 
+  - `[--blocks=<blocks>]`
+    Comma-delimited list of blocks to export, by name (eg:- `core/quote`). Use the `namespace/*` form (eg:- `core/*`, quoted so your shell doesn't expand it) to export a whole namespace, or `*` for all blocks. Defaults to all blocks. Optional.
+
+  - `[--patterns=<patterns>]`
+    Comma-delimited list of block patterns to export, by name (eg:- `foo/something`), a `namespace/*` fan-out (eg:- `foo/*`, quoted), or `*` for all patterns. Cannot be combined with `--blocks`. Optional.
+
   - `[--post_type=<types>]`
     Comma-delimited list of post types. Optional.
+
+  - `[--post_status=<status>]`
+    Comma-delimited list of post statuses to include. Default `publish`. Optional.
 
   - `[--posts_per_block=<number>]`
     Number of posts per block, default to -1 (all). Optional.
 
   - `[--ignore_parent=<ignore_parent>]`
     Ignore top level blocks. Optional. Default true.
+
+  The exported CSV columns are `block_name`, `block_slug`, `post_id`, `post_type`, `post_title`, `permalink`, `post_status`, `edit_link`, `post_author`, `post_date`, `post_modified`, and a blank `notes` column for QA sign-off. For `--patterns` exports, the first two columns are `pattern_name` and `pattern_slug` instead.
 
 ## Frequently Asked Questions
 

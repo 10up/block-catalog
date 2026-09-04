@@ -179,6 +179,9 @@ class CatalogCommand extends \WP_CLI_Command {
 	 * <post-id>
 	 * : The post id to lookup blocks for.
 	 *
+	 * [--type=<type>]
+	 * : Filter terms by type. One of 'any', 'blocks', 'patterns'. Default 'any'.
+	 *
 	 * @subcommand post-blocks
 	 * @param array $args Command args
 	 * @param array $opts Command opts
@@ -188,28 +191,42 @@ class CatalogCommand extends \WP_CLI_Command {
 			\WP_CLI::error( __( 'Please enter a valid post_id', 'block-catalog' ) );
 		}
 
+		$type = isset( $opts['type'] ) ? $opts['type'] : 'any';
+
+		if ( ! in_array( $type, [ 'any', 'blocks', 'patterns' ], true ) ) {
+			\WP_CLI::error( __( "Invalid --type, expected one of 'any', 'blocks' or 'patterns'.", 'block-catalog' ) );
+		}
+
 		$post_id = intval( $args[0] );
 
 		$builder = new CatalogBuilder();
 		$builder->catalog( $post_id );
 
 		$blocks = wp_get_object_terms( $post_id, BLOCK_CATALOG_TAXONOMY );
+		$blocks = $this->filter_post_blocks( $blocks, $type );
 
 		if ( empty( $blocks ) ) {
-			\WP_CLI::error( __( 'No blocks found.', 'block-catalog' ) );
+			\WP_CLI::error(
+				'patterns' === $type
+					? __( 'No patterns found.', 'block-catalog' )
+					: __( 'No blocks found.', 'block-catalog' )
+			);
 		}
 
+		$name_label = 'patterns' === $type ? 'Pattern Name' : 'Block Name';
+
 		$block_items = array_map(
-			function ( $term ) {
+			function ( $term ) use ( $name_label ) {
 				return [
-					'Block' => $term->name,
-					'ID'    => $term->term_id,
+					'ID'        => $term->term_id,
+					$name_label => $term->name,
+					'Slug'      => $term->slug,
 				];
 			},
 			$blocks
 		);
 
-		\WP_CLI\Utils\format_items( 'table', $block_items, [ 'ID', 'Block' ] );
+		\WP_CLI\Utils\format_items( 'table', $block_items, [ 'ID', $name_label, 'Slug' ] );
 	}
 
 	/**
@@ -220,8 +237,21 @@ class CatalogCommand extends \WP_CLI_Command {
 	 * [--output=<output>]
 	 * : Path to the CSV file. Defaults to /tmp/block-catalog.csv
 	 *
+	 * [--blocks=<blocks>]
+	 * : Comma-delimited list of blocks to export, by name (eg:- core/quote) or slug
+	 * (eg:- core-quote). Use the 'namespace/*' form (eg:- core/*) to export a whole
+	 * namespace, or '*' for all blocks. Defaults to all blocks. Optional.
+	 *
+	 * [--patterns=<patterns>]
+	 * : Comma-delimited list of block patterns to export, by name (eg:- foo/something),
+	 * a 'namespace/*' fan-out (eg:- foo/*), or '*' for all patterns. Cannot be combined
+	 * with --blocks. Optional.
+	 *
 	 * [--post_type=<types>]
 	 * : Comma-delimited list of post types. Optional.
+	 *
+	 * [--post_status=<status>]
+	 * : Comma-delimited list of post statuses to include. Default 'publish'. Optional.
 	 *
 	 * [--posts_per_block=<number>]
 	 * : Number of posts per block, default to -1 (all). Optional.
@@ -233,6 +263,12 @@ class CatalogCommand extends \WP_CLI_Command {
 	 *
 	 *     wp block-catalog export --output=path/to/csv
 	 *
+	 *     wp block-catalog export --blocks=core/quote,core/pullquote --output=path/to/csv
+	 *
+	 *     wp block-catalog export --blocks='core/*' --output=path/to/csv
+	 *
+	 *     wp block-catalog export --patterns=foo/something --output=path/to/csv
+	 *
 	 * @when after_wp_load
 	 *
 	 * @param array $args Positional arguments.
@@ -242,13 +278,28 @@ class CatalogCommand extends \WP_CLI_Command {
 		$output          = isset( $opts['output'] ) ? $opts['output'] : '/tmp/block-catalog.csv';
 		$post_types      = isset( $opts['post_type'] ) ? explode( ',', $opts['post_type'] ) : array();
 		$posts_per_block = isset( $opts['posts_per_block'] ) ? intval( $opts['posts_per_block'] ) : -1;
+		$post_status     = isset( $opts['post_status'] ) ? explode( ',', $opts['post_status'] ) : array( 'publish' );
 
 		$opts['output']          = $output;
 		$opts['post_type']       = $post_types;
 		$opts['posts_per_block'] = $posts_per_block;
+		$opts['post_status']     = $post_status;
 
 		$exporter = new \BlockCatalog\CatalogExporter();
-		$result   = $exporter->export( $output, $opts );
+
+		if ( isset( $opts['patterns'] ) && isset( $opts['blocks'] ) ) {
+			\WP_CLI::error( __( 'Please use either --patterns or --blocks, not both.', 'block-catalog' ) );
+		}
+
+		if ( isset( $opts['patterns'] ) ) {
+			$opts['blocks'] = $exporter->patterns_to_block_slugs( $opts['patterns'] );
+		}
+
+		if ( isset( $opts['blocks'] ) ) {
+			$opts['blocks'] = $this->resolve_export_blocks( $opts['blocks'] );
+		}
+
+		$result = $exporter->export( $output, $opts );
 
 		if ( is_wp_error( $result ) ) {
 			\WP_CLI::error( $result->get_error_message() );
@@ -257,6 +308,72 @@ class CatalogCommand extends \WP_CLI_Command {
 		} else {
 			\WP_CLI::success( $result['message'] );
 		}
+	}
+
+	/**
+	 * Resolves the --blocks option into a validated list of catalog term slugs.
+	 *
+	 * A '*' token short-circuits to an empty list, meaning no filtering (export everything).
+	 * Otherwise warns for any block name that doesn't match an indexed block, and aborts if
+	 * the catalog isn't indexed or none of the requested blocks match.
+	 *
+	 * @param string $blocks The raw --blocks option value.
+	 * @return array List of resolved term slugs ([] = no filter / export all).
+	 */
+	private function resolve_export_blocks( $blocks ) {
+		// A '*' means everything, so skip filtering and export all catalog terms.
+		if ( '*' === $blocks ) {
+			return [];
+		}
+
+		$finder = new PostFinder();
+
+		if ( ! $finder->is_indexed() ) {
+			\WP_CLI::error( __( 'Block Catalog index is empty, please index the site first.', 'block-catalog' ) );
+		}
+
+		$resolved = $finder->resolve_block_filter( $blocks );
+
+		foreach ( $resolved['unmatched'] as $name ) {
+			// translators: %s is the block name that was not found.
+			\WP_CLI::warning( sprintf( __( 'No indexed block found for "%s", skipping.', 'block-catalog' ), $name ) );
+		}
+
+		if ( empty( $resolved['slugs'] ) ) {
+			\WP_CLI::error( __( 'None of the specified blocks matched an indexed block.', 'block-catalog' ) );
+		}
+
+		return $resolved['slugs'];
+	}
+
+	/**
+	 * Filters a post's catalog terms by type, dropping grouping parent terms.
+	 *
+	 * @param array  $terms The post's catalog terms
+	 * @param string $type The type filter, one of 'any', 'blocks' or 'patterns'
+	 * @return array
+	 */
+	private function filter_post_blocks( $terms, $type ) {
+		$builder = new CatalogBuilder();
+
+		return array_filter(
+			$terms,
+			function ( $term ) use ( $type, $builder ) {
+				if ( 0 === $term->parent ) {
+					return false;
+				}
+
+				if ( 'patterns' === $type ) {
+					return $builder->is_pattern_term( $term->slug );
+				}
+
+				if ( 'blocks' === $type ) {
+					return ! $builder->is_pattern_term( $term->slug );
+				}
+
+				return true;
+			}
+		);
 	}
 
 	/**
