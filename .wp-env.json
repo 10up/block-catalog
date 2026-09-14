@@ -1,0 +1,7 @@
+{
+  "plugins": ["."],
+  "lifecycleScripts": {
+    "afterStart": "./tests/bin/initialize.sh",
+    "afterReset": "./tests/bin/initialize.sh"
+  }
+}
