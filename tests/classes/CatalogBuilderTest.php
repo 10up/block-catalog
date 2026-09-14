@@ -133,6 +133,151 @@ class CatalogBuilderTest extends \WP_UnitTestCase {
 		$this->assertEquals( [ "re-$post_id" => 'My Reusable1' ], $actual['terms'] );
 	}
 
+	function test_it_detects_pattern_paths() {
+		$this->assertTrue( $this->builder->is_pattern_path( 'patterns' ) );
+		$this->assertTrue( $this->builder->is_pattern_path( 'patterns/ns/hero' ) );
+		$this->assertFalse( $this->builder->is_pattern_path( 'core/heading' ) );
+		$this->assertFalse( $this->builder->is_pattern_path( 're-555' ) );
+	}
+
+	function test_it_nests_patterns_under_namespace_and_top() {
+		$ns_id = $this->builder->get_block_parent_term( 'patterns/ns/hero' );
+		$ns    = get_term( $ns_id );
+		$this->assertEquals( 'patterns-ns', $ns->slug );
+
+		$top = get_term( $ns->parent );
+		$this->assertEquals( 'patterns', $top->slug );
+		$this->assertEquals( 0, (int) $top->parent );
+	}
+
+	function test_it_uses_pattern_name_as_term_for_user_pattern() {
+		$post_id = $this->factory->post->create( [ 'post_type' => 'wp_block', 'post_title' => 'Test List Pattern' ] );
+
+		$block = [
+			'blockName' => 'core/list',
+			'attrs'     => [
+				'metadata' => [
+					'patternName' => "core/block/$post_id",
+					'name'        => 'Test List Pattern',
+				],
+			],
+		];
+
+		$actual = $this->builder->block_to_terms( $block );
+		$this->assertEquals( 'Test List Pattern', $actual['terms'][ "patterns/user/$post_id" ] );
+	}
+
+	function test_it_uses_registered_title_as_term_for_theme_pattern() {
+		register_block_pattern( 'ns/hero', [ 'title' => 'Hero Pattern', 'content' => '<!-- wp:paragraph --><p>hi</p><!-- /wp:paragraph -->' ] );
+
+		$block = [
+			'blockName' => 'core/group',
+			'attrs'     => [
+				'metadata' => [
+					'patternName' => 'ns/hero',
+				],
+			],
+		];
+
+		$actual = $this->builder->block_to_terms( $block );
+		$this->assertEquals( 'Hero Pattern', $actual['terms']['patterns/ns/hero'] );
+	}
+
+	function test_it_ignores_blocks_with_only_metadata_name() {
+		$block = [
+			'blockName' => 'core/group',
+			'attrs'     => [
+				'metadata' => [
+					'name' => 'My Renamed Group',
+				],
+			],
+		];
+
+		$this->assertEmpty( $this->builder->get_pattern_terms( $block ) );
+	}
+
+	function test_it_builds_pattern_post_block_terms() {
+		$content = file_get_contents( FIXTURES_DIR . '/pattern-blocks.html' );
+		$post_id = $this->factory->post->create( [ 'post_content' => $content ] );
+
+		$actual = $this->builder->get_post_block_terms( $post_id );
+
+		$expected = [
+			'core/list'          => 'List',
+			'core/list-item'     => 'List Item',
+			'patterns/user/1412' => 'Test List Pattern',
+		];
+
+		$this->assertEquals( $expected, $actual['terms'] );
+	}
+
+	function test_it_sets_patterns_parent_term() {
+		$content = file_get_contents( FIXTURES_DIR . '/pattern-blocks.html' );
+		$post_id = $this->factory->post->create( [ 'post_content' => $content ] );
+
+		$terms = $this->builder->get_post_block_terms( $post_id );
+		$this->builder->set_post_block_terms( $post_id, $terms );
+
+		$actual = wp_get_object_terms( $post_id, BLOCK_CATALOG_TAXONOMY, [ 'fields' => 'names' ] );
+
+		$this->assertContains( 'User', $actual );
+		$this->assertContains( 'Test List Pattern', $actual );
+
+		$user = get_term_by( 'slug', 'patterns-user', BLOCK_CATALOG_TAXONOMY );
+		$top  = get_term_by( 'slug', 'patterns', BLOCK_CATALOG_TAXONOMY );
+		$this->assertEquals( $top->term_id, $user->parent );
+	}
+
+	function test_it_builds_group_pattern_post_block_terms() {
+		$content = file_get_contents( FIXTURES_DIR . '/group-pattern.html' );
+		$post_id = $this->factory->post->create( [ 'post_content' => $content ] );
+
+		$actual = $this->builder->get_post_block_terms( $post_id );
+
+		$expected = [
+			'core/group'     => 'Group',
+			'core/spacer'    => 'Spacer',
+			'core/heading'   => 'Heading',
+			'core/image'     => 'Image',
+			'core/paragraph' => 'Paragraph',
+			'patterns/core/intro-area-with-heading-and-image' => 'Intro',
+		];
+
+		$this->assertEquals( $expected, $actual['terms'] );
+	}
+
+	function test_it_builds_multiple_pattern_post_block_terms() {
+		$content = file_get_contents( FIXTURES_DIR . '/multiple-patterns.html' );
+		$post_id = $this->factory->post->create( [ 'post_content' => $content ] );
+
+		$actual = $this->builder->get_post_block_terms( $post_id );
+
+		$expected = [
+			'core/group'     => 'Group',
+			'core/heading'   => 'Heading',
+			'core/columns'   => 'Columns',
+			'core/column'    => 'Column',
+			'core/paragraph' => 'Paragraph',
+			'patterns/twentytwentyfive/hero'     => 'Hero',
+			'patterns/twentytwentyfive/features' => 'Features',
+		];
+
+		$this->assertEquals( $expected, $actual['terms'] );
+	}
+
+	function test_it_knows_pattern_slug_is_a_pattern_term() {
+		$this->assertTrue( $this->builder->is_pattern_term( 'patterns-user-1412' ) );
+		$this->assertTrue( $this->builder->is_pattern_term( 'patterns-twentytwentyfive-hero' ) );
+	}
+
+	function test_it_treats_reusable_slug_as_a_pattern_term() {
+		$this->assertTrue( $this->builder->is_pattern_term( 're-555' ) );
+	}
+
+	function test_it_knows_block_slug_is_not_a_pattern_term() {
+		$this->assertFalse( $this->builder->is_pattern_term( 'core-paragraph' ) );
+	}
+
 	function test_it_uses_block_label_as_term_for_non_reusable_blocks() {
 		register_block_type( 'ns/foo11', [ 'title' => 'Registered Title' ] );
 
