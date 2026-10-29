@@ -19,6 +19,8 @@ class RESTSupportTest extends \WP_UnitTestCase {
 
 		$this->builder = new CatalogBuilder();
 		$this->rest = new RESTSupport();
+
+		wp_set_current_user( $this->factory->user->create( [ 'role' => 'administrator' ] ) );
 	}
 
 	function tearDown():void {
@@ -122,6 +124,60 @@ class RESTSupportTest extends \WP_UnitTestCase {
 
 		$this->assertEquals( 7, $actual['removed'] );
 		$this->assertEquals( 0, $actual['errors'] );
+	}
+
+	function test_it_does_not_index_posts_the_user_cannot_edit() {
+		$content = file_get_contents( FIXTURES_DIR . '/nested-blocks.html' );
+		$post_id = $this->factory->post->create( [ 'post_content' => $content, 'post_status' => 'private' ] );
+
+		// Saving the post catalogs it, so start from no terms.
+		wp_set_object_terms( $post_id, [], BLOCK_CATALOG_TAXONOMY );
+
+		wp_set_current_user( $this->factory->user->create( [ 'role' => 'author' ] ) );
+		add_filter( 'block_catalog_capability', function() {
+			return 'edit_posts';
+		} );
+
+		$request = new \WP_REST_Request( 'POST', '/block-catalog/v1/index' );
+		$request->set_param( 'post_ids', [ $post_id ] );
+
+		$actual = $this->rest->index( $request );
+
+		$this->assertEquals( 0, $actual['updated'] );
+		$this->assertEquals( 1, $actual['errors'] );
+		$this->assertEmpty( wp_get_object_terms( $post_id, BLOCK_CATALOG_TAXONOMY ) );
+	}
+
+	/**
+	 * @dataProvider endpoint_provider
+	 */
+	function test_it_denies_endpoints_to_users_below_editor( $route, $body ) {
+		$this->rest->register_endpoints();
+
+		foreach ( [ 'contributor', 'author' ] as $role ) {
+			wp_set_current_user( $this->factory->user->create( [ 'role' => $role ] ) );
+
+			$request = new \WP_REST_Request( 'POST', $route );
+			$request->set_body_params( $body );
+
+			$this->assertEquals( 403, $this->server->dispatch( $request )->get_status(), "$role on $route" );
+		}
+
+		wp_set_current_user( $this->factory->user->create( [ 'role' => 'editor' ] ) );
+
+		$request = new \WP_REST_Request( 'POST', $route );
+		$request->set_body_params( $body );
+
+		$this->assertEquals( 200, $this->server->dispatch( $request )->get_status(), "editor on $route" );
+	}
+
+	function endpoint_provider() {
+		return [
+			[ '/block-catalog/v1/posts', [] ],
+			[ '/block-catalog/v1/index', [ 'post_ids' => [ 1 ] ] ],
+			[ '/block-catalog/v1/terms', [] ],
+			[ '/block-catalog/v1/delete-index', [] ],
+		];
 	}
 
 }

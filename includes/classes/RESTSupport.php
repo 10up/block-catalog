@@ -244,6 +244,11 @@ class RESTSupport {
 		$builder  = new CatalogBuilder();
 
 		foreach ( $post_ids as $post_id ) {
+			if ( ! current_user_can( 'edit_post', $post_id ) ) {
+				++$errors;
+				continue;
+			}
+
 			$result = $builder->catalog( $post_id );
 
 			\BlockCatalog\Utility\clear_caches();
