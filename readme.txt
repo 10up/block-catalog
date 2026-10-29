@@ -64,12 +64,19 @@ Please report security bugs found in the source code of the Block Catalog plugin
 
 **Changed**
 
+- Change our default capability from `edit_posts` to `manage_categories`. **Note**: this is a breaking change for Authors and Contributors who will no longer have access to trigger a catalog indexing ([GHSA-38fv-295q-m8cf](https://github.com/10up/block-catalog/security/advisories/GHSA-38fv-295q-m8cf)).
 - Bump WordPress tested-up-to version 7.1 ([#84](https://github.com/10up/block-catalog/pull/84), [#110](https://github.com/10up/block-catalog/pull/110), [#119](https://github.com/10up/block-catalog/pull/119)).
 - Bump minimum supported WordPress version to 6.6 ([#85](https://github.com/10up/block-catalog/pull/85)).
 
 **Fixed**
 
 - Fatal error accessing object cache properties that may be protected/private in drop-ins ([#96](https://github.com/10up/block-catalog/pull/96)).
+- Ensure the index deletion properly deletes terms ([GHSA-r5x5-g636-fr9r](https://github.com/10up/block-catalog/security/advisories/GHSA-r5x5-g636-fr9r)).
+
+**Security**
+
+- Resolve GHSA-r5x5-g636-fr9r ([GHSA-r5x5-g636-fr9r](https://github.com/10up/block-catalog/security/advisories/GHSA-r5x5-g636-fr9r)).
+- Resolve GHSA-38fv-295q-m8cf ([GHSA-38fv-295q-m8cf](https://github.com/10up/block-catalog/security/advisories/GHSA-38fv-295q-m8cf)).
 
 = 1.6.2 - 2025-02-03 =
 * **Changed:** Bump WordPress "tested up to" version 6.7 (props [@thrijith](https://github.com/thrijith), [@jeffpaul](https://github.com/jeffpaul), [@Sidsector9](https://github.com/Sidsector9) via [#74](https://github.com/10up/block-catalog/pull/74), [#75](https://github.com/10up/block-catalog/pull/75)).
@@ -99,6 +106,9 @@ Please report security bugs found in the source code of the Block Catalog plugin
 [View historical changelog details here](https://github.com/10up/block-catalog/blob/develop/CHANGELOG.md).
 
 == Upgrade Notice ==
+
+= 1.6.3 =
+This is a security release, it is recommended to upgrade immediately.
 
 = 1.6.1 =
 Updates the [Support Level](https://github.com/10up/block-catalog/blob/develop/README.md#support-level) from `Beta` to `Stable`.

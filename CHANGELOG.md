@@ -5,15 +5,23 @@ All notable changes to this project will be documented in this file, per [the Ke
 ## [Unreleased] - TBD
 
 ## [1.6.3] - 2026-10-29
+**This is a security release, it is recommended to upgrade immediately.**
+
 ### Added
 - "Settings" page link right on the plugins page to review the settings of the plugin from there directly ([#92](https://github.com/10up/block-catalog/pull/92)).
 
 ### Changed
+- Change our default capability from `edit_posts` to `manage_categories`. **Note**: this is a breaking change for Authors and Contributors who will no longer have access to trigger a catalog indexing ([GHSA-38fv-295q-m8cf](https://github.com/10up/block-catalog/security/advisories/GHSA-38fv-295q-m8cf)).
 - Bump WordPress tested-up-to version 7.1 ([#84](https://github.com/10up/block-catalog/pull/84), [#110](https://github.com/10up/block-catalog/pull/110), [#119](https://github.com/10up/block-catalog/pull/119)).
 - Bump minimum supported WordPress version to 6.6 ([#85](https://github.com/10up/block-catalog/pull/85)).
 
 ### Fixed
 - Fatal error accessing object cache properties that may be protected/private in drop-ins ([#96](https://github.com/10up/block-catalog/pull/96)).
+- Ensure the index deletion properly deletes terms ([GHSA-r5x5-g636-fr9r](https://github.com/10up/block-catalog/security/advisories/GHSA-r5x5-g636-fr9r)).
+
+### Security
+- Resolve GHSA-r5x5-g636-fr9r ([GHSA-r5x5-g636-fr9r](https://github.com/10up/block-catalog/security/advisories/GHSA-r5x5-g636-fr9r)).
+- Resolve GHSA-38fv-295q-m8cf ([GHSA-38fv-295q-m8cf](https://github.com/10up/block-catalog/security/advisories/GHSA-38fv-295q-m8cf)).
 
 ### Developer
 - Update all third-party actions our workflows rely on to use versions based on specific commit hashes ([#79](https://github.com/10up/block-catalog/pull/79)).
