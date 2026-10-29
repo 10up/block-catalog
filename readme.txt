@@ -2,7 +2,7 @@
 Contributors:      10up, dsawardekar, dkotter, jeffpaul
 Tags:              gutenberg, developer, blocks, custom blocks
 Tested up to:      7.1
-Stable tag:        1.6.2
+Stable tag:        1.6.3
 License:           GPL-2.0-or-later
 License URI:       https://spdx.org/licenses/GPL-2.0-or-later.html
 
@@ -56,6 +56,28 @@ Please report security bugs found in the source code of the Block Catalog plugin
 
 == Changelog ==
 
+= 1.6.3 - 2026-10-29 =
+
+**Added**
+
+- "Settings" page link right on the plugins page to review the settings of the plugin from there directly ([#92](https://github.com/10up/block-catalog/pull/92)).
+
+**Changed**
+
+- Change our default capability from `edit_posts` to `manage_categories`. **Note**: this is a breaking change for Authors and Contributors who will no longer have access to trigger a catalog indexing ([GHSA-38fv-295q-m8cf](https://github.com/10up/block-catalog/security/advisories/GHSA-38fv-295q-m8cf)).
+- Bump WordPress tested-up-to version 7.1 ([#84](https://github.com/10up/block-catalog/pull/84), [#110](https://github.com/10up/block-catalog/pull/110), [#119](https://github.com/10up/block-catalog/pull/119)).
+- Bump minimum supported WordPress version to 6.6 ([#85](https://github.com/10up/block-catalog/pull/85)).
+
+**Fixed**
+
+- Fatal error accessing object cache properties that may be protected/private in drop-ins ([#96](https://github.com/10up/block-catalog/pull/96)).
+- Ensure the index deletion properly deletes terms ([GHSA-r5x5-g636-fr9r](https://github.com/10up/block-catalog/security/advisories/GHSA-r5x5-g636-fr9r)).
+
+**Security**
+
+- Resolve GHSA-r5x5-g636-fr9r ([GHSA-r5x5-g636-fr9r](https://github.com/10up/block-catalog/security/advisories/GHSA-r5x5-g636-fr9r)).
+- Resolve GHSA-38fv-295q-m8cf ([GHSA-38fv-295q-m8cf](https://github.com/10up/block-catalog/security/advisories/GHSA-38fv-295q-m8cf)).
+
 = 1.6.2 - 2025-02-03 =
 * **Changed:** Bump WordPress "tested up to" version 6.7 (props [@thrijith](https://github.com/thrijith), [@jeffpaul](https://github.com/jeffpaul), [@Sidsector9](https://github.com/Sidsector9) via [#74](https://github.com/10up/block-catalog/pull/74), [#75](https://github.com/10up/block-catalog/pull/75)).
 * **Security:** Bump `webpack` from 5.91.0 to 5.94.0 (props [@dependabot](https://github.com/apps/dependabot), [@peterwilsoncc](https://github.com/peterwilsoncc) via [#68](https://github.com/10up/block-catalog/pull/68)).
@@ -81,37 +103,12 @@ Please report security bugs found in the source code of the Block Catalog plugin
 * **Security:** Bump `10up-toolkit` from 5.2.3 to 6.0.1 (props [@dependabot](https://github.com/apps/dependabot), [@Sidsector9](https://github.com/Sidsector9) via [#50](https://github.com/10up/block-catalog/pull/50)).
 * **Security:** Bump `webpack-dev-middleware` from 5.3.3 to 5.3.4 (props [@dependabot](https://github.com/apps/dependabot), [@Sidsector9](https://github.com/Sidsector9) via [#50](https://github.com/10up/block-catalog/pull/50)).
 
-= 1.5.4 - 2024-02-29 =
-* **Added:** Support for the WordPress.org plugin preview (props [@dkotter](https://github.com/dkotter), [@jeffpaul](https://github.com/jeffpaul) via [#38](https://github.com/10up/block-catalog/pull/38)).
-* **Changed:** Significantly improved performance of block catalog reset on larger WordPress installations (props [@dsawardekar](https://github.com/dsawardekar), [@Sidsector9](https://github.com/Sidsector9) via [#41](https://github.com/10up/block-catalog/pull/41)).
-* **Changed:** Clean up NPM dependencies and update the minimum node version to 20 (props [@Sidsector9](https://github.com/Sidsector9), [@dsawardekar](https://github.com/dsawardekar) via [#43](https://github.com/10up/block-catalog/pull/43)).
-* **Security:** Bump `tj-actions/changed-files` from 39 to 41 (props [@dependabot](https://github.com/apps/dependabot), [@peterwilsoncc](https://github.com/peterwilsoncc) via [#39](https://github.com/10up/block-catalog/pull/39)).
-* **Security:** Bump `follow-redirects` from 1.15.2 to 1.15.4 (props [@dependabot](https://github.com/apps/dependabot), [@Sidsector9](https://github.com/Sidsector9) via [#40](https://github.com/10up/block-catalog/pull/40)).
-
-= 1.5.3 - 2023-11-23 =
-* **Fixed:** PHP 8.2 deprecation warnings (props [@dsawardekar](https://github.com/dsawardekar), [@ravinderk](https://github.com/ravinderk) via [#34](https://github.com/10up/block-catalog/pull/34)).
-* **Added:** PHPUnit 9.x support (props [@dsawardekar](https://github.com/dsawardekar), [@ravinderk](https://github.com/ravinderk) via [#34](https://github.com/10up/block-catalog/pull/34)).
-* **Security:** Bump `sharp` from 0.32.3 to 0.32.6 (props [@dependabot](https://github.com/apps/dependabot), [@faisal-alvi](https://github.com/faisal-alvi) via [#32](https://github.com/10up/block-catalog/pull/32)).
-
-= 1.5.2 - 2023-11-16 =
-* **Changed:** Bump WordPress "tested up to" version to 6.4 (props [@qasumitbagthariya](https://github.com/qasumitbagthariya), [@jeffpaul](https://github.com/jeffpaul) via [#28](https://github.com/10up/block-catalog/pull/28), [#29](https://github.com/10up/block-catalog/pull/29)).
-
-= 1.5.1 - 2023-10-24 =
-**Note that this release changes the name of the base plugin file. As such, you'll probably need to reactivate the plugin after updating.**
-
-* **Added:** Add our standard GitHub Action automations (props [@jeffpaul](https://github.com/jeffpaul), [@dsawardekar](https://github.com/dsawardekar), [@dkotter](https://github.com/dkotter) via [#10](https://github.com/10up/block-catalog/pull/10), [#20](https://github.com/10up/block-catalog/pull/20), [#22](https://github.com/10up/block-catalog/pull/22), [#23](https://github.com/10up/block-catalog/pull/23), [#24](https://github.com/10up/block-catalog/pull/24), [#25](https://github.com/10up/block-catalog/pull/25)).
-* **Changed:** Update our plugin image assets (props [Brooke Campbell](https://www.linkedin.com/in/brookecampbelldesign/), [@jeffpaul](https://github.com/jeffpaul), [@dsawardekar](https://github.com/dsawardekar), [@faisal-alvi](https://github.com/faisal-alvi) via [#11](https://github.com/10up/block-catalog/pull/11), [#17](https://github.com/10up/block-catalog/pull/17)).
-* **Changed:** Updated the main plugin file name (props [@dkotter](https://github.com/dkotter), [@peterwilsoncc](https://github.com/peterwilsoncc), [@dsawardekar](https://github.com/dsawardekar) via [#18](https://github.com/10up/block-catalog/pull/18)).
-* **Security:** Bump `@babel/traverse` from 7.22.8 to 7.23.2 (props [@dependabot](https://github.com/apps/dependabot), [@dkotter](https://github.com/dkotter) via [#21](https://github.com/10up/block-catalog/pull/21)).
-
-= 1.5.0 - 2023-08-11 =
-* **Added:** `Beta` Support Level (props [@jeffpaul](https://github.com/jeffpaul), [@dsawardekar](https://github.com/dsawardekar) via [#3](https://github.com/10up/block-catalog/pull/3)).
-* **Added:** Adds support for multisite via WP CLI (props [@dsawardekar](https://github.com/dsawardekar), [@Sidsector9](https://github.com/Sidsector9) via [#9](https://github.com/10up/block-catalog/pull/9)).
-* **Fixed:** Missing name in the `block_catalog_taxonomy_options` hook (props [@dsawardekar](https://github.com/dsawardekar), [@fabiankaegy](https://github.com/fabiankaegy) via [#6](https://github.com/10up/block-catalog/pull/6)).
-
 [View historical changelog details here](https://github.com/10up/block-catalog/blob/develop/CHANGELOG.md).
 
 == Upgrade Notice ==
+
+= 1.6.3 =
+This is a security release, it is recommended to upgrade immediately.
 
 = 1.6.1 =
 Updates the [Support Level](https://github.com/10up/block-catalog/blob/develop/README.md#support-level) from `Beta` to `Stable`.
