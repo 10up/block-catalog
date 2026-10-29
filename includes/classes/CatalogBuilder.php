@@ -70,22 +70,7 @@ class CatalogBuilder {
 			++$errors;
 		}
 
-		// Delete term taxonomy
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
-		$term_taxonomy = $wpdb->query(
-			$wpdb->prepare(
-				"DELETE FROM {$wpdb->term_taxonomy} WHERE taxonomy = %s",
-				BLOCK_CATALOG_TAXONOMY
-			)
-		);
-
-		if ( false === $term_taxonomy ) {
-			++$errors;
-		} else {
-			$removed = $term_taxonomy;
-		}
-
-		// Delete terms
+		// Delete terms, before term taxonomy, as the lookup relies on the term taxonomy rows
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
 		$terms = $wpdb->query(
 			$wpdb->prepare(
@@ -99,6 +84,21 @@ class CatalogBuilder {
 
 		if ( false === $terms ) {
 			++$errors;
+		}
+
+		// Delete term taxonomy
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
+		$term_taxonomy = $wpdb->query(
+			$wpdb->prepare(
+				"DELETE FROM {$wpdb->term_taxonomy} WHERE taxonomy = %s",
+				BLOCK_CATALOG_TAXONOMY
+			)
+		);
+
+		if ( false === $term_taxonomy ) {
+			++$errors;
+		} else {
+			$removed = $term_taxonomy;
 		}
 
 		// update block catalog term counts = 0
@@ -365,9 +365,11 @@ class CatalogBuilder {
 		 */
 		$label = apply_filters( 'block_catalog_block_term_label', $label, $block );
 
-		if ( 'core/block' === $block['blockName'] && ! empty( $block['attrs']['ref'] ) ) {
-			$reusable_slug           = 're-' . intval( $block['attrs']['ref'] );
-			$terms[ $reusable_slug ] = get_the_title( $block['attrs']['ref'] );
+		$ref = intval( $block['attrs']['ref'] ?? 0 );
+
+		// Ensure only published reusable blocks are named in the catalog.
+		if ( 'core/block' === $block['blockName'] && $ref && 'wp_block' === get_post_type( $ref ) && 'publish' === get_post_status( $ref ) ) {
+			$terms[ 're-' . $ref ] = get_the_title( $ref );
 		} else {
 			$terms[ $block['blockName'] ] = $label;
 		}
