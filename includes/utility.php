@@ -148,5 +148,5 @@ function get_required_capability() {
 	 * @param string $cap The capability name
 	 * @return string The new capability name
 	 */
-	return apply_filters( 'block_catalog_capability', 'edit_posts' );
+	return apply_filters( 'block_catalog_capability', 'manage_categories' );
 }

@@ -60,7 +60,7 @@ class UtilityTests extends \WP_UnitTestCase {
 	}
 
 	function test_it_has_default_capability() {
-		$this->assertEquals( 'edit_posts', get_required_capability() );
+		$this->assertEquals( 'manage_categories', get_required_capability() );
 	}
 
 	function test_it_can_override_default_capability() {

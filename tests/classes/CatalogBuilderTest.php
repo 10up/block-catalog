@@ -133,6 +133,36 @@ class CatalogBuilderTest extends \WP_UnitTestCase {
 		$this->assertEquals( [ "re-$post_id" => 'My Reusable1' ], $actual['terms'] );
 	}
 
+	function test_it_does_not_use_title_of_non_reusable_block_ref_as_term() {
+		$post_id = $this->factory->post->create( [ 'post_status' => 'private', 'post_title' => 'Secret Post' ] );
+
+		$block  = [
+			'blockName' => 'core/block',
+			'attrs' => [
+				'ref' => $post_id,
+			]
+		];
+
+		$actual = $this->builder->block_to_terms( $block );
+		$this->assertArrayNotHasKey( "re-$post_id", $actual['terms'] );
+		$this->assertNotContains( 'Private: Secret Post', $actual['terms'] );
+	}
+
+	function test_it_does_not_use_title_of_unpublished_reusable_block_as_term() {
+		$post_id = $this->factory->post->create( [ 'post_type' => 'wp_block', 'post_status' => 'draft', 'post_title' => 'Draft Reusable' ] );
+
+		$block  = [
+			'blockName' => 'core/block',
+			'attrs' => [
+				'ref' => $post_id,
+			]
+		];
+
+		$actual = $this->builder->block_to_terms( $block );
+		$this->assertArrayNotHasKey( "re-$post_id", $actual['terms'] );
+		$this->assertNotContains( 'Draft Reusable', $actual['terms'] );
+	}
+
 	function test_it_uses_block_label_as_term_for_non_reusable_blocks() {
 		register_block_type( 'ns/foo11', [ 'title' => 'Registered Title' ] );
 
@@ -407,6 +437,24 @@ class CatalogBuilderTest extends \WP_UnitTestCase {
 
 		$actual = get_terms( [ 'taxonomy' => BLOCK_CATALOG_TAXONOMY ] );
 		$this->assertEmpty( $actual );
+	}
+
+	function test_it_does_not_leave_orphaned_terms_when_deleting_index() {
+		global $wpdb;
+
+		$content = file_get_contents( FIXTURES_DIR . '/nested-blocks.html' );
+		$post_id = $this->factory->post->create( [ 'post_content' => $content ] );
+
+		$this->builder->catalog( $post_id );
+
+		$term_ids = get_terms( [ 'taxonomy' => BLOCK_CATALOG_TAXONOMY, 'hide_empty' => false, 'fields' => 'ids' ] );
+		$this->assertNotEmpty( $term_ids );
+
+		$this->builder->delete_index();
+
+		$ids    = implode( ',', array_map( 'intval', $term_ids ) );
+		$actual = $wpdb->get_var( "SELECT COUNT(*) FROM {$wpdb->terms} WHERE term_id IN ($ids)" ); // phpcs:ignore
+		$this->assertEquals( 0, $actual );
 	}
 
 	function test_it_knows_core_paragraph_is_not_classic_editor() {
