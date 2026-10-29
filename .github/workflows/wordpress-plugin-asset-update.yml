@@ -25,7 +25,7 @@ jobs:
 
       - name: Build
         run: |
-          npm ci --no-optional
+          npm ci
           npm run build
 
       - name: WordPress.org plugin asset/readme update
