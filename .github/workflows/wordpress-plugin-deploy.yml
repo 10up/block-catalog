@@ -22,7 +22,7 @@ jobs:
 
     - name: Build
       run: |
-        npm ci --no-optional
+        npm ci
         npm run build
 
     - name: WordPress Plugin Deploy
