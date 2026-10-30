@@ -5,6 +5,7 @@ describe("Admin can login and open dashboard", () => {
 
 	it('Create post and insert heading', () => {
 		cy.createPost({
+			content: '',
 			beforeSave: () => {
 				cy.insertBlock('core/heading').then(id => {
 					cy.getBlockEditor().find(`#${id}`).click().type('This is test heading');
