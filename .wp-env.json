@@ -1,7 +1,11 @@
 {
-  "plugins": ["."],
-  "lifecycleScripts": {
-    "afterStart": "./tests/bin/initialize.sh",
-    "afterReset": "./tests/bin/initialize.sh"
-  }
+	"$schema": "https://schemas.wp.org/trunk/wp-env.json",
+	"testsEnvironment": false,
+	"core": null,
+	"plugins": [ "." ],
+	"config": {
+		"WP_DEVELOPMENT_MODE": "plugin",
+		"WP_ENVIRONMENT_TYPE": "development",
+		"WP_DEBUG": true
+	}
 }
