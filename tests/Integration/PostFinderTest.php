@@ -184,6 +184,9 @@ class PostFinderTest extends \WP_UnitTestCase {
 		$this->assertEquals( 4, $actual );
 	}
 
+	/**
+	 * @group ms-required
+	 */
 	function test_it_can_count_posts_across_network() {
 		// first create a few blogs on the network
 		$blog_ids = $this->factory->blog->create_many( 3 );
@@ -212,6 +215,9 @@ class PostFinderTest extends \WP_UnitTestCase {
 		$this->assertEquals( 3, $actual[2]['count'] );
 	}
 
+	/**
+	 * @group ms-required
+	 */
 	function test_it_can_count_posts_across_post_types_across_network() {
 		// first create a few blogs on the network
 		$blog_ids = $this->factory->blog->create_many( 3 );
@@ -246,6 +252,9 @@ class PostFinderTest extends \WP_UnitTestCase {
 		$this->assertEquals( 7, $actual[2]['count'] );
 	}
 
+	/**
+	 * @group ms-required
+	 */
 	function test_it_can_find_posts_with_mixed_blocks_across_network() {
 		// first create a few blogs on the network
 		$blog_ids = $this->factory->blog->create_many( 3 );
@@ -281,6 +290,9 @@ class PostFinderTest extends \WP_UnitTestCase {
 		$this->assertEquals( 2, $actual[2]['count'] );
 	}
 
+	/**
+	 * @group ms-required
+	 */
 	function test_it_knows_if_no_block_matches_across_the_network() {
 		// first create a few blogs on the network
 		$blog_ids = $this->factory->blog->create_many( 3 );
@@ -369,6 +381,9 @@ class PostFinderTest extends \WP_UnitTestCase {
 		$this->assertEquals( $post_ids, $actual );
 	}
 
+	/**
+	 * @group ms-required
+	 */
 	function test_it_can_find_posts_across_post_types_with_operators_across_network() {
 		// first create a few blogs on the network
 		$blog_ids = $this->factory->blog->create_many( 3 );
@@ -424,6 +439,9 @@ class PostFinderTest extends \WP_UnitTestCase {
 		$this->assertEquals( 'not-indexed', $actual->get_error_code() );
 	}
 
+	/**
+	 * @group ms-required
+	 */
 	function test_it_returns_list_of_errors_if_finding_fails_across_network() {
 		// create a few blogs on the network
 		$blog_ids = $this->factory->blog->create_many( 3 );
