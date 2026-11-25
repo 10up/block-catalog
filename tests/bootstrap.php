@@ -1,34 +1,41 @@
 <?php
 /**
- * PHPUnit bootstrap file
+ * Bootstraps the PHPUnit integration tests.
+ *
+ * @package BlockCatalog
  */
 
-$_tests_dir = getenv( 'WP_TESTS_DIR' );
+define( 'TESTS_REPO_ROOT_DIR', dirname( __DIR__ ) );
 
-define( 'TEST_DIR', dirname( __FILE__ ) );
-define( 'PHPUNIT_RUNNER', true );
-define( 'FIXTURES_DIR', TEST_DIR . '/fixtures/' );
+// Block markup fixtures shared by the integration tests.
+define( 'FIXTURES_DIR', __DIR__ . '/fixtures/' );
 
-if ( ! $_tests_dir ) {
-	$_tests_dir = rtrim( sys_get_temp_dir(), '/\\' ) . '/wordpress-tests-lib';
+// Composer autoload also loads the PHPUnit Polyfills the WP test library requires.
+if ( file_exists( TESTS_REPO_ROOT_DIR . '/vendor/autoload.php' ) ) {
+	require_once TESTS_REPO_ROOT_DIR . '/vendor/autoload.php';
 }
 
-if ( ! file_exists( $_tests_dir . '/includes/functions.php' ) ) {
-	echo "Could not find $_tests_dir/includes/functions.php, have you run bin/install-wp-tests.sh ?" . PHP_EOL;
-	exit( 1 );
+// Find the WordPress test library. wp-env sets WP_TESTS_DIR; wp-phpunit sets WP_PHPUNIT__DIR.
+if ( false !== getenv( 'WP_TESTS_DIR' ) ) {
+	$_test_root = getenv( 'WP_TESTS_DIR' );
+} elseif ( false !== getenv( 'WP_DEVELOP_DIR' ) ) {
+	$_test_root = getenv( 'WP_DEVELOP_DIR' ) . '/tests/phpunit';
+} elseif ( false !== getenv( 'WP_PHPUNIT__DIR' ) ) {
+	$_test_root = getenv( 'WP_PHPUNIT__DIR' );
+} else {
+	$_test_root = '/tmp/wordpress-tests-lib';
 }
 
-// Give access to tests_add_filter() function.
-require_once $_tests_dir . '/includes/functions.php';
+// Gives access to tests_add_filter().
+require_once $_test_root . '/includes/functions.php';
 
-/**
- * Manually load the plugin being tested.
- */
-function _manually_load_plugin() {
-	require dirname( dirname( __FILE__ ) ) . '/block-catalog.php';
-}
-tests_add_filter( 'muplugins_loaded', '_manually_load_plugin' );
+// Load the plugin as a must-use plugin so it is active for every test.
+tests_add_filter(
+	'muplugins_loaded',
+	static function (): void {
+		require TESTS_REPO_ROOT_DIR . '/block-catalog.php';
+	}
+);
 
 // Start up the WP testing environment.
-require $_tests_dir . '/includes/bootstrap.php';
-
+require $_test_root . '/includes/bootstrap.php';

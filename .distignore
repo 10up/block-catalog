@@ -2,9 +2,11 @@
 /.git
 /.github
 /.wordpress-org
+/artifacts
 /assets
 /bin
 /node_modules
+/release
 /tests
 /vendor
 
