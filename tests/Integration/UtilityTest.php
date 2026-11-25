@@ -15,6 +15,12 @@ class UtilityTests extends \WP_UnitTestCase {
 	}
 
 	function test_it_excludes_known_internal_post_types() {
+		foreach ( [ 'feedback', 'jp_pay_order', 'jp_pay_product', 'dt_subscription' ] as $post_type ) {
+			if ( ! post_type_exists( $post_type ) ) {
+				register_post_type( $post_type, [ 'show_in_rest' => true ] );
+			}
+		}
+
 		$actual = get_supported_post_types();
 
 		$this->assertNotContains( 'feedback', $actual );
@@ -71,31 +77,31 @@ class UtilityTests extends \WP_UnitTestCase {
 		$this->assertEquals( 'manage_options', get_required_capability() );
 	}
 
-	function test_clear_caches_does_not_cause_errors() {
-		// Test that clear_caches function can be called without errors
-		// This is especially important for compatibility with Object Cache Pro and other cache implementations
-		$result = clear_caches();
-		
-		// The function should not return anything (void function)
-		$this->assertNull( $result );
-		
-		// The function should not cause any fatal errors or exceptions
-		// If we reach this point, the test passes
-		$this->assertTrue( true );
-	}
+	function test_clear_caches_works_with_object_caches_that_reject_property_writes() {
+		global $wp_object_cache;
 
-	function test_clear_caches_uses_appropriate_cache_function() {
-		// Test that the function uses wp_cache_flush_runtime() when available (WordPress 6.0+)
-		// This is more appropriate for preventing out of memory errors during bulk operations
-		if ( function_exists( 'wp_cache_supports' ) && wp_cache_supports( 'flush_runtime' ) ) {
-			// We can't easily test the internal behavior without mocking, but we can verify
-			// the capability check works and our function can call it without errors
-			$this->assertTrue( function_exists( 'wp_cache_supports' ) );
-			$this->assertTrue( wp_cache_supports( 'flush_runtime' ) );
+		// Object Cache Pro and similar drop-ins don't allow writing arbitrary
+		// properties, so clear_caches() must only use the wp_cache_* API (#95).
+		$original_cache  = $wp_object_cache;
+		$wp_object_cache = new class() {
+			public $flushed = false;
+
+			public function __set( $name, $value ) {
+				throw new \RuntimeException( "Object cache property $name written directly" );
+			}
+
+			public function flush() {
+				$this->flushed = true;
+				return true;
+			}
+		};
+
+		try {
+			clear_caches();
+
+			$this->assertTrue( $wp_object_cache->flushed );
+		} finally {
+			$wp_object_cache = $original_cache;
 		}
-		
-		// The function should always work regardless of WordPress version
-		$result = clear_caches();
-		$this->assertNull( $result );
 	}
 }
